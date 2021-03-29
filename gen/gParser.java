@@ -42,7 +42,7 @@ public class gParser extends Parser {
 		return new String[] {
 			null, "':'", "','", "';'", "'['", "']'", "'{'", "'}'", "'('", "')'", 
 			"'if'", "'else'", "'for'", "'to'", "'pos'", "'x:'", "'y:'", "'void'", 
-			"'return'", null, "' '", null, "'bool'", null, null, "'<'", "'>'", "'<='", 
+			"'return'", null, null, null, "'bool'", null, null, "'<'", "'>'", "'<='", 
 			"'>='", "'=='", "'!='", "'||'", "'&&'", "'!'", "'='", null, "'-'", "'%'", 
 			"'+'", "'*'", "'/'"
 		};
