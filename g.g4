@@ -74,6 +74,8 @@ RETURN : 'return' ;
 
 LINE_COMMENT : '//' ~[\r\n]* -> channel(HIDDEN) ;
 
+WHITESPACE : ' ' -> skip ;
+
 TYPE : 'int'
      | 'double'
      ;
