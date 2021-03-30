@@ -4,7 +4,4 @@ out
 compile-out/compile-out.ino
 output/
 output/output.ino
-arduino-cli
-arduino-cli.exe
-LICENSE.txt
 language-meta.json
