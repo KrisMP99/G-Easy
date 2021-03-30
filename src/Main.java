@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        CharStream charStream = CharStreams.fromFileName("test.g");
+        CharStream charStream = CharStreams.fromFileName("src/test.g");
         GEasyLexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();
