@@ -1,4 +1,4 @@
-grammar g;
+grammar GEasy;
 
 // Parser rules
 prog: (dcl | stmt | func | func_call )* EOF ;

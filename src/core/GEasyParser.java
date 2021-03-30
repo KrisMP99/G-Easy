@@ -1,4 +1,4 @@
-// Generated from C:/Users/Kristian/Desktop/P4\g.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/P4/src/core\GEasy.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
-public class gParser extends Parser {
+public class GEasyParser extends Parser {
 	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
@@ -93,7 +93,7 @@ public class gParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "g.g4"; }
+	public String getGrammarFileName() { return "GEasy.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -104,13 +104,13 @@ public class gParser extends Parser {
 	@Override
 	public ATN getATN() { return _ATN; }
 
-	public gParser(TokenStream input) {
+	public GEasyParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
 	public static class ProgContext extends ParserRuleContext {
-		public TerminalNode EOF() { return getToken(gParser.EOF, 0); }
+		public TerminalNode EOF() { return getToken(GEasyParser.EOF, 0); }
 		public List<DclContext> dcl() {
 			return getRuleContexts(DclContext.class);
 		}
@@ -141,7 +141,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_prog; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitProg(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitProg(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -207,7 +207,7 @@ public class gParser extends Parser {
 	}
 
 	public static class DclContext extends ParserRuleContext {
-		public TerminalNode SEMICOLON() { return getToken(gParser.SEMICOLON, 0); }
+		public TerminalNode SEMICOLON() { return getToken(GEasyParser.SEMICOLON, 0); }
 		public AssignContext assign() {
 			return getRuleContext(AssignContext.class,0);
 		}
@@ -226,7 +226,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_dcl; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitDcl(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitDcl(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -281,9 +281,9 @@ public class gParser extends Parser {
 	}
 
 	public static class Var_dclContext extends ParserRuleContext {
-		public TerminalNode TYPE() { return getToken(gParser.TYPE, 0); }
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode ASSIGN_OP() { return getToken(gParser.ASSIGN_OP, 0); }
+		public TerminalNode TYPE() { return getToken(GEasyParser.TYPE, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode ASSIGN_OP() { return getToken(GEasyParser.ASSIGN_OP, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
@@ -299,7 +299,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_var_dcl; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitVar_dcl(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitVar_dcl(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -352,9 +352,9 @@ public class gParser extends Parser {
 	}
 
 	public static class Pos_dclContext extends ParserRuleContext {
-		public TerminalNode POS() { return getToken(gParser.POS, 0); }
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode ASSIGN_OP() { return getToken(gParser.ASSIGN_OP, 0); }
+		public TerminalNode POS() { return getToken(GEasyParser.POS, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode ASSIGN_OP() { return getToken(GEasyParser.ASSIGN_OP, 0); }
 		public Pos_assignContext pos_assign() {
 			return getRuleContext(Pos_assignContext.class,0);
 		}
@@ -364,7 +364,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_pos_dcl; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitPos_dcl(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitPos_dcl(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -397,22 +397,22 @@ public class gParser extends Parser {
 	}
 
 	public static class Array_dclContext extends ParserRuleContext {
-		public TerminalNode TYPE() { return getToken(gParser.TYPE, 0); }
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode L_BRACKET() { return getToken(gParser.L_BRACKET, 0); }
-		public TerminalNode R_BRACKET() { return getToken(gParser.R_BRACKET, 0); }
-		public TerminalNode ASSIGN_OP() { return getToken(gParser.ASSIGN_OP, 0); }
-		public TerminalNode L_BRACE() { return getToken(gParser.L_BRACE, 0); }
-		public TerminalNode R_BRACE() { return getToken(gParser.R_BRACE, 0); }
+		public TerminalNode TYPE() { return getToken(GEasyParser.TYPE, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode L_BRACKET() { return getToken(GEasyParser.L_BRACKET, 0); }
+		public TerminalNode R_BRACKET() { return getToken(GEasyParser.R_BRACKET, 0); }
+		public TerminalNode ASSIGN_OP() { return getToken(GEasyParser.ASSIGN_OP, 0); }
+		public TerminalNode L_BRACE() { return getToken(GEasyParser.L_BRACE, 0); }
+		public TerminalNode R_BRACE() { return getToken(GEasyParser.R_BRACE, 0); }
 		public List<ValContext> val() {
 			return getRuleContexts(ValContext.class);
 		}
 		public ValContext val(int i) {
 			return getRuleContext(ValContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(gParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(gParser.COMMA, i);
+			return getToken(GEasyParser.COMMA, i);
 		}
 		public Array_dclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -420,7 +420,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_array_dcl; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitArray_dcl(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitArray_dcl(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -480,8 +480,8 @@ public class gParser extends Parser {
 	}
 
 	public static class AssignContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode ASSIGN_OP() { return getToken(gParser.ASSIGN_OP, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode ASSIGN_OP() { return getToken(GEasyParser.ASSIGN_OP, 0); }
 		public Pos_assignContext pos_assign() {
 			return getRuleContext(Pos_assignContext.class,0);
 		}
@@ -497,7 +497,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_assign; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitAssign(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitAssign(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -560,20 +560,20 @@ public class gParser extends Parser {
 	}
 
 	public static class Pos_assignContext extends ParserRuleContext {
-		public TerminalNode L_BRACE() { return getToken(gParser.L_BRACE, 0); }
-		public TerminalNode XCOORD() { return getToken(gParser.XCOORD, 0); }
+		public TerminalNode L_BRACE() { return getToken(GEasyParser.L_BRACE, 0); }
+		public TerminalNode XCOORD() { return getToken(GEasyParser.XCOORD, 0); }
 		public List<ValContext> val() {
 			return getRuleContexts(ValContext.class);
 		}
 		public ValContext val(int i) {
 			return getRuleContext(ValContext.class,i);
 		}
-		public TerminalNode COMMA() { return getToken(gParser.COMMA, 0); }
-		public TerminalNode YCOORD() { return getToken(gParser.YCOORD, 0); }
-		public TerminalNode R_BRACE() { return getToken(gParser.R_BRACE, 0); }
-		public List<TerminalNode> MINUS() { return getTokens(gParser.MINUS); }
+		public TerminalNode COMMA() { return getToken(GEasyParser.COMMA, 0); }
+		public TerminalNode YCOORD() { return getToken(GEasyParser.YCOORD, 0); }
+		public TerminalNode R_BRACE() { return getToken(GEasyParser.R_BRACE, 0); }
+		public List<TerminalNode> MINUS() { return getTokens(GEasyParser.MINUS); }
 		public TerminalNode MINUS(int i) {
-			return getToken(gParser.MINUS, i);
+			return getToken(GEasyParser.MINUS, i);
 		}
 		public Pos_assignContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -581,7 +581,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_pos_assign; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitPos_assign(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitPos_assign(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -643,10 +643,10 @@ public class gParser extends Parser {
 	}
 
 	public static class Array_assignContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode L_BRACKET() { return getToken(gParser.L_BRACKET, 0); }
-		public TerminalNode R_BRACKET() { return getToken(gParser.R_BRACKET, 0); }
-		public TerminalNode NUMBER() { return getToken(gParser.NUMBER, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode L_BRACKET() { return getToken(GEasyParser.L_BRACKET, 0); }
+		public TerminalNode R_BRACKET() { return getToken(GEasyParser.R_BRACKET, 0); }
+		public TerminalNode NUMBER() { return getToken(GEasyParser.NUMBER, 0); }
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
 		}
@@ -659,7 +659,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_array_assign; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitArray_assign(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitArray_assign(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -723,10 +723,10 @@ public class gParser extends Parser {
 		public ValContext val(int i) {
 			return getRuleContext(ValContext.class,i);
 		}
-		public TerminalNode MINUS() { return getToken(gParser.MINUS, 0); }
-		public List<TerminalNode> ARITHMETIC_OP() { return getTokens(gParser.ARITHMETIC_OP); }
+		public TerminalNode MINUS() { return getToken(GEasyParser.MINUS, 0); }
+		public List<TerminalNode> ARITHMETIC_OP() { return getTokens(GEasyParser.ARITHMETIC_OP); }
 		public TerminalNode ARITHMETIC_OP(int i) {
-			return getToken(gParser.ARITHMETIC_OP, i);
+			return getToken(GEasyParser.ARITHMETIC_OP, i);
 		}
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -737,7 +737,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_expr; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitExpr(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitExpr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -799,15 +799,15 @@ public class gParser extends Parser {
 	}
 
 	public static class Func_callContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(gParser.ID); }
+		public List<TerminalNode> ID() { return getTokens(GEasyParser.ID); }
 		public TerminalNode ID(int i) {
-			return getToken(gParser.ID, i);
+			return getToken(GEasyParser.ID, i);
 		}
-		public TerminalNode LP() { return getToken(gParser.LP, 0); }
-		public TerminalNode RP() { return getToken(gParser.RP, 0); }
-		public List<TerminalNode> COLON() { return getTokens(gParser.COLON); }
+		public TerminalNode LP() { return getToken(GEasyParser.LP, 0); }
+		public TerminalNode RP() { return getToken(GEasyParser.RP, 0); }
+		public List<TerminalNode> COLON() { return getTokens(GEasyParser.COLON); }
 		public TerminalNode COLON(int i) {
-			return getToken(gParser.COLON, i);
+			return getToken(GEasyParser.COLON, i);
 		}
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -815,9 +815,9 @@ public class gParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(gParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(gParser.COMMA, i);
+			return getToken(GEasyParser.COMMA, i);
 		}
 		public Func_callContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -825,7 +825,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_func_call; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitFunc_call(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitFunc_call(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -894,7 +894,7 @@ public class gParser extends Parser {
 		public AssignContext assign() {
 			return getRuleContext(AssignContext.class,0);
 		}
-		public TerminalNode SEMICOLON() { return getToken(gParser.SEMICOLON, 0); }
+		public TerminalNode SEMICOLON() { return getToken(GEasyParser.SEMICOLON, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
@@ -907,14 +907,14 @@ public class gParser extends Parser {
 		public IterativeContext iterative() {
 			return getRuleContext(IterativeContext.class,0);
 		}
-		public TerminalNode LINE_COMMENT() { return getToken(gParser.LINE_COMMENT, 0); }
+		public TerminalNode LINE_COMMENT() { return getToken(GEasyParser.LINE_COMMENT, 0); }
 		public StmtContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_stmt; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitStmt(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitStmt(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -988,9 +988,9 @@ public class gParser extends Parser {
 	}
 
 	public static class SelectionContext extends ParserRuleContext {
-		public TerminalNode IF() { return getToken(gParser.IF, 0); }
-		public TerminalNode LP() { return getToken(gParser.LP, 0); }
-		public TerminalNode RP() { return getToken(gParser.RP, 0); }
+		public TerminalNode IF() { return getToken(GEasyParser.IF, 0); }
+		public TerminalNode LP() { return getToken(GEasyParser.LP, 0); }
+		public TerminalNode RP() { return getToken(GEasyParser.RP, 0); }
 		public List<BlokContext> blok() {
 			return getRuleContexts(BlokContext.class);
 		}
@@ -1000,15 +1000,15 @@ public class gParser extends Parser {
 		public Logical_exprContext logical_expr() {
 			return getRuleContext(Logical_exprContext.class,0);
 		}
-		public TerminalNode BOOL() { return getToken(gParser.BOOL, 0); }
-		public TerminalNode ELSE() { return getToken(gParser.ELSE, 0); }
+		public TerminalNode BOOL() { return getToken(GEasyParser.BOOL, 0); }
+		public TerminalNode ELSE() { return getToken(GEasyParser.ELSE, 0); }
 		public SelectionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_selection; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitSelection(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitSelection(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1074,20 +1074,20 @@ public class gParser extends Parser {
 	}
 
 	public static class IterativeContext extends ParserRuleContext {
-		public TerminalNode FOR() { return getToken(gParser.FOR, 0); }
+		public TerminalNode FOR() { return getToken(GEasyParser.FOR, 0); }
 		public List<ValContext> val() {
 			return getRuleContexts(ValContext.class);
 		}
 		public ValContext val(int i) {
 			return getRuleContext(ValContext.class,i);
 		}
-		public TerminalNode TO() { return getToken(gParser.TO, 0); }
+		public TerminalNode TO() { return getToken(GEasyParser.TO, 0); }
 		public BlokContext blok() {
 			return getRuleContext(BlokContext.class,0);
 		}
-		public List<TerminalNode> MINUS() { return getTokens(gParser.MINUS); }
+		public List<TerminalNode> MINUS() { return getTokens(GEasyParser.MINUS); }
 		public TerminalNode MINUS(int i) {
-			return getToken(gParser.MINUS, i);
+			return getToken(GEasyParser.MINUS, i);
 		}
 		public IterativeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1095,7 +1095,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_iterative; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitIterative(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitIterative(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1157,19 +1157,19 @@ public class gParser extends Parser {
 		public ExprContext expr(int i) {
 			return getRuleContext(ExprContext.class,i);
 		}
-		public TerminalNode COMPARER_OP() { return getToken(gParser.COMPARER_OP, 0); }
+		public TerminalNode COMPARER_OP() { return getToken(GEasyParser.COMPARER_OP, 0); }
 		public Logical_exprContext logical_expr() {
 			return getRuleContext(Logical_exprContext.class,0);
 		}
-		public TerminalNode AND() { return getToken(gParser.AND, 0); }
-		public TerminalNode OR() { return getToken(gParser.OR, 0); }
+		public TerminalNode AND() { return getToken(GEasyParser.AND, 0); }
+		public TerminalNode OR() { return getToken(GEasyParser.OR, 0); }
 		public Logical_exprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_logical_expr; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitLogical_expr(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitLogical_expr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1221,15 +1221,15 @@ public class gParser extends Parser {
 	}
 
 	public static class FuncContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode LP() { return getToken(gParser.LP, 0); }
-		public TerminalNode RP() { return getToken(gParser.RP, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode LP() { return getToken(GEasyParser.LP, 0); }
+		public TerminalNode RP() { return getToken(GEasyParser.RP, 0); }
 		public BlokContext blok() {
 			return getRuleContext(BlokContext.class,0);
 		}
-		public TerminalNode TYPE() { return getToken(gParser.TYPE, 0); }
-		public TerminalNode VOID() { return getToken(gParser.VOID, 0); }
-		public TerminalNode BOOL_T() { return getToken(gParser.BOOL_T, 0); }
+		public TerminalNode TYPE() { return getToken(GEasyParser.TYPE, 0); }
+		public TerminalNode VOID() { return getToken(GEasyParser.VOID, 0); }
+		public TerminalNode BOOL_T() { return getToken(GEasyParser.BOOL_T, 0); }
 		public ParamContext param() {
 			return getRuleContext(ParamContext.class,0);
 		}
@@ -1239,7 +1239,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_func; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitFunc(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitFunc(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1293,17 +1293,17 @@ public class gParser extends Parser {
 	}
 
 	public static class ParamContext extends ParserRuleContext {
-		public List<TerminalNode> TYPE() { return getTokens(gParser.TYPE); }
+		public List<TerminalNode> TYPE() { return getTokens(GEasyParser.TYPE); }
 		public TerminalNode TYPE(int i) {
-			return getToken(gParser.TYPE, i);
+			return getToken(GEasyParser.TYPE, i);
 		}
-		public List<TerminalNode> ID() { return getTokens(gParser.ID); }
+		public List<TerminalNode> ID() { return getTokens(GEasyParser.ID); }
 		public TerminalNode ID(int i) {
-			return getToken(gParser.ID, i);
+			return getToken(GEasyParser.ID, i);
 		}
-		public List<TerminalNode> COMMA() { return getTokens(gParser.COMMA); }
+		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
 		public TerminalNode COMMA(int i) {
-			return getToken(gParser.COMMA, i);
+			return getToken(GEasyParser.COMMA, i);
 		}
 		public ParamContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1311,7 +1311,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_param; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitParam(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitParam(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1359,8 +1359,8 @@ public class gParser extends Parser {
 	}
 
 	public static class BlokContext extends ParserRuleContext {
-		public TerminalNode L_BRACE() { return getToken(gParser.L_BRACE, 0); }
-		public TerminalNode R_BRACE() { return getToken(gParser.R_BRACE, 0); }
+		public TerminalNode L_BRACE() { return getToken(GEasyParser.L_BRACE, 0); }
+		public TerminalNode R_BRACE() { return getToken(GEasyParser.R_BRACE, 0); }
 		public List<DclContext> dcl() {
 			return getRuleContexts(DclContext.class);
 		}
@@ -1385,7 +1385,7 @@ public class gParser extends Parser {
 		@Override public int getRuleIndex() { return RULE_blok; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitBlok(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitBlok(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1447,19 +1447,19 @@ public class gParser extends Parser {
 	}
 
 	public static class Return_exprContext extends ParserRuleContext {
-		public TerminalNode RETURN() { return getToken(gParser.RETURN, 0); }
-		public TerminalNode SEMICOLON() { return getToken(gParser.SEMICOLON, 0); }
+		public TerminalNode RETURN() { return getToken(GEasyParser.RETURN, 0); }
+		public TerminalNode SEMICOLON() { return getToken(GEasyParser.SEMICOLON, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
-		public TerminalNode BOOL() { return getToken(gParser.BOOL, 0); }
+		public TerminalNode BOOL() { return getToken(GEasyParser.BOOL, 0); }
 		public Return_exprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_return_expr; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitReturn_expr(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitReturn_expr(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1508,15 +1508,15 @@ public class gParser extends Parser {
 	}
 
 	public static class ValContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(gParser.ID, 0); }
-		public TerminalNode NUMBER() { return getToken(gParser.NUMBER, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode NUMBER() { return getToken(GEasyParser.NUMBER, 0); }
 		public ValContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_val; }
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof gVisitor ) return ((gVisitor<? extends T>)visitor).visitVal(this);
+			if ( visitor instanceof GEasyVisitor ) return ((GEasyVisitor<? extends T>)visitor).visitVal(this);
 			else return visitor.visitChildren(this);
 		}
 	}
