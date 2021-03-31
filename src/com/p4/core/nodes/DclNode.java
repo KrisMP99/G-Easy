@@ -1,25 +1,24 @@
 package com.p4.core.nodes;
 
-public abstract class DclNode<T> extends AstNode {
-    private String id;
+import com.p4.core.visitors.INodeVisitor;
+
+public class DclNode extends AstNode {
+    private String ID;
 
     public DclNode(String id) {
-        this.id = id;
+        this.ID = id;
     }
 
     public String getID(){
-        return id;
+        return ID;
     }
 
-    public void setID(String ID) {
-        this.id = ID;
+    public void setID(String id){
+        this.ID = id;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    @Override
+    public void accept(INodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

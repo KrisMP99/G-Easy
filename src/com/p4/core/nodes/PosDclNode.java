@@ -3,9 +3,19 @@ package com.p4.core.nodes;
 import com.p4.core.visitors.INodeVisitor;
 import com.p4.core.datatypes.Pos;
 
-public class PosDclNode extends DclNode<Pos> {
-    public PosDclNode(String ID) {
-        super(ID);
+public class PosDclNode extends AstNode {
+    private String ID;
+
+    public PosDclNode(String ID){
+        this.ID = ID;
+    }
+
+    public String getID(){
+        return this.ID;
+    }
+
+    public void setID(String id){
+        this.ID = id;
     }
 
     @Override

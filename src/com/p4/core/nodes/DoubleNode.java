@@ -2,10 +2,11 @@ package com.p4.core.nodes;
 
 import com.p4.core.visitors.INodeVisitor;
 
-public class DoubleNode extends LiteralNode{
+public class DoubleNode extends AstNode{
+    public double value;
 
-    public DoubleNode(Object value, boolean isNegative) {
-        super(value, isNegative);
+    public DoubleNode(double value) {
+        this.value = value;
     }
 
     @Override
