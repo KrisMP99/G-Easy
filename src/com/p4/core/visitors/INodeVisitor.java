@@ -19,6 +19,7 @@ public interface INodeVisitor {
 
     void visit(PosAssignNode node);
     void visit(ArrayAssignNode node);
+    void visit(ArrayAccessNode node);
     void visit(ExprNode node);
 
     void visit(SelectionNode node);
@@ -45,6 +46,6 @@ public interface INodeVisitor {
     void visit(DoubleNode node);
     void visit(PosNode node);
 
-    void visit(CommentNode node);
+    void visit(LineCommentNode node);
 
 }

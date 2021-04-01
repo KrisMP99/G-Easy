@@ -6,8 +6,9 @@ import com.p4.core.datatypes.Pos;
 public class PosDclNode extends AstNode {
     private String ID;
 
-    public PosDclNode(String ID){
+    public PosDclNode(String ID, String type){
         this.ID = ID;
+        this.type = type;
     }
 
     public String getID(){
@@ -16,6 +17,14 @@ public class PosDclNode extends AstNode {
 
     public void setID(String id){
         this.ID = id;
+    }
+
+    public String getType(){
+        return this.type;
+    }
+
+    public void setType(String type){
+        this.type = type;
     }
 
     @Override

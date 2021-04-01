@@ -1,4 +1,4 @@
-package com.p4;
+package com.p4.core;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
