@@ -4,7 +4,7 @@ grammar GEasy;
 prog: (dcl | stmt | func | func_call )* EOF ;
 dcl : (assign | array_dcl | pos_dcl | var_dcl) SEMICOLON ;
 
-var_dcl : TYPE ID ASSIGN_OP (expr | func_call | array_assign) ;
+var_dcl : TYPE ID ASSIGN_OP (expr | func_call) ;
 
 pos_dcl : POS ID ASSIGN_OP pos_assign ;
 
@@ -14,9 +14,9 @@ assign : ID ASSIGN_OP ((expr | func_call) | pos_assign) ;
 
 pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
 
-array_assign : ID L_BRACKET (NUMBER  | expr) R_BRACKET (expr)? ;
+array_access : ID L_BRACKET (NUMBER | expr) R_BRACKET ;
 
-expr : (MINUS)? val (ARITHMETIC_OP val (ARITHMETIC_OP expr)? )? ;
+expr : (MINUS)? (val | array_access) (ARITHMETIC_OP (val | array_access) (ARITHMETIC_OP expr)? )? ;
 
 func_call : ID LP (ID COLON expr ( COMMA ID COLON expr)*)? RP ;
 
@@ -28,17 +28,17 @@ stmt : assign SEMICOLON
      | LINE_COMMENT
      ;
 
-selection : IF LP (logical_expr | BOOL) RP blok (ELSE blok)? ;
+selection : IF LP (logical_expr | BOOL) RP block (ELSE block)? ;
 
-iterative : FOR (MINUS)? val TO (MINUS)? val blok ;
+iterative : FOR (MINUS)? val TO (MINUS)? val block ;
 
 logical_expr : expr COMPARER_OP expr ((AND | OR ) logical_expr)? ;
 
-func : (TYPE | VOID | BOOL_T) ID LP (param)? RP blok ;
+func : (TYPE | VOID | BOOL_T) ID LP (param)? RP block ;
 
 param : TYPE ID (COMMA TYPE ID)* ;
 
-blok : L_BRACE (dcl | stmt | return_expr)+ R_BRACE ;
+block : L_BRACE (dcl | stmt | return_expr)+ R_BRACE ;
 
 return_expr : RETURN (expr | BOOL) SEMICOLON ;
 

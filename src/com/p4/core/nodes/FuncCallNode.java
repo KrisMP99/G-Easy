@@ -1,6 +1,8 @@
 package com.p4.core.nodes;
 
-public abstract class FuncCallNode<T> extends AstNode {
+import com.p4.core.visitors.INodeVisitor;
+
+public class FuncCallNode extends AstNode {
     private String id;
 
     public FuncCallNode(String id) {
@@ -15,11 +17,8 @@ public abstract class FuncCallNode<T> extends AstNode {
         this.id = ID;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    @Override
+    public void accept(INodeVisitor visitor) {
+        visitor.visit(this);
     }
 }

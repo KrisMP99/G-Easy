@@ -39,7 +39,9 @@ public interface INodeVisitor {
     void visit(NumberNode node);
     void visit(IDNode node);
     void visit(BoolNode node);
+    void visit(IntDclNode node);
     void visit(IntNode node);
+    void visit(DoubleDclNode node);
     void visit(DoubleNode node);
     void visit(PosNode node);
 

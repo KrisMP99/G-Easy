@@ -1,7 +1,5 @@
 package com.p4;
 
-import com.p4.core.GEasyLexer;
-import com.p4.core.GEasyParser;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
