@@ -1,5 +1,8 @@
 package com.p4.core;
 
+import com.p4.core.nodes.ProgNode;
+import com.p4.core.visitors.AstTreeVisitor;
+import com.p4.core.visitors.AstVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -11,6 +14,12 @@ public class Main {
         GEasyLexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();
+
+        GEasyBaseVisitor<?> visitor = new AstVisitor<>();
+        ProgNode ast = (ProgNode) visitor.visit(parseTree);
+
+        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
+        astTreeVisitor.visit(0, ast);
 
         // Text in console
         System.out.println(parseTree.toStringTree(parser));

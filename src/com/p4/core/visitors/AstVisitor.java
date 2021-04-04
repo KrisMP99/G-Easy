@@ -304,17 +304,82 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
-        return super.visitLogical_expr(ctx);
+        LogicalExprNode logicalExprNode = new LogicalExprNode();
+
+        int childCount = ctx.getChildCount();
+
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            ParseTree child = ctx.getChild(childIndex);
+
+            if((child instanceof GEasyParser.Logical_exprContext) || (child instanceof GEasyParser.ExprContext)) {
+                AstNode childNode = visit(child);
+                logicalExprNode.children.add(childNode);
+            }
+        }
+
+        return logicalExprNode;
     }
 
     @Override
     public AstNode visitFunc(GEasyParser.FuncContext ctx) {
-        return super.visitFunc(ctx);
+        String id = ctx.ID().toString();
+        String type_t = ctx.TYPE().toString();
+        String void_t = ctx.VOID().toString();
+        String bool_t = ctx.BOOL_T().toString();
+
+        FuncNode funcNode;
+
+        if(type_t != null) {
+            funcNode = new FuncNode(id, type_t);
+        }
+        else if(void_t != null) {
+            funcNode = new FuncNode(id, void_t);
+        }
+        else if(bool_t != null) {
+            funcNode = new FuncNode(id, bool_t);
+        } else {
+            return null;
+        }
+
+        if(ctx.getChildCount() > 1) {
+            funcNode.children.add(visit(ctx.getChild(0)));
+            funcNode.children.add(visit(ctx.getChild(1)));
+        } else {
+            funcNode.children.add(visit(ctx.getChild(0)));
+        }
+
+        return funcNode;
     }
 
     @Override
     public AstNode visitParam(GEasyParser.ParamContext ctx) {
-        return super.visitParam(ctx);
+        ParamNode paramNode = new ParamNode();
+
+        int childrenCount = ctx.getChildCount();
+
+        for(int childIndex = 0; childIndex < childrenCount; childIndex++) {
+            IDNode idNode;
+            String type = ctx.getChild(childIndex).toString();
+
+            switch (type) {
+                case "int":
+                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "int");
+                    break;
+                case "double":
+                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "double");
+                    break;
+                default:
+                    idNode = null;
+                    break;
+            }
+
+            if(idNode != null) {
+                paramNode.children.add(idNode);
+            }
+
+        }
+
+        return paramNode;
     }
 
     @Override
@@ -323,7 +388,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         // Since a block can contain a lot of different constructs,
         // we use the visitChildren() function
-
         return visitChildren(blockNode, ctx.children.toArray(ParseTree[]::new));
     }
 
@@ -336,7 +400,21 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitReturn_expr(GEasyParser.Return_exprContext ctx) {
-        return super.visitReturn_expr(ctx);
+        ReturnExprNode returnExprNode = new ReturnExprNode();
+
+        AstNode exprNode = visit(ctx.expr());
+
+        if(exprNode != null) {
+            returnExprNode.children.add(exprNode);
+            return returnExprNode;
+        }
+        else if (ctx.BOOL() != null) {
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()));
+            returnExprNode.children.add(boolNode);
+            return returnExprNode;
+        }
+
+        return null;
     }
 
     @Override

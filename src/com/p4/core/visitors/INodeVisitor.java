@@ -47,5 +47,6 @@ public interface INodeVisitor {
     void visit(PosNode node);
 
     void visit(LineCommentNode node);
+    void visit(CommentNode node);
 
 }
