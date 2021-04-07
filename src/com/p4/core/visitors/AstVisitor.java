@@ -50,11 +50,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitVar_dcl(GEasyParser.Var_dclContext ctx) {
+        String type = ctx.TYPE().toString();
+        String ID = ctx.ID().toString();
+        VarDclNode varDclNode = new VarDclNode(ID, type);
+
         GEasyParser.ExprContext expr = ctx.expr();
         GEasyParser.Func_callContext func_call = ctx.func_call();
 
-        VarDclNode varDclNode = new VarDclNode(ctx.ID().toString());
-        varDclNode.setType(ctx.TYPE().toString());
 
         if(expr != null) {
             AstNode exprNode = visit(ctx.expr());
@@ -189,6 +191,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
         ExprNode exprNode = new ExprNode();
+
         int childCount = ctx.getChildCount();
 
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
@@ -196,11 +199,49 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.Array_accessContext))  {
                 AstNode childNode = visit(child);
+
+                // int numOfArithm = ctx.ARITHMETIC_OP().size();
+
+                if(childIndex + 1 <= childCount) {
+                   // Til i morgen:
+                   // Lav arithmetic som en node, og til føj den til exprNode som barn
+                }
+
                 exprNode.children.add(childNode);
             }
         }
 
         return exprNode;
+    }
+
+
+    public int getArithmeticOP() {
+
+        switch(child.getText()) {
+            case "%":
+                exprNode.setToken(GEasyParser.MOD);
+                break;
+            case "+":
+                exprNode.setToken(GEasyParser.PLUS);
+                break;
+            case "-":
+                exprNode.setToken(GEasyParser.MINUS);
+                break;
+            case "*":
+                exprNode.setToken(GEasyParser.MULTIPLICATION);
+                break;
+            case "/":
+                exprNode.setToken(GEasyParser.DIVISION);
+                break;
+            default:
+                return null;
+        }
+
+        // If there are more than one expression, eg. 5 + 5 + 5
+        if(parent.getChild(nextOP) != null) {
+            exprNode.children.add(visit(parent.expr(arithmIndex));
+        }
+
     }
 
     @Override
@@ -419,7 +460,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitVal(GEasyParser.ValContext ctx){
-
         if(ctx.NUMBER() != null) {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
