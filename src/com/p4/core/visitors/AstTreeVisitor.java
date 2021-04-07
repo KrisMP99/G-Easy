@@ -2,6 +2,7 @@ package com.p4.core.visitors;
 
 import com.p4.core.nodes.*;
 
+// Used to visit our Ast and print it to the console
 public class AstTreeVisitor {
     public void visit(int localIndent, AstNode node) {
         if(node != null) {
@@ -32,7 +33,6 @@ public class AstTreeVisitor {
             for(AstNode childNode : node.getChildren()) {
                 this.visit(localIndent + 1, childNode);
             }
-
         }
     }
 

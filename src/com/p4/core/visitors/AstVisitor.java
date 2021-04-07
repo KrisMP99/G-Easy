@@ -8,34 +8,43 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
+    // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
     @Override
     public AstNode visitProg(GEasyParser.ProgContext ctx) {
         ProgNode progNode = new ProgNode();
 
+        // We visit all the children prog has (which is the whole program)
         return visitChildren(progNode, ctx.children.toArray(ParseTree[]::new));
     }
 
+    // Helper function to visit all the children of a particular ParseTree
     private AstNode visitChildren(AstNode node, ParseTree[] children) {
         // Iterates through all the node's children
         for(ParseTree child : children) {
-            // Skip leaves/terminals, as they have no children
+
+            // Skip leaves/terminals
             if(child.getPayload() instanceof CommonToken) {
                 continue;
             }
+
             node.children.add(visit(child));
         }
 
         return node;
     }
 
+    // We won't add dcl as a node in our Ast, as it contains only non-terminals
+    // Basically, it will only clutter the Ast with an unecessary node
     @Override
     public AstNode visitDcl(GEasyParser.DclContext ctx) {
+        // A dcl can be one of the following non-terminals:
+        // assign, array_dcl, pos_dcl, var_dcl
         GEasyParser.AssignContext assign = ctx.assign();
         GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
         GEasyParser.Pos_dclContext pos_dcl = ctx.pos_dcl();
         GEasyParser.Var_dclContext var_dcl = ctx.var_dcl();
 
-        // find which type of dcl
+        // Figure out which dcl we're dealing with
         if(assign != null) {
             return visit(assign);
         }
@@ -45,7 +54,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if(pos_dcl != null) {
             return visit(pos_dcl);
         }
-        else { return visit(var_dcl); }
+        else if(var_dcl != null) {
+            return visit(var_dcl);
+        }
+
+        // Does not contain a DCL (error)
+        return null;
     }
 
     @Override
@@ -57,6 +71,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         GEasyParser.Func_callContext func_call = ctx.func_call();
 
         // Find what kind of var_dcl we're dealing with
+        // Should we add pos here somehow? (Requires a change in our grammar)
         AstNode dclNode;
         switch (type) {
             case "int":
@@ -69,6 +84,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 return null;
         }
 
+        // A variable can be initialized to either an expression or func call
+        // If it's an expr/func_call we visit the given node and add it as a child to our dclNode
         if(expr != null) {
             AstNode exprNode = visit(ctx.expr());
             dclNode.children.add(exprNode);
@@ -80,9 +97,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return dclNode;
         }
 
+        // No var_dcl (error)
         return null;
     }
 
+    // Consider adding this to var_dcl somehow
     @Override
     public AstNode visitPos_dcl(GEasyParser.Pos_dclContext ctx) {
         String id = ctx.ID().toString();
@@ -191,21 +210,34 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
+        // Create empty ExprNode to add children to later
         ExprNode exprNode = new ExprNode();
 
+        // Go through all the children of our expression
+        // First we get the number of children, and then use it in the for-loop
         int childCount = ctx.getChildCount();
 
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            // We create a ParseTree from the child
+            // We do this, so we travese it's children easily
             ParseTree child = ctx.getChild(childIndex);
 
+            // Since we're not interested in all of the children in the expression, we only deal with those we neeed in our AST
+            // In our case, it's the non-terminals: val, array_access and expr.
             if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.Array_accessContext))  {
+                // We create a new AstNode where we visit the child
+                // and add it as a child
                 AstNode childNode = visit(child);
                 exprNode.children.add(childNode);
 
-                if(childIndex + 1 <= childCount) {
+                // We also need to grab all the arithmetic operators, as we need them when type checking
+                // We add 1 to childIndex as, from our grammar, we know a value/array_access always will be followed by an arithmetic operator
+                if(childIndex + 1 < childCount) {
+                    // We use the helper function 'getArithmeticOPNode' to retrieve the operator we need
                     ParseTree nextChild = ctx.getChild(childIndex + 1);
                     AstNode arithmNode = getArithmeticOPNode(nextChild);
 
+                    // If there is an arithmetic operator, we add it as a child to expr
                     if(arithmNode != null) {
                         exprNode.children.add(arithmNode);
                     }
@@ -215,7 +247,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return exprNode;
     }
 
-
+    // Helper function to get the aritmethic operator
     public AstNode getArithmeticOPNode(ParseTree child) {
         if(child != null) {
             switch(child.getText()) {
@@ -233,7 +265,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                     return null;
             }
         }
-
         return null;
     }
 
@@ -243,6 +274,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int childCount = ctx.getChildCount();
 
+        // We go through all the children and add those we need for our Ast
+        // In our case it's the non-terminal expr, and ...
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
@@ -257,7 +290,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitStmt(GEasyParser.StmtContext ctx) {
-        // Er lidt i tvivl her, siden stmt kun har 1 barn, så burde den vil ikke laves i en AST
+        // Er lidt i tvivl her, siden stmt kun har 1 barn, så burde den vel ikke laves i en AST
         // Skips this node and goes directly to the next child
         return visit(ctx.getChild(0));
 
@@ -451,6 +484,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return null;
     }
 
+    // Handles our non-terminal 'val'
+    // Can be either an ID or number
+    // A number can then be either an int or double (the only number types in G-Easy)
     @Override
     public AstNode visitVal(GEasyParser.ValContext ctx){
         if(ctx.NUMBER() != null) {
