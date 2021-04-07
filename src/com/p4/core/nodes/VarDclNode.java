@@ -3,12 +3,11 @@ package com.p4.core.nodes;
 import com.p4.core.visitors.INodeVisitor;
 import org.antlr.v4.runtime.CommonToken;
 
-public class VarDclNode extends AstNode {
+public abstract class VarDclNode<T> extends AstNode {
     private String ID;
 
-    public VarDclNode(String id, String type) {
+    public VarDclNode(String id) {
         this.ID = id;
-        this.type = type;
     }
 
     public String getID() {
@@ -26,10 +25,5 @@ public class VarDclNode extends AstNode {
     public void setType(String type)
     {
         this.type = type;
-    }
-
-    @Override
-    public void accept(INodeVisitor visitor) {
-        visitor.visit(this);
     }
 }

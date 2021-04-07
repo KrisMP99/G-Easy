@@ -6,8 +6,26 @@ public class AstTreeVisitor {
     public void visit(int localIndent, AstNode node) {
         if(node != null) {
             switch (node.getClass().toString()) {
-                case "class com.p4.core.nodes.VarDclNode":
-                    this.print(localIndent, node.getClass().toString() + " vi er igang med at lave en int navn: " + ((VarDclNode)node).getID());
+                case "class com.p4.core.nodes.IntDclNode":
+                    this.print(localIndent," IntDcl " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.DoubleDclNode":
+                    this.print(localIndent," DoubleDcl " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.PosDclNode":
+                    this.print(localIndent," PosDcl " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.ExprNode":
+                    this.print(localIndent, "Expr ");
+                    break;
+                case "class com.p4.core.nodes.ArithmeticNode":
+                    this.print(localIndent, "Arthm: " + ((ArithmeticNode)node).getToken());
+                    break;
+                case "class com.p4.core.nodes.DoubleNode":
+                    this.print(localIndent, "Double: " + ((DoubleNode)node).value);
+                    break;
+                case "class com.p4.core.nodes.IntNode":
+                    this.print(localIndent, "Int: " + ((IntNode)node).value);
                     break;
             }
 

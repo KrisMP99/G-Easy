@@ -2,11 +2,9 @@ package com.p4.core.nodes;
 
 import com.p4.core.visitors.INodeVisitor;
 
-public class DoubleDclNode extends AstNode {
-    public String id;
-
+public class DoubleDclNode extends VarDclNode<Double> {
     public DoubleDclNode(String ID) {
-        this.id = ID;
+        super(ID);
     }
 
     @Override

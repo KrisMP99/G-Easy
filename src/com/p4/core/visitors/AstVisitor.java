@@ -52,34 +52,35 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitVar_dcl(GEasyParser.Var_dclContext ctx) {
         String type = ctx.TYPE().toString();
         String ID = ctx.ID().toString();
-        VarDclNode varDclNode = new VarDclNode(ID, type);
 
         GEasyParser.ExprContext expr = ctx.expr();
         GEasyParser.Func_callContext func_call = ctx.func_call();
 
+        // Find what kind of var_dcl we're dealing with
+        AstNode dclNode;
+        switch (type) {
+            case "int":
+                dclNode = new IntDclNode(ID);
+                break;
+            case "double":
+                dclNode = new DoubleDclNode(ID);
+                break;
+            default:
+                return null;
+        }
 
         if(expr != null) {
             AstNode exprNode = visit(ctx.expr());
-            varDclNode.children.add(exprNode);
-            return varDclNode;
+            dclNode.children.add(exprNode);
+            return dclNode;
         }
         else if(func_call != null) {
             AstNode funcCallNode = visit(ctx.func_call());
-            varDclNode.children.add(funcCallNode);
-            return varDclNode;
-        } else {
-            /*AstNode dclNode;
+            dclNode.children.add(funcCallNode);
+            return dclNode;
+        }
 
-            switch (ctx.TYPE().toString()){
-                case "int":
-                    dclNode = new IntDclNode(ctx.ID().toString());
-                    break;
-                case "double":
-                    dclNode = new DoubleDclNode(ctx.ID().toString());
-                    break;
-                default:*/
-                    return null;
-            }
+        return null;
     }
 
     @Override
@@ -199,49 +200,41 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.Array_accessContext))  {
                 AstNode childNode = visit(child);
-
-                // int numOfArithm = ctx.ARITHMETIC_OP().size();
+                exprNode.children.add(childNode);
 
                 if(childIndex + 1 <= childCount) {
-                   // Til i morgen:
-                   // Lav arithmetic som en node, og til føj den til exprNode som barn
-                }
+                    ParseTree nextChild = ctx.getChild(childIndex + 1);
+                    AstNode arithmNode = getArithmeticOPNode(nextChild);
 
-                exprNode.children.add(childNode);
+                    if(arithmNode != null) {
+                        exprNode.children.add(arithmNode);
+                    }
+                }
             }
         }
-
         return exprNode;
     }
 
 
-    public int getArithmeticOP() {
-
-        switch(child.getText()) {
-            case "%":
-                exprNode.setToken(GEasyParser.MOD);
-                break;
-            case "+":
-                exprNode.setToken(GEasyParser.PLUS);
-                break;
-            case "-":
-                exprNode.setToken(GEasyParser.MINUS);
-                break;
-            case "*":
-                exprNode.setToken(GEasyParser.MULTIPLICATION);
-                break;
-            case "/":
-                exprNode.setToken(GEasyParser.DIVISION);
-                break;
-            default:
-                return null;
+    public AstNode getArithmeticOPNode(ParseTree child) {
+        if(child != null) {
+            switch(child.getText()) {
+                case "%":
+                    return new ArithmeticNode(GEasyParser.MOD);
+                case "+":
+                    return new ArithmeticNode(GEasyParser.PLUS);
+                case "-":
+                    return new ArithmeticNode(GEasyParser.MINUS);
+                case "*":
+                    return new ArithmeticNode(GEasyParser.MULTIPLICATION);
+                case "/":
+                    return new ArithmeticNode(GEasyParser.DIVISION);
+                default:
+                    return null;
+            }
         }
 
-        // If there are more than one expression, eg. 5 + 5 + 5
-        if(parent.getChild(nextOP) != null) {
-            exprNode.children.add(visit(parent.expr(arithmIndex));
-        }
-
+        return null;
     }
 
     @Override

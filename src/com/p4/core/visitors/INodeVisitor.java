@@ -36,6 +36,7 @@ public interface INodeVisitor {
     void visit(DivNode node);
     void visit(ModNode node);
     void visit(MultNode node);
+    void visit(ArithmeticNode node);
 
     void visit(NumberNode node);
     void visit(IDNode node);

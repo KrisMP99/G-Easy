@@ -4,11 +4,9 @@ import com.p4.core.visitors.INodeVisitor;
 
 import java.util.List;
 
-public class IntDclNode extends AstNode{
-    public String id;
-
+public class IntDclNode extends VarDclNode<Integer>{
     public IntDclNode(String ID){
-        this.id = ID;
+        super(ID);
     }
 
     @Override

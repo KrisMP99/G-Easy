@@ -21,6 +21,11 @@ public class Main {
         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
         astTreeVisitor.visit(0, ast);
 
+        // ast
+        System.out.println(ast.toString());
+
+
+
         // Text in console
         System.out.println(parseTree.toStringTree(parser));
 
