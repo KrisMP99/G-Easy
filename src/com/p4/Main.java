@@ -1,4 +1,4 @@
-package com.p4.core;
+package com.p4.core.;
 
 import com.p4.core.nodes.ProgNode;
 import com.p4.core.visitors.AstTreeVisitor;
@@ -23,8 +23,6 @@ public class Main {
 
         // ast
         System.out.println(ast.toString());
-
-
 
         // Text in console
         System.out.println(parseTree.toStringTree(parser));
