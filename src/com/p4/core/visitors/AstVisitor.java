@@ -221,7 +221,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int childCount = ctx.getChildCount();
 
-        for(int childIndex = 0; childIndex < childCount; childCount++) {
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
             if(child instanceof GEasyParser.ExprContext){
@@ -229,6 +229,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 arrayAccessNode.children.add(exprNode);
             }
         }
+
         return arrayAccessNode;
     }
 

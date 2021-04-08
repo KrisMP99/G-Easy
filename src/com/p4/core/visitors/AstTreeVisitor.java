@@ -33,6 +33,7 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
                     this.print(localIndent, "Array Access: " + ((ArrayAccessNode)node).ID);
+                    break;
                 case "class com.p4.core.nodes.FuncCallNode":
                     this.print(localIndent, "FunCall: " + ((FuncCallNode)node).getID());
                     break;
