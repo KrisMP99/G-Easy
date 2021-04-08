@@ -12,11 +12,11 @@ pos_dcl : POS ID ASSIGN_OP pos_assign ;
 
 array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (val (COMMA val)*) R_BRACE ;
 
-assign : ID ASSIGN_OP ((expr | func_call) | pos_assign) ;
+assign : (ID | array_access) ASSIGN_OP (expr | func_call | pos_assign) ;
 
 pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
 
-array_access : ID L_BRACKET (NUMBER | expr) R_BRACKET ;
+array_access : ID L_BRACKET expr R_BRACKET ;
 
 expr : (MINUS)? (val | array_access) (ARITHMETIC_OP (val | array_access) (ARITHMETIC_OP expr)? )? ;
 
