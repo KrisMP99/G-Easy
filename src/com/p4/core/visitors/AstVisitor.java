@@ -115,21 +115,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return null;
     }
 
-    // Consider adding this to var_dcl somehow
-    @Override
-    public AstNode visitPos_dcl(GEasyParser.Pos_dclContext ctx) {
-        String id = ctx.ID().toString();
-        String type = ctx.POS().toString();
-
-        AstNode posDclNode = new PosDclNode(id, type);
-
-        // Add children (pos assign)
-        posDclNode.children.add(visit(ctx.pos_assign()));
-
-        return posDclNode;
-
-    }
-
     @Override
     public AstNode visitArray_dcl(GEasyParser.Array_dclContext ctx) {
         String id = ctx.ID().toString();
@@ -198,19 +183,30 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
-        PosAssignNode posAssignNode = new PosAssignNode();
+    public AstNode visitPos_dcl(GEasyParser.Pos_dclContext ctx) {
+        String id = ctx.ID().toString();
+        String pos = ctx.POS().toString();
 
-        int childCount = ctx.getChildCount();
+        PosDclNode posDclNode = new PosDclNode(id);
 
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
+        GEasyParser.Pos_assignContext assign = ctx.pos_assign();
 
-            if(child instanceof GEasyParser.ValContext) {
-                AstNode childNode = visit(child);
-                posAssignNode.children.add(childNode);
-            }
+        if(assign != null){
+            return visitPos_assign(ctx.pos_assign());
         }
+
+        return null;
+    }
+
+    @Override
+    public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
+        PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
+
+        AstNode xCordVal = visit(ctx.val(0));
+        AstNode yCordVal = visit(ctx.val(1));
+
+        PosNode posNode = new PosNode<>(xCordVal, yCordVal);
+        posAssignNode.children.add(posNode);
 
         return posAssignNode;
     }
