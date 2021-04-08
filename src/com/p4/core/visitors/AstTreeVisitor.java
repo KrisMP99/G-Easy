@@ -33,6 +33,21 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
                     this.print(localIndent, "Array Access: " + ((ArrayAccessNode)node).ID);
+                case "class com.p4.core.nodes.FuncCallNode":
+                    this.print(localIndent, "FunCall: " + ((FuncCallNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.ActualParamNode":
+                    this.print(localIndent, "ActualParm: " + ((ActualParamNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.LineCommentNode":
+                    this.print(localIndent, "Line comment: " + ((LineCommentNode)node).getComment());
+                    break;
+                case "class com.p4.core.nodes.PosAssignNode":
+                    this.print(localIndent, "Pos Assign: ");
+                    break;
+                case "class com.p4.core.nodes.PosNode":
+                    this.print(localIndent, "Pos: x: " + ((PosNode)node).p1.getX() + " y: " + ((PosNode)node).p1.getY());
+                    break;
             }
 
             for(AstNode childNode : node.getChildren()) {
