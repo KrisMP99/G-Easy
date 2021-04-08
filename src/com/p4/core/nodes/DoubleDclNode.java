@@ -5,6 +5,7 @@ import com.p4.core.visitors.INodeVisitor;
 public class DoubleDclNode extends VarDclNode<Double> {
     public DoubleDclNode(String ID) {
         super(ID);
+        type = "double";
     }
 
     @Override

@@ -32,11 +32,18 @@ stmt : assign SEMICOLON
      | comment
      ;
 
+/*
+
 selection : IF LP (logical_expr | BOOL) RP block (ELSE block)? ;
+logical_expr : (expr | BOOL) (COMPARER_OP | AND | OR) (expr | BOOL) ((AND | OR ) logical_expr)? ;
+
+*/
+
+selection : IF LP logical_expr RP block (ELSE block)? ;
 
 iterative : FOR (MINUS)? val TO (MINUS)? val block ;
 
-logical_expr : expr COMPARER_OP expr ((AND | OR ) logical_expr)? ;
+logical_expr : BOOL | ((expr | BOOL) (COMPARER_OP | AND | OR) (expr | BOOL) ((AND | OR) logical_expr)?) ;
 
 func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
 
@@ -90,12 +97,15 @@ TYPE : 'int'
 
 BOOL_T : 'bool' ;
 
-BOOL : 'true'
-     | 'false'
+BOOL : TRUE
+     | FALSE
      ;
 
+TRUE : 'true' ;
+FALSE : 'false' ;
+
 COMPARER_OP : LESS_THAN
-            | GREATHER_THAN
+            | GREATER_THAN
             | LESS_THAN_EQ
             | GREATER_THAN_EQ
             | NOT_EQ
@@ -103,7 +113,7 @@ COMPARER_OP : LESS_THAN
             ;
 
 LESS_THAN : '<' ;
-GREATHER_THAN : '>' ;
+GREATER_THAN : '>' ;
 LESS_THAN_EQ : '<=' ;
 GREATER_THAN_EQ : '>=' ;
 IS_EQ : '==' ;

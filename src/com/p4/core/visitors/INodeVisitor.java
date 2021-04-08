@@ -38,6 +38,8 @@ public interface INodeVisitor {
     void visit(ModNode node);
     void visit(MultNode node);
     void visit(ArithmeticNode node);
+    void visit(LogicalNode node);
+    void visit(CompNode node);
 
     void visit(NumberNode node);
     void visit(IDNode node);

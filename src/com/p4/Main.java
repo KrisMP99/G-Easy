@@ -31,7 +31,7 @@ public class Main {
         // Text in console
         System.out.println(parseTree.toStringTree(parser));
 
-        //AST in GUI
+        //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();
     }

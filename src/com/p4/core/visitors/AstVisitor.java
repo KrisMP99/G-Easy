@@ -195,6 +195,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         GEasyParser.Pos_assignContext assign = ctx.pos_assign();
 
+        // Note: We need to add this as a child, right?
         if(assign != null){
             return visitPos_assign(ctx.pos_assign());
         }
@@ -371,15 +372,17 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitSelection(GEasyParser.SelectionContext ctx) {
-        SelectionNode selectionNode = new SelectionNode();
+        String type = ctx.IF().toString();
+        SelectionNode selectionNode = new SelectionNode(type);
 
         // Visit the condition
         // How do we handle the case of a bool here??
+        // Maybe it's possible to make BOOL a part of logical_expr? (I moved it)
         selectionNode.children.add(visit(ctx.logical_expr()));
 
         // Visit the block, if there is an else present, it visits both blocks
-        for(GEasyParser.BlockContext blck : ctx.block()) {
-            selectionNode.children.add(visitBlock(blck));
+        for(GEasyParser.BlockContext block : ctx.block()) {
+            selectionNode.children.add(visitBlock(block));
         }
 
         return selectionNode;
@@ -410,6 +413,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int childCount = ctx.getChildCount();
 
+        // If there is only one child, it must be a boolean
+        if(childCount == 1) {
+            return getLogicalNode(ctx.getChild(0));
+        }
+
+        // Go through all the children
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
@@ -417,10 +426,73 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 AstNode childNode = visit(child);
                 logicalExprNode.children.add(childNode);
             }
+
+            // If there is a logical/comp operator we add it
+            if(getLogicalNode(child) != null) {
+                logicalExprNode.children.add(getLogicalNode(child));
+            }
+            if(getCompNode(child) != null) {
+                logicalExprNode.children.add(getCompNode(child));
+            }
         }
 
         return logicalExprNode;
     }
+
+    private AstNode getLogicalNode(ParseTree child) {
+        if(child != null) {
+            LogicalNode logicalNode = new LogicalNode();
+
+            switch (child.getText()) {
+                case "true":
+                    logicalNode.setToken(GEasyParser.TRUE);
+                    return logicalNode;
+                case "false":
+                    logicalNode.setToken(GEasyParser.FALSE);
+                    return logicalNode;
+                default:
+                    // error
+                    return null;
+            }
+        }
+
+        // error
+        return null;
+    }
+
+    private AstNode getCompNode(ParseTree child) {
+        if(child != null) {
+            CompNode compNode = new CompNode();
+
+            switch (child.getText()) {
+                case "<":
+                    compNode.setToken(GEasyParser.LESS_THAN);
+                    return compNode;
+                case ">":
+                    compNode.setToken(GEasyParser.GREATER_THAN);
+                    return compNode;
+                case "<=":
+                    compNode.setToken(GEasyParser.LESS_THAN_EQ);
+                    return compNode;
+                case ">=":
+                    compNode.setToken(GEasyParser.GREATER_THAN_EQ);
+                    return compNode;
+                case "==":
+                    compNode.setToken(GEasyParser.IS_EQ);
+                    return compNode;
+                case "!=":
+                    compNode.setToken(GEasyParser.NOT_EQ);
+                    return compNode;
+                default:
+                    // Error
+                    return null;
+            }
+        }
+
+        // error
+        return null;
+    }
+
 
     @Override
     public AstNode visitFunc_dcl(GEasyParser.Func_dclContext ctx) {
@@ -539,6 +611,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
     }
 
+    // Is this needed, as the parser ignores comments ...?
     @Override
     public AstNode visitComment(GEasyParser.CommentContext ctx) {
         String lineComment = ctx.LINE_COMMENT().toString();
