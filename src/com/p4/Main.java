@@ -1,5 +1,8 @@
-package com.p4.core.;
+package com.p4;
 
+import com.p4.core.GEasyBaseVisitor;
+import com.p4.core.GEasyLexer;
+import com.p4.core.GEasyParser;
 import com.p4.core.nodes.ProgNode;
 import com.p4.core.visitors.AstTreeVisitor;
 import com.p4.core.visitors.AstVisitor;
