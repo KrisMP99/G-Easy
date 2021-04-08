@@ -40,19 +40,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         // A dcl can be one of the following non-terminals:
         // assign, array_dcl, pos_dcl, var_dcl
         GEasyParser.AssignContext assign = ctx.assign();
-        GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
-        GEasyParser.Pos_dclContext pos_dcl = ctx.pos_dcl();
         GEasyParser.Var_dclContext var_dcl = ctx.var_dcl();
 
         // Figure out which dcl we're dealing with
         if(assign != null) {
             return visit(assign);
-        }
-        else if(array_dcl != null) {
-            return visit(array_dcl);
-        }
-        else if(pos_dcl != null) {
-            return visit(pos_dcl);
         }
         else if(var_dcl != null) {
             return visit(var_dcl);
@@ -64,6 +56,26 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitVar_dcl(GEasyParser.Var_dclContext ctx) {
+        GEasyParser.Num_dclContext num_dcl = ctx.num_dcl();
+        GEasyParser.Pos_dclContext pos_dcl = ctx.pos_dcl();
+        GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
+
+        if(num_dcl != null) {
+            return visit(num_dcl);
+
+        } else if(pos_dcl != null) {
+            return visit(pos_dcl);
+
+        } else if(array_dcl != array_dcl) {
+            return visit(array_dcl);
+        }
+
+        // No var_dcl (error)
+        return null;
+    }
+
+    @Override
+    public AstNode visitNum_dcl(GEasyParser.Num_dclContext ctx) {
         String type = ctx.TYPE().toString();
         String ID = ctx.ID().toString();
 
@@ -388,7 +400,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitFunc(GEasyParser.FuncContext ctx) {
+    public AstNode visitFunc_dcl(GEasyParser.Func_dclContext ctx) {
         String id = ctx.ID().toString();
         String type_t = ctx.TYPE().toString();
         String void_t = ctx.VOID().toString();
@@ -419,7 +431,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitParam(GEasyParser.ParamContext ctx) {
+    public AstNode visitFormal_param(GEasyParser.Formal_paramContext ctx) {
         ParamNode paramNode = new ParamNode();
 
         int childrenCount = ctx.getChildCount();

@@ -1,4 +1,4 @@
-// Generated from C:/Users/Kristian/Desktop/GEasyCompiler/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -28,6 +28,12 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVar_dcl(GEasyParser.Var_dclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#num_dcl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNum_dcl(GEasyParser.Num_dclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#pos_dcl}.
 	 * @param ctx the parse tree
@@ -71,6 +77,12 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunc_call(GEasyParser.Func_callContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GEasyParser#actual_param}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitActual_param(GEasyParser.Actual_paramContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GEasyParser#stmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -95,17 +107,17 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GEasyParser#func}.
+	 * Visit a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunc(GEasyParser.FuncContext ctx);
+	T visitFunc_dcl(GEasyParser.Func_dclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GEasyParser#param}.
+	 * Visit a parse tree produced by {@link GEasyParser#formal_param}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParam(GEasyParser.ParamContext ctx);
+	T visitFormal_param(GEasyParser.Formal_paramContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#block}.
 	 * @param ctx the parse tree
@@ -124,4 +136,10 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitVal(GEasyParser.ValContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#comment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComment(GEasyParser.CommentContext ctx);
 }
