@@ -22,7 +22,7 @@ expr : (MINUS)? (val | array_access) (ARITHMETIC_OP (val | array_access) (ARITHM
 
 func_call : ID LP actual_param RP ;
 
-actual_param : (ID COLON expr ( COMMA ID COLON expr)*)? ;
+actual_param : (ID COLON expr ( COMMA actual_param)*)? ;
 
 stmt : assign SEMICOLON
      | expr SEMICOLON

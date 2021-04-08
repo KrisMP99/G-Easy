@@ -977,23 +977,20 @@ public class GEasyParser extends Parser {
 	}
 
 	public static class Actual_paramContext extends ParserRuleContext {
-		public List<TerminalNode> ID() { return getTokens(GEasyParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(GEasyParser.ID, i);
-		}
-		public List<TerminalNode> COLON() { return getTokens(GEasyParser.COLON); }
-		public TerminalNode COLON(int i) {
-			return getToken(GEasyParser.COLON, i);
-		}
-		public List<ExprContext> expr() {
-			return getRuleContexts(ExprContext.class);
-		}
-		public ExprContext expr(int i) {
-			return getRuleContext(ExprContext.class,i);
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
+		public TerminalNode COLON() { return getToken(GEasyParser.COLON, 0); }
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
 		public TerminalNode COMMA(int i) {
 			return getToken(GEasyParser.COMMA, i);
+		}
+		public List<Actual_paramContext> actual_param() {
+			return getRuleContexts(Actual_paramContext.class);
+		}
+		public Actual_paramContext actual_param(int i) {
+			return getRuleContext(Actual_paramContext.class,i);
 		}
 		public Actual_paramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1019,9 +1016,10 @@ public class GEasyParser extends Parser {
 		enterRule(_localctx, 22, RULE_actual_param);
 		int _la;
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(158);
+			setState(156);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==ID) {
@@ -1032,25 +1030,23 @@ public class GEasyParser extends Parser {
 				match(COLON);
 				setState(148);
 				expr();
-				setState(155);
+				setState(153);
 				_errHandler.sync(this);
-				_la = _input.LA(1);
-				while (_la==COMMA) {
-					{
-					{
-					setState(149);
-					match(COMMA);
-					setState(150);
-					match(ID);
-					setState(151);
-					match(COLON);
-					setState(152);
-					expr();
+				_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
+				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						setState(149);
+						match(COMMA);
+						setState(150);
+						actual_param();
+						}
+						} 
 					}
-					}
-					setState(157);
+					setState(155);
 					_errHandler.sync(this);
-					_la = _input.LA(1);
+					_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
 				}
 				}
 			}
@@ -1111,54 +1107,54 @@ public class GEasyParser extends Parser {
 		StmtContext _localctx = new StmtContext(_ctx, getState());
 		enterRule(_localctx, 24, RULE_stmt);
 		try {
-			setState(172);
+			setState(170);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(160);
+				setState(158);
 				assign();
-				setState(161);
+				setState(159);
 				match(SEMICOLON);
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(163);
+				setState(161);
 				expr();
-				setState(164);
+				setState(162);
 				match(SEMICOLON);
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(166);
+				setState(164);
 				func_call();
-				setState(167);
+				setState(165);
 				match(SEMICOLON);
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(169);
+				setState(167);
 				selection();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(170);
+				setState(168);
 				iterative();
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(171);
+				setState(169);
 				comment();
 				}
 				break;
@@ -1216,42 +1212,42 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(174);
+			setState(172);
 			match(IF);
-			setState(175);
+			setState(173);
 			match(LP);
-			setState(178);
+			setState(176);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case MINUS:
 			case NUMBER:
 			case ID:
 				{
-				setState(176);
+				setState(174);
 				logical_expr();
 				}
 				break;
 			case BOOL:
 				{
-				setState(177);
+				setState(175);
 				match(BOOL);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(180);
+			setState(178);
 			match(RP);
-			setState(181);
+			setState(179);
 			block();
-			setState(184);
+			setState(182);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==ELSE) {
 				{
-				setState(182);
+				setState(180);
 				match(ELSE);
-				setState(183);
+				setState(181);
 				block();
 				}
 			}
@@ -1311,35 +1307,34 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(186);
+			setState(184);
 			match(FOR);
+			setState(186);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==MINUS) {
+				{
+				setState(185);
+				match(MINUS);
+				}
+			}
+
 			setState(188);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==MINUS) {
-				{
-				setState(187);
-				match(MINUS);
-				}
-			}
-
-			setState(190);
 			val();
-			setState(191);
+			setState(189);
 			match(TO);
-			setState(193);
+			setState(191);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==MINUS) {
 				{
-				setState(192);
+				setState(190);
 				match(MINUS);
 				}
 			}
-
-			setState(195);
+			setState(193);
 			val();
-			setState(196);
+			setState(194);
 			block();
 			}
 		}
@@ -1393,18 +1388,18 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
+			setState(196);
+			expr();
+			setState(197);
+			match(COMPARER_OP);
 			setState(198);
 			expr();
-			setState(199);
-			match(COMPARER_OP);
-			setState(200);
-			expr();
-			setState(203);
+			setState(201);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==OR || _la==AND) {
 				{
-				setState(201);
+				setState(199);
 				_la = _input.LA(1);
 				if ( !(_la==OR || _la==AND) ) {
 				_errHandler.recoverInline(this);
@@ -1414,7 +1409,7 @@ public class GEasyParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				setState(202);
+				setState(200);
 				logical_expr();
 				}
 			}
@@ -1471,7 +1466,7 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(205);
+			setState(203);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VOID) | (1L << TYPE) | (1L << BOOL_T))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -1481,23 +1476,22 @@ public class GEasyParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(206);
+			setState(204);
 			match(ID);
-			setState(207);
+			setState(205);
 			match(LP);
-			setState(209);
+			setState(207);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==TYPE) {
 				{
-				setState(208);
+				setState(206);
 				formal_param();
 				}
 			}
-
-			setState(211);
+			setState(209);
 			match(RP);
-			setState(212);
+			setState(210);
 			block();
 			}
 		}
@@ -1551,25 +1545,25 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(214);
+			setState(212);
 			match(TYPE);
-			setState(215);
+			setState(213);
 			match(ID);
-			setState(221);
+			setState(219);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==COMMA) {
 				{
 				{
-				setState(216);
+				setState(214);
 				match(COMMA);
-				setState(217);
+				setState(215);
 				match(TYPE);
-				setState(218);
+				setState(216);
 				match(ID);
 				}
 				}
-				setState(223);
+				setState(221);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -1633,41 +1627,41 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(224);
+			setState(222);
 			match(L_BRACE);
-			setState(228); 
+			setState(226); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
-				setState(228);
+				setState(226);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,25,_ctx) ) {
 				case 1:
 					{
-					setState(225);
+					setState(223);
 					dcl();
 					}
 					break;
 				case 2:
 					{
-					setState(226);
+					setState(224);
 					stmt();
 					}
 					break;
 				case 3:
 					{
-					setState(227);
+					setState(225);
 					return_expr();
 					}
 					break;
 				}
 				}
-				setState(230); 
+				setState(228); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IF) | (1L << FOR) | (1L << POS) | (1L << VOID) | (1L << RETURN) | (1L << LINE_COMMENT) | (1L << TYPE) | (1L << BOOL_T) | (1L << MINUS) | (1L << NUMBER) | (1L << ID))) != 0) );
-			setState(232);
+			setState(230);
 			match(R_BRACE);
 			}
 		}
@@ -1714,29 +1708,29 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(234);
+			setState(232);
 			match(RETURN);
-			setState(237);
+			setState(235);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case MINUS:
 			case NUMBER:
 			case ID:
 				{
-				setState(235);
+				setState(233);
 				expr();
 				}
 				break;
 			case BOOL:
 				{
-				setState(236);
+				setState(234);
 				match(BOOL);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			setState(239);
+			setState(237);
 			match(SEMICOLON);
 			}
 		}
@@ -1780,7 +1774,7 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(241);
+			setState(239);
 			_la = _input.LA(1);
 			if ( !(_la==NUMBER || _la==ID) ) {
 			_errHandler.recoverInline(this);
@@ -1830,7 +1824,7 @@ public class GEasyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(243);
+			setState(241);
 			match(LINE_COMMENT);
 			}
 		}
@@ -1846,7 +1840,7 @@ public class GEasyParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3,\u00f8\4\2\t\2\4"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3,\u00f6\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\3\2\3\2\3\2\7\2\62"+
@@ -1856,36 +1850,36 @@ public class GEasyParser extends Parser {
 		"\n\b\3\b\3\b\3\b\3\b\5\bi\n\b\3\t\3\t\3\t\5\tn\n\t\3\t\3\t\3\t\3\t\5\t"+
 		"t\n\t\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\13\5\13\177\n\13\3\13\3\13\5\13"+
 		"\u0083\n\13\3\13\3\13\3\13\5\13\u0088\n\13\3\13\3\13\5\13\u008c\n\13\5"+
-		"\13\u008e\n\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\7\r\u009c"+
-		"\n\r\f\r\16\r\u009f\13\r\5\r\u00a1\n\r\3\16\3\16\3\16\3\16\3\16\3\16\3"+
-		"\16\3\16\3\16\3\16\3\16\3\16\5\16\u00af\n\16\3\17\3\17\3\17\3\17\5\17"+
-		"\u00b5\n\17\3\17\3\17\3\17\3\17\5\17\u00bb\n\17\3\20\3\20\5\20\u00bf\n"+
-		"\20\3\20\3\20\3\20\5\20\u00c4\n\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21"+
-		"\3\21\5\21\u00ce\n\21\3\22\3\22\3\22\3\22\5\22\u00d4\n\22\3\22\3\22\3"+
-		"\22\3\23\3\23\3\23\3\23\3\23\7\23\u00de\n\23\f\23\16\23\u00e1\13\23\3"+
-		"\24\3\24\3\24\3\24\6\24\u00e7\n\24\r\24\16\24\u00e8\3\24\3\24\3\25\3\25"+
-		"\3\25\5\25\u00f0\n\25\3\25\3\25\3\26\3\26\3\27\3\27\3\27\2\2\30\2\4\6"+
-		"\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,\2\5\3\2!\"\4\2\23\23\27\30\3"+
-		"\2+,\2\u0106\2\63\3\2\2\2\4;\3\2\2\2\6B\3\2\2\2\bD\3\2\2\2\nK\3\2\2\2"+
-		"\fP\3\2\2\2\16b\3\2\2\2\20j\3\2\2\2\22x\3\2\2\2\24~\3\2\2\2\26\u008f\3"+
-		"\2\2\2\30\u00a0\3\2\2\2\32\u00ae\3\2\2\2\34\u00b0\3\2\2\2\36\u00bc\3\2"+
-		"\2\2 \u00c8\3\2\2\2\"\u00cf\3\2\2\2$\u00d8\3\2\2\2&\u00e2\3\2\2\2(\u00ec"+
-		"\3\2\2\2*\u00f3\3\2\2\2,\u00f5\3\2\2\2.\62\5\4\3\2/\62\5\32\16\2\60\62"+
-		"\5\26\f\2\61.\3\2\2\2\61/\3\2\2\2\61\60\3\2\2\2\62\65\3\2\2\2\63\61\3"+
-		"\2\2\2\63\64\3\2\2\2\64\66\3\2\2\2\65\63\3\2\2\2\66\67\7\2\2\3\67\3\3"+
-		"\2\2\28<\5\16\b\29<\5\6\4\2:<\5\"\22\2;8\3\2\2\2;9\3\2\2\2;:\3\2\2\2<"+
-		"=\3\2\2\2=>\7\5\2\2>\5\3\2\2\2?C\5\b\5\2@C\5\n\6\2AC\5\f\7\2B?\3\2\2\2"+
-		"B@\3\2\2\2BA\3\2\2\2C\7\3\2\2\2DE\7\27\2\2EF\7,\2\2FI\7$\2\2GJ\5\24\13"+
-		"\2HJ\5\26\f\2IG\3\2\2\2IH\3\2\2\2J\t\3\2\2\2KL\7\20\2\2LM\7,\2\2MN\7$"+
-		"\2\2NO\5\20\t\2O\13\3\2\2\2PQ\7\27\2\2QR\7,\2\2RS\7\6\2\2ST\7\7\2\2TU"+
-		"\7$\2\2UV\7\b\2\2V[\5*\26\2WX\7\4\2\2XZ\5*\26\2YW\3\2\2\2Z]\3\2\2\2[Y"+
-		"\3\2\2\2[\\\3\2\2\2\\^\3\2\2\2][\3\2\2\2^_\7\t\2\2_\r\3\2\2\2`c\7,\2\2"+
-		"ac\5\22\n\2b`\3\2\2\2ba\3\2\2\2cd\3\2\2\2dh\7$\2\2ei\5\24\13\2fi\5\26"+
-		"\f\2gi\5\20\t\2he\3\2\2\2hf\3\2\2\2hg\3\2\2\2i\17\3\2\2\2jk\7\b\2\2km"+
-		"\7\21\2\2ln\7&\2\2ml\3\2\2\2mn\3\2\2\2no\3\2\2\2op\5*\26\2pq\7\4\2\2q"+
-		"s\7\22\2\2rt\7&\2\2sr\3\2\2\2st\3\2\2\2tu\3\2\2\2uv\5*\26\2vw\7\t\2\2"+
-		"w\21\3\2\2\2xy\7,\2\2yz\7\6\2\2z{\5\24\13\2{|\7\7\2\2|\23\3\2\2\2}\177"+
-		"\7&\2\2~}\3\2\2\2~\177\3\2\2\2\177\u0082\3\2\2\2\u0080\u0083\5*\26\2\u0081"+
+		"\13\u008e\n\13\3\f\3\f\3\f\3\f\3\f\3\r\3\r\3\r\3\r\3\r\7\r\u009a\n\r\f"+
+		"\r\16\r\u009d\13\r\5\r\u009f\n\r\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3"+
+		"\16\3\16\3\16\3\16\3\16\5\16\u00ad\n\16\3\17\3\17\3\17\3\17\5\17\u00b3"+
+		"\n\17\3\17\3\17\3\17\3\17\5\17\u00b9\n\17\3\20\3\20\5\20\u00bd\n\20\3"+
+		"\20\3\20\3\20\5\20\u00c2\n\20\3\20\3\20\3\20\3\21\3\21\3\21\3\21\3\21"+
+		"\5\21\u00cc\n\21\3\22\3\22\3\22\3\22\5\22\u00d2\n\22\3\22\3\22\3\22\3"+
+		"\23\3\23\3\23\3\23\3\23\7\23\u00dc\n\23\f\23\16\23\u00df\13\23\3\24\3"+
+		"\24\3\24\3\24\6\24\u00e5\n\24\r\24\16\24\u00e6\3\24\3\24\3\25\3\25\3\25"+
+		"\5\25\u00ee\n\25\3\25\3\25\3\26\3\26\3\27\3\27\3\27\2\2\30\2\4\6\b\n\f"+
+		"\16\20\22\24\26\30\32\34\36 \"$&(*,\2\5\3\2!\"\4\2\23\23\27\30\3\2+,\2"+
+		"\u0104\2\63\3\2\2\2\4;\3\2\2\2\6B\3\2\2\2\bD\3\2\2\2\nK\3\2\2\2\fP\3\2"+
+		"\2\2\16b\3\2\2\2\20j\3\2\2\2\22x\3\2\2\2\24~\3\2\2\2\26\u008f\3\2\2\2"+
+		"\30\u009e\3\2\2\2\32\u00ac\3\2\2\2\34\u00ae\3\2\2\2\36\u00ba\3\2\2\2 "+
+		"\u00c6\3\2\2\2\"\u00cd\3\2\2\2$\u00d6\3\2\2\2&\u00e0\3\2\2\2(\u00ea\3"+
+		"\2\2\2*\u00f1\3\2\2\2,\u00f3\3\2\2\2.\62\5\4\3\2/\62\5\32\16\2\60\62\5"+
+		"\26\f\2\61.\3\2\2\2\61/\3\2\2\2\61\60\3\2\2\2\62\65\3\2\2\2\63\61\3\2"+
+		"\2\2\63\64\3\2\2\2\64\66\3\2\2\2\65\63\3\2\2\2\66\67\7\2\2\3\67\3\3\2"+
+		"\2\28<\5\16\b\29<\5\6\4\2:<\5\"\22\2;8\3\2\2\2;9\3\2\2\2;:\3\2\2\2<=\3"+
+		"\2\2\2=>\7\5\2\2>\5\3\2\2\2?C\5\b\5\2@C\5\n\6\2AC\5\f\7\2B?\3\2\2\2B@"+
+		"\3\2\2\2BA\3\2\2\2C\7\3\2\2\2DE\7\27\2\2EF\7,\2\2FI\7$\2\2GJ\5\24\13\2"+
+		"HJ\5\26\f\2IG\3\2\2\2IH\3\2\2\2J\t\3\2\2\2KL\7\20\2\2LM\7,\2\2MN\7$\2"+
+		"\2NO\5\20\t\2O\13\3\2\2\2PQ\7\27\2\2QR\7,\2\2RS\7\6\2\2ST\7\7\2\2TU\7"+
+		"$\2\2UV\7\b\2\2V[\5*\26\2WX\7\4\2\2XZ\5*\26\2YW\3\2\2\2Z]\3\2\2\2[Y\3"+
+		"\2\2\2[\\\3\2\2\2\\^\3\2\2\2][\3\2\2\2^_\7\t\2\2_\r\3\2\2\2`c\7,\2\2a"+
+		"c\5\22\n\2b`\3\2\2\2ba\3\2\2\2cd\3\2\2\2dh\7$\2\2ei\5\24\13\2fi\5\26\f"+
+		"\2gi\5\20\t\2he\3\2\2\2hf\3\2\2\2hg\3\2\2\2i\17\3\2\2\2jk\7\b\2\2km\7"+
+		"\21\2\2ln\7&\2\2ml\3\2\2\2mn\3\2\2\2no\3\2\2\2op\5*\26\2pq\7\4\2\2qs\7"+
+		"\22\2\2rt\7&\2\2sr\3\2\2\2st\3\2\2\2tu\3\2\2\2uv\5*\26\2vw\7\t\2\2w\21"+
+		"\3\2\2\2xy\7,\2\2yz\7\6\2\2z{\5\24\13\2{|\7\7\2\2|\23\3\2\2\2}\177\7&"+
+		"\2\2~}\3\2\2\2~\177\3\2\2\2\177\u0082\3\2\2\2\u0080\u0083\5*\26\2\u0081"+
 		"\u0083\5\22\n\2\u0082\u0080\3\2\2\2\u0082\u0081\3\2\2\2\u0083\u008d\3"+
 		"\2\2\2\u0084\u0087\7%\2\2\u0085\u0088\5*\26\2\u0086\u0088\5\22\n\2\u0087"+
 		"\u0085\3\2\2\2\u0087\u0086\3\2\2\2\u0088\u008b\3\2\2\2\u0089\u008a\7%"+
@@ -1893,40 +1887,41 @@ public class GEasyParser extends Parser {
 		"\u008e\3\2\2\2\u008d\u0084\3\2\2\2\u008d\u008e\3\2\2\2\u008e\25\3\2\2"+
 		"\2\u008f\u0090\7,\2\2\u0090\u0091\7\n\2\2\u0091\u0092\5\30\r\2\u0092\u0093"+
 		"\7\13\2\2\u0093\27\3\2\2\2\u0094\u0095\7,\2\2\u0095\u0096\7\3\2\2\u0096"+
-		"\u009d\5\24\13\2\u0097\u0098\7\4\2\2\u0098\u0099\7,\2\2\u0099\u009a\7"+
-		"\3\2\2\u009a\u009c\5\24\13\2\u009b\u0097\3\2\2\2\u009c\u009f\3\2\2\2\u009d"+
-		"\u009b\3\2\2\2\u009d\u009e\3\2\2\2\u009e\u00a1\3\2\2\2\u009f\u009d\3\2"+
-		"\2\2\u00a0\u0094\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\31\3\2\2\2\u00a2\u00a3"+
-		"\5\16\b\2\u00a3\u00a4\7\5\2\2\u00a4\u00af\3\2\2\2\u00a5\u00a6\5\24\13"+
-		"\2\u00a6\u00a7\7\5\2\2\u00a7\u00af\3\2\2\2\u00a8\u00a9\5\26\f\2\u00a9"+
-		"\u00aa\7\5\2\2\u00aa\u00af\3\2\2\2\u00ab\u00af\5\34\17\2\u00ac\u00af\5"+
-		"\36\20\2\u00ad\u00af\5,\27\2\u00ae\u00a2\3\2\2\2\u00ae\u00a5\3\2\2\2\u00ae"+
-		"\u00a8\3\2\2\2\u00ae\u00ab\3\2\2\2\u00ae\u00ac\3\2\2\2\u00ae\u00ad\3\2"+
-		"\2\2\u00af\33\3\2\2\2\u00b0\u00b1\7\f\2\2\u00b1\u00b4\7\n\2\2\u00b2\u00b5"+
-		"\5 \21\2\u00b3\u00b5\7\31\2\2\u00b4\u00b2\3\2\2\2\u00b4\u00b3\3\2\2\2"+
-		"\u00b5\u00b6\3\2\2\2\u00b6\u00b7\7\13\2\2\u00b7\u00ba\5&\24\2\u00b8\u00b9"+
-		"\7\r\2\2\u00b9\u00bb\5&\24\2\u00ba\u00b8\3\2\2\2\u00ba\u00bb\3\2\2\2\u00bb"+
-		"\35\3\2\2\2\u00bc\u00be\7\16\2\2\u00bd\u00bf\7&\2\2\u00be\u00bd\3\2\2"+
-		"\2\u00be\u00bf\3\2\2\2\u00bf\u00c0\3\2\2\2\u00c0\u00c1\5*\26\2\u00c1\u00c3"+
-		"\7\17\2\2\u00c2\u00c4\7&\2\2\u00c3\u00c2\3\2\2\2\u00c3\u00c4\3\2\2\2\u00c4"+
-		"\u00c5\3\2\2\2\u00c5\u00c6\5*\26\2\u00c6\u00c7\5&\24\2\u00c7\37\3\2\2"+
-		"\2\u00c8\u00c9\5\24\13\2\u00c9\u00ca\7\32\2\2\u00ca\u00cd\5\24\13\2\u00cb"+
-		"\u00cc\t\2\2\2\u00cc\u00ce\5 \21\2\u00cd\u00cb\3\2\2\2\u00cd\u00ce\3\2"+
-		"\2\2\u00ce!\3\2\2\2\u00cf\u00d0\t\3\2\2\u00d0\u00d1\7,\2\2\u00d1\u00d3"+
-		"\7\n\2\2\u00d2\u00d4\5$\23\2\u00d3\u00d2\3\2\2\2\u00d3\u00d4\3\2\2\2\u00d4"+
-		"\u00d5\3\2\2\2\u00d5\u00d6\7\13\2\2\u00d6\u00d7\5&\24\2\u00d7#\3\2\2\2"+
-		"\u00d8\u00d9\7\27\2\2\u00d9\u00df\7,\2\2\u00da\u00db\7\4\2\2\u00db\u00dc"+
-		"\7\27\2\2\u00dc\u00de\7,\2\2\u00dd\u00da\3\2\2\2\u00de\u00e1\3\2\2\2\u00df"+
-		"\u00dd\3\2\2\2\u00df\u00e0\3\2\2\2\u00e0%\3\2\2\2\u00e1\u00df\3\2\2\2"+
-		"\u00e2\u00e6\7\b\2\2\u00e3\u00e7\5\4\3\2\u00e4\u00e7\5\32\16\2\u00e5\u00e7"+
-		"\5(\25\2\u00e6\u00e3\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e6\u00e5\3\2\2\2\u00e7"+
-		"\u00e8\3\2\2\2\u00e8\u00e6\3\2\2\2\u00e8\u00e9\3\2\2\2\u00e9\u00ea\3\2"+
-		"\2\2\u00ea\u00eb\7\t\2\2\u00eb\'\3\2\2\2\u00ec\u00ef\7\24\2\2\u00ed\u00f0"+
-		"\5\24\13\2\u00ee\u00f0\7\31\2\2\u00ef\u00ed\3\2\2\2\u00ef\u00ee\3\2\2"+
-		"\2\u00f0\u00f1\3\2\2\2\u00f1\u00f2\7\5\2\2\u00f2)\3\2\2\2\u00f3\u00f4"+
-		"\t\4\2\2\u00f4+\3\2\2\2\u00f5\u00f6\7\25\2\2\u00f6-\3\2\2\2\36\61\63;"+
-		"BI[bhms~\u0082\u0087\u008b\u008d\u009d\u00a0\u00ae\u00b4\u00ba\u00be\u00c3"+
-		"\u00cd\u00d3\u00df\u00e6\u00e8\u00ef";
+		"\u009b\5\24\13\2\u0097\u0098\7\4\2\2\u0098\u009a\5\30\r\2\u0099\u0097"+
+		"\3\2\2\2\u009a\u009d\3\2\2\2\u009b\u0099\3\2\2\2\u009b\u009c\3\2\2\2\u009c"+
+		"\u009f\3\2\2\2\u009d\u009b\3\2\2\2\u009e\u0094\3\2\2\2\u009e\u009f\3\2"+
+		"\2\2\u009f\31\3\2\2\2\u00a0\u00a1\5\16\b\2\u00a1\u00a2\7\5\2\2\u00a2\u00ad"+
+		"\3\2\2\2\u00a3\u00a4\5\24\13\2\u00a4\u00a5\7\5\2\2\u00a5\u00ad\3\2\2\2"+
+		"\u00a6\u00a7\5\26\f\2\u00a7\u00a8\7\5\2\2\u00a8\u00ad\3\2\2\2\u00a9\u00ad"+
+		"\5\34\17\2\u00aa\u00ad\5\36\20\2\u00ab\u00ad\5,\27\2\u00ac\u00a0\3\2\2"+
+		"\2\u00ac\u00a3\3\2\2\2\u00ac\u00a6\3\2\2\2\u00ac\u00a9\3\2\2\2\u00ac\u00aa"+
+		"\3\2\2\2\u00ac\u00ab\3\2\2\2\u00ad\33\3\2\2\2\u00ae\u00af\7\f\2\2\u00af"+
+		"\u00b2\7\n\2\2\u00b0\u00b3\5 \21\2\u00b1\u00b3\7\31\2\2\u00b2\u00b0\3"+
+		"\2\2\2\u00b2\u00b1\3\2\2\2\u00b3\u00b4\3\2\2\2\u00b4\u00b5\7\13\2\2\u00b5"+
+		"\u00b8\5&\24\2\u00b6\u00b7\7\r\2\2\u00b7\u00b9\5&\24\2\u00b8\u00b6\3\2"+
+		"\2\2\u00b8\u00b9\3\2\2\2\u00b9\35\3\2\2\2\u00ba\u00bc\7\16\2\2\u00bb\u00bd"+
+		"\7&\2\2\u00bc\u00bb\3\2\2\2\u00bc\u00bd\3\2\2\2\u00bd\u00be\3\2\2\2\u00be"+
+		"\u00bf\5*\26\2\u00bf\u00c1\7\17\2\2\u00c0\u00c2\7&\2\2\u00c1\u00c0\3\2"+
+		"\2\2\u00c1\u00c2\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c4\5*\26\2\u00c4"+
+		"\u00c5\5&\24\2\u00c5\37\3\2\2\2\u00c6\u00c7\5\24\13\2\u00c7\u00c8\7\32"+
+		"\2\2\u00c8\u00cb\5\24\13\2\u00c9\u00ca\t\2\2\2\u00ca\u00cc\5 \21\2\u00cb"+
+		"\u00c9\3\2\2\2\u00cb\u00cc\3\2\2\2\u00cc!\3\2\2\2\u00cd\u00ce\t\3\2\2"+
+		"\u00ce\u00cf\7,\2\2\u00cf\u00d1\7\n\2\2\u00d0\u00d2\5$\23\2\u00d1\u00d0"+
+		"\3\2\2\2\u00d1\u00d2\3\2\2\2\u00d2\u00d3\3\2\2\2\u00d3\u00d4\7\13\2\2"+
+		"\u00d4\u00d5\5&\24\2\u00d5#\3\2\2\2\u00d6\u00d7\7\27\2\2\u00d7\u00dd\7"+
+		",\2\2\u00d8\u00d9\7\4\2\2\u00d9\u00da\7\27\2\2\u00da\u00dc\7,\2\2\u00db"+
+		"\u00d8\3\2\2\2\u00dc\u00df\3\2\2\2\u00dd\u00db\3\2\2\2\u00dd\u00de\3\2"+
+		"\2\2\u00de%\3\2\2\2\u00df\u00dd\3\2\2\2\u00e0\u00e4\7\b\2\2\u00e1\u00e5"+
+		"\5\4\3\2\u00e2\u00e5\5\32\16\2\u00e3\u00e5\5(\25\2\u00e4\u00e1\3\2\2\2"+
+		"\u00e4\u00e2\3\2\2\2\u00e4\u00e3\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e4"+
+		"\3\2\2\2\u00e6\u00e7\3\2\2\2\u00e7\u00e8\3\2\2\2\u00e8\u00e9\7\t\2\2\u00e9"+
+		"\'\3\2\2\2\u00ea\u00ed\7\24\2\2\u00eb\u00ee\5\24\13\2\u00ec\u00ee\7\31"+
+		"\2\2\u00ed\u00eb\3\2\2\2\u00ed\u00ec\3\2\2\2\u00ee\u00ef\3\2\2\2\u00ef"+
+		"\u00f0\7\5\2\2\u00f0)\3\2\2\2\u00f1\u00f2\t\4\2\2\u00f2+\3\2\2\2\u00f3"+
+		"\u00f4\7\25\2\2\u00f4-\3\2\2\2\36\61\63;BI[bhms~\u0082\u0087\u008b\u008d"+
+		"\u009b\u009e\u00ac\u00b2\u00b8\u00bc\u00c1\u00cb\u00d1\u00dd\u00e4\u00e6"+
+		"\u00ed";
+  
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

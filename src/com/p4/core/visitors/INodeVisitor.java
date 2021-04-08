@@ -27,6 +27,7 @@ public interface INodeVisitor {
     void visit(LogicalExprNode node);
 
     void visit(ParamNode node);
+    void visit(ActualParamNode node);
     void visit(BlockNode node);
     void visit(ReturnExprNode node);
     void visit(ValNode node);

@@ -28,6 +28,15 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.IntNode":
                     this.print(localIndent, "Int: " + ((IntNode)node).value);
                     break;
+                case "class com.p4.core.nodes.FuncCallNode":
+                    this.print(localIndent, "FunCall: " + ((FuncCallNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.ActualParamNode":
+                    this.print(localIndent, "ActualParm: " + ((ActualParamNode)node).getID());
+                    break;
+                case "class com.p4.core.nodes.LineCommentNode":
+                    this.print(localIndent, "Line comment: " + ((LineCommentNode)node).getComment());
+                    break;
                 case "class com.p4.core.nodes.PosAssignNode":
                     this.print(localIndent, "Pos Assign: ");
                     break;
