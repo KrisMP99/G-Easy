@@ -28,6 +28,12 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.IntNode":
                     this.print(localIndent, "Int: " + ((IntNode)node).value);
                     break;
+                case "class com.p4.core.nodes.PosAssignNode":
+                    this.print(localIndent, "Pos Assign: ");
+                    break;
+                case "class com.p4.core.nodes.PosNode":
+                    this.print(localIndent, "Pos: x: " + ((PosNode)node).p1.getX() + " y: " + ((PosNode)node).p1.getY());
+                    break;
             }
 
             for(AstNode childNode : node.getChildren()) {

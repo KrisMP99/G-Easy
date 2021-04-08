@@ -16,6 +16,11 @@ public class IDNode extends AstNode {
     }
 
     @Override
+    public String toString(){
+        return id;
+    }
+
+    @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }

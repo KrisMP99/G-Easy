@@ -8,6 +8,11 @@ public class IntNode extends AstNode {
         this.value = value;
     }
 
+    @Override
+    public String toString(){
+        return Integer.toString(value);
+    }
+
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
