@@ -38,9 +38,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitDcl(GEasyParser.DclContext ctx) {
         // A dcl can be one of the following non-terminals:
-        // assign, array_dcl, pos_dcl, var_dcl
+        // assign, var_dcl, func_dcl
         GEasyParser.AssignContext assign = ctx.assign();
         GEasyParser.Var_dclContext var_dcl = ctx.var_dcl();
+        GEasyParser.Func_dclContext func_dcl = ctx.func_dcl();
 
         // Figure out which dcl we're dealing with
         if(assign != null) {
@@ -48,6 +49,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
         else if(var_dcl != null) {
             return visit(var_dcl);
+
+        } else if(func_dcl != null) {
+            return visit(func_dcl);
         }
 
         // Does not contain a DCL (error)
@@ -66,7 +70,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         } else if(pos_dcl != null) {
             return visit(pos_dcl);
 
-        } else if(array_dcl != array_dcl) {
+        } else if(array_dcl != null) {
             return visit(array_dcl);
         }
 
@@ -207,12 +211,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         for(int childIndex = 0; childIndex < childCount; childCount++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if(child instanceof TerminalNode){
-                if(child == ctx.NUMBER()){
-                    AstNode numChild = visit(child);
-                    arrayAccessNode.children.add(numChild);
-                }
-            } else if(child instanceof GEasyParser.ExprContext){
+            if(child instanceof GEasyParser.ExprContext){
                 AstNode exprNode = visit(child);
                 arrayAccessNode.children.add(exprNode);
             }
