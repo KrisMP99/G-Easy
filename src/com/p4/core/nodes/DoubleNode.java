@@ -10,6 +10,11 @@ public class DoubleNode extends AstNode{
     }
 
     @Override
+    public String toString(){
+        return Double.toString(value);
+    }
+
+    @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }

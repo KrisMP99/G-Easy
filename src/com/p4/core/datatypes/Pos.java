@@ -1,19 +1,27 @@
 package com.p4.core.datatypes;
 
-public class Pos {
-    public double x;
-    public double y;
+public class Pos<T> {
+    private T x;
+    private T y;
 
-    public String id1;
-    public String id2;
-
-    public Pos(double x, double y) {
+    public Pos(T x, T y) {
         this.x = x;
         this.y = y;
     }
 
-    public Pos(String id1, String id2) {
-        this.id1 = id1;
-        this.id2 = id1;
+    public void setX(T x) {
+        this.x = x;
+    }
+
+    public void setY(T y) {
+        this.y = y;
+    }
+
+    public T getX() {
+        return x;
+    }
+
+    public T getY() {
+        return y;
     }
 }
