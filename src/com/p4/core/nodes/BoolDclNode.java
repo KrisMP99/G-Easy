@@ -5,7 +5,10 @@ import com.p4.core.visitors.INodeVisitor;
 public class BoolDclNode extends AstNode {
     private String id;
 
-
+    public BoolDclNode(String id, String type) {
+        this.id = id;
+        this.type = type;
+    }
 
     @Override
     public void accept(INodeVisitor visitor) {

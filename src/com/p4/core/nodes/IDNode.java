@@ -24,4 +24,12 @@ public class IDNode extends AstNode {
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }
+
+    public String getID() {
+        return id;
+    }
+
+    public void setID(String id) {
+        this.id = id;
+    }
 }

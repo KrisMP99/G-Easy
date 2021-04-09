@@ -3,16 +3,17 @@ package com.p4.core.nodes;
 import com.p4.core.visitors.INodeVisitor;
 
 public class BoolNode extends AstNode {
+    boolean type;
 
-    public BoolNode(String value) {
+    public BoolNode(boolean value) {
         type = value;
     }
 
-    public String getType() {
+    public boolean getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(boolean type) {
         this.type = type;
     }
 

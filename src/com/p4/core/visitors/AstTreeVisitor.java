@@ -53,6 +53,9 @@ public class AstTreeVisitor {
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
                     this.print(localIndent, "(Selection) " + ((SelectionNode)node).getType() + isElse);
                     break;
+                case "class com.p4.core.nodes.LogicalOPNode":
+                    this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
+                    break;
                 case "class com.p4.core.nodes.LogicalExprNode":
                     this.print(localIndent, "(LogicalExpr)");
                     break;
@@ -62,8 +65,17 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.CompNode":
                     this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
+                case "class com.p4.core.nodes.CompExprNode":
+                    this.print(localIndent, "(CompExpr)");
+                    break;
+                case "class com.p4.core.nodes.BoolExprNode":
+                    this.print(localIndent, "(BoolExpr)");
+                    break;
+                case "class com.p4.core.nodes.BoolNode":
+                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getType());
+                    break;
                 case "class com.p4.core.nodes.IDNode":
-                    this.print(localIndent, "(ID) " + ((IDNode)node).id);
+                    this.print(localIndent, "(ID) " + ((IDNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.AssignNode":
                     this.print(localIndent, "(Assign) " + ((AssignNode)node).getID());
@@ -80,11 +92,10 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.ReturnExprNode":
                     this.print(localIndent, "(ReturnExpr)");
                     break;
-                case "class com.p4.core.nodes.BoolNode":
-                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getType());
-                    break;
                 case "class com.p4.core.nodes.ProgNode":
                     this.print(localIndent, "(prog)");
+                    break;
+
             }
 
             for(AstNode childNode : node.getChildren()) {

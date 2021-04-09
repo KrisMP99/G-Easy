@@ -138,8 +138,21 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitBoolDcl(GEasyParser.BoolDclContext ctx) {
+    public AstNode visitBool_dcl(GEasyParser.Bool_dclContext ctx) {
+        String ID = ctx.ID().toString();
+        String type = ctx.BOOL_T().toString();
 
+        BoolDclNode boolDclNode = new BoolDclNode(ID, type);
+
+        GEasyParser.Logical_exprContext logicalExpr = ctx.logical_expr();
+
+        if(logicalExpr != null) {
+            boolDclNode.children.add(visit(logicalExpr));
+            return boolDclNode;
+        }
+
+        // error
+        return null;
     }
 
 
@@ -375,17 +388,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitSelection(GEasyParser.SelectionContext ctx) {
-        String type = ctx.IF().toString();
-        String sElse = ctx.ELSE().toString();
-
         SelectionNode selectionNode;
 
-        if(sElse != null) {
-            selectionNode = new SelectionNode(type, true);
+        if(ctx.ELSE() != null) {
+            selectionNode = new SelectionNode(ctx.IF().toString(), true);
         } else {
-            selectionNode = new SelectionNode(type, false);
+            selectionNode = new SelectionNode(ctx.IF().toString(), false);
         }
-
 
         // Visit the condition
         // How do we handle the case of a bool here??
@@ -427,50 +436,36 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int childCount = ctx.getChildCount();
 
-        // If there is only one child, it must be a boolean
-        if(childCount == 1) {
-            return getLogicalNode(ctx.getChild(0));
-        }
-
         // Go through all the children
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if((child instanceof GEasyParser.Logical_exprContext) || (child instanceof GEasyParser.ExprContext)) {
+            if((child instanceof GEasyParser.Logical_exprContext) || (child instanceof GEasyParser.Comp_exprContext) || (child instanceof GEasyParser.Bool_exprContext)) {
                 AstNode childNode = visit(child);
                 logicalExprNode.children.add(childNode);
             }
 
-            // If there is a logical/comp operator we add it
-            if(getLogicalNode(child) != null) {
-                logicalExprNode.children.add(getLogicalNode(child));
-            }
-            if(getCompNode(child) != null) {
-                logicalExprNode.children.add(getCompNode(child));
+            // If there is a comp operator we add it
+            if(visitLogicalOperatorNode(child) != null) {
+                logicalExprNode.children.add(visitLogicalOperatorNode(child));
             }
         }
 
         return logicalExprNode;
     }
 
-    private AstNode getLogicalNode(ParseTree child) {
+    private AstNode visitLogicalOperatorNode(ParseTree child) {
         if(child != null) {
-            LogicalNode logicalNode = new LogicalNode();
-
             switch (child.getText()) {
-                case "true":
-                    logicalNode.setToken(GEasyParser.TRUE);
-                    return logicalNode;
-                case "false":
-                    logicalNode.setToken(GEasyParser.FALSE);
-                    return logicalNode;
+                case "&&":
+                    return new LogicalOPNode(GEasyParser.AND);
+                case "||":
+                    return new LogicalOPNode(GEasyParser.OR);
                 default:
-                    // error
                     return null;
             }
         }
 
-        // error
         return null;
     }
 
@@ -506,6 +501,74 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return null;
     }
 
+    @Override
+    public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
+        CompExprNode compExprNode = new CompExprNode();
+
+        int childCount = ctx.getChildCount();
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            ParseTree child = ctx.getChild(childIndex);
+
+            if(child instanceof GEasyParser.ExprContext) {
+                AstNode childNode = visit(child);
+                compExprNode.children.add(childNode);
+            }
+
+            if(getCompNode(child) != null) {
+                compExprNode.children.add(getCompNode(child));
+            }
+        }
+
+        return compExprNode;
+    }
+
+    @Override
+    public AstNode visitBool_expr(GEasyParser.Bool_exprContext ctx) {
+        BoolExprNode boolExprNode = new BoolExprNode();
+
+        int childCount = ctx.getChildCount();
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            ParseTree child = ctx.getChild(childIndex);
+
+            if(visitBoolNode(child) != null) {
+                AstNode childNode = visitBoolNode(child);
+                boolExprNode.children.add(childNode);
+            }
+            else if(getCompNode(child) != null) {
+                boolExprNode.children.add(getCompNode(child));
+            }
+            else if(visitIDNode(child) != null) {
+                boolExprNode.children.add(visitIDNode(child));
+            }
+        }
+        // error
+        return boolExprNode;
+    }
+
+    private AstNode visitIDNode(ParseTree child) {
+        if(child != null) {
+            return new IDNode(child.getText());
+        }
+
+        // error
+        return null;
+    }
+
+    private AstNode visitBoolNode(ParseTree child) {
+        if(child != null) {
+            switch (child.getText()) {
+                case "true":
+                    return new BoolNode(true);
+                case "false":
+                    return new BoolNode(false);
+                default:
+                    return null;
+            }
+        }
+
+        // error
+        return null;
+    }
 
     @Override
     public AstNode visitFunc_dcl(GEasyParser.Func_dclContext ctx) {
@@ -590,7 +653,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return returnExprNode;
         }
         else if (ctx.BOOL() != null) {
-            BoolNode boolNode = new BoolNode(ctx.BOOL().toString());
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()));
             returnExprNode.children.add(boolNode);
             return returnExprNode;
         }

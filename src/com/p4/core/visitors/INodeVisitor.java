@@ -41,6 +41,8 @@ public interface INodeVisitor {
     void visit(LogicalNode node);
     void visit(CompNode node);
     void visit(BoolDclNode node);
+    void visit(BoolExprNode node);
+    void visit(CompExprNode node);
 
     void visit(NumberNode node);
     void visit(IDNode node);
@@ -50,6 +52,7 @@ public interface INodeVisitor {
     void visit(DoubleDclNode node);
     void visit(DoubleNode node);
     void visit(PosNode node);
+    void visit(LogicalOPNode node);
 
     void visit(LineCommentNode node);
     void visit(CommentNode node);
