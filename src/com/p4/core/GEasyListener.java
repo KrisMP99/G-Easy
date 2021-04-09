@@ -1,4 +1,4 @@
-// Generated from /Users/ceciliefog/IdeaProjects/G-Easy/src/com/p4/core/GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -57,6 +57,16 @@ public interface GEasyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPos_dcl(GEasyParser.Pos_dclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#bool_dcl}.
+	 * @param ctx the parse tree
+	 */
+	void enterBool_dcl(GEasyParser.Bool_dclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#bool_dcl}.
+	 * @param ctx the parse tree
+	 */
+	void exitBool_dcl(GEasyParser.Bool_dclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GEasyParser#array_dcl}.
 	 * @param ctx the parse tree
@@ -167,6 +177,26 @@ public interface GEasyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#bool_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBool_expr(GEasyParser.Bool_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#bool_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBool_expr(GEasyParser.Bool_exprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree

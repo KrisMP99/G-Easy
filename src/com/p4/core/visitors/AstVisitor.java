@@ -5,9 +5,6 @@ import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
-import javax.sound.sampled.Line;
 
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
@@ -139,6 +136,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         return arrayDclNode;
     }
+
+    @Override
+    public AstNode visitBoolDcl(GEasyParser.BoolDclContext ctx) {
+
+    }
+
 
     @Override
     public AstNode visitAssign(GEasyParser.AssignContext ctx) {
@@ -373,7 +376,16 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitSelection(GEasyParser.SelectionContext ctx) {
         String type = ctx.IF().toString();
-        SelectionNode selectionNode = new SelectionNode(type);
+        String sElse = ctx.ELSE().toString();
+
+        SelectionNode selectionNode;
+
+        if(sElse != null) {
+            selectionNode = new SelectionNode(type, true);
+        } else {
+            selectionNode = new SelectionNode(type, false);
+        }
+
 
         // Visit the condition
         // How do we handle the case of a bool here??
@@ -390,7 +402,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitIterative(GEasyParser.IterativeContext ctx) {
-        IterativeNode iterativeNode = new IterativeNode();
+        String type = ctx.FOR().toString();
+        String for_to = ctx.TO().toString();
+        IterativeNode iterativeNode = new IterativeNode(type, for_to);
 
         // Visit children
         int childCount = ctx.getChildCount();
@@ -488,7 +502,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                     return null;
             }
         }
-
         // error
         return null;
     }
@@ -497,32 +510,34 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitFunc_dcl(GEasyParser.Func_dclContext ctx) {
         String id = ctx.ID().toString();
-        String type_t = ctx.TYPE().toString();
-        String void_t = ctx.VOID().toString();
-        String bool_t = ctx.BOOL_T().toString();
 
-        FuncNode funcNode;
+        FuncDclNode funcDclNode;
 
-        if(type_t != null) {
-            funcNode = new FuncNode(id, type_t);
+        if(ctx.TYPE() != null) {
+            funcDclNode = new FuncDclNode(id, ctx.TYPE().toString());
         }
-        else if(void_t != null) {
-            funcNode = new FuncNode(id, void_t);
+        else if(ctx.VOID() != null) {
+            funcDclNode = new FuncDclNode(id, ctx.VOID().toString());
         }
-        else if(bool_t != null) {
-            funcNode = new FuncNode(id, bool_t);
+        else if(ctx.BOOL_T() != null) {
+            funcDclNode = new FuncDclNode(id, ctx.BOOL_T().toString());
         } else {
             return null;
         }
 
-        if(ctx.getChildCount() > 1) {
-            funcNode.children.add(visit(ctx.getChild(0)));
-            funcNode.children.add(visit(ctx.getChild(1)));
-        } else {
-            funcNode.children.add(visit(ctx.getChild(0)));
+        // Visit children
+        int childCount = ctx.getChildCount();
+
+        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            ParseTree child = ctx.getChild(childIndex);
+
+            if((child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.BlockContext)) {
+                AstNode childNode = visit(child);
+                funcDclNode.children.add(childNode);
+            }
         }
 
-        return funcNode;
+        return funcDclNode;
     }
 
     @Override
@@ -550,7 +565,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             if(idNode != null) {
                 paramNode.children.add(idNode);
             }
-
         }
 
         return paramNode;
@@ -565,25 +579,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return visitChildren(blockNode, ctx.children.toArray(ParseTree[]::new));
     }
 
-    // Revisit later
-    public AstNode handleBlk(GEasyParser.BlockContext ctx, String id) {
-        BlockNode blockNode = (BlockNode) visit(ctx);
-        blockNode.setParentID(id);
-        return blockNode;
-    }
-
     @Override
     public AstNode visitReturn_expr(GEasyParser.Return_exprContext ctx) {
         ReturnExprNode returnExprNode = new ReturnExprNode();
 
-        AstNode exprNode = visit(ctx.expr());
+        GEasyParser.ExprContext expr = ctx.expr();
 
-        if(exprNode != null) {
-            returnExprNode.children.add(exprNode);
+        if(expr != null) {
+            returnExprNode.children.add(visit(expr));
             return returnExprNode;
         }
         else if (ctx.BOOL() != null) {
-            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()));
+            BoolNode boolNode = new BoolNode(ctx.BOOL().toString());
             returnExprNode.children.add(boolNode);
             return returnExprNode;
         }
@@ -620,7 +627,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             LineCommentNode commentNode = new LineCommentNode(lineComment);
             return commentNode;
         }
-
         // error
         return null;
     }

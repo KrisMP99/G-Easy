@@ -9,7 +9,7 @@ public interface INodeVisitor {
 
     void visit(DclNode node);
     void visit(StmtNode node);
-    void visit(FuncNode node);
+    void visit(FuncDclNode node);
     void visit(FuncCallNode node);
 
     void visit(AssignNode node);
@@ -40,6 +40,7 @@ public interface INodeVisitor {
     void visit(ArithmeticNode node);
     void visit(LogicalNode node);
     void visit(CompNode node);
+    void visit(BoolDclNode node);
 
     void visit(NumberNode node);
     void visit(IDNode node);

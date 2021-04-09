@@ -1,4 +1,4 @@
-// Generated from /Users/ceciliefog/IdeaProjects/G-Easy/src/com/p4/core/GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -71,6 +71,18 @@ public class GEasyBaseListener implements GEasyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPos_dcl(GEasyParser.Pos_dclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBool_dcl(GEasyParser.Bool_dclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBool_dcl(GEasyParser.Bool_dclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -203,6 +215,30 @@ public class GEasyBaseListener implements GEasyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogical_expr(GEasyParser.Logical_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComp_expr(GEasyParser.Comp_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComp_expr(GEasyParser.Comp_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBool_expr(GEasyParser.Bool_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBool_expr(GEasyParser.Bool_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

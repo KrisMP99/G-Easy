@@ -1,4 +1,4 @@
-// Generated from C:/Users/Kristian/Desktop/GEasyCompiler/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -40,6 +40,12 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPos_dcl(GEasyParser.Pos_dclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#bool_dcl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBool_dcl(GEasyParser.Bool_dclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#array_dcl}.
 	 * @param ctx the parse tree
@@ -106,6 +112,18 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#bool_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBool_expr(GEasyParser.Bool_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree
