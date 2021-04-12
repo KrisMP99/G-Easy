@@ -62,15 +62,20 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         GEasyParser.Num_dclContext num_dcl = ctx.num_dcl();
         GEasyParser.Pos_dclContext pos_dcl = ctx.pos_dcl();
         GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
+        GEasyParser.Bool_dclContext bool_dcl = ctx.bool_dcl();
 
         if(num_dcl != null) {
             return visit(num_dcl);
-
-        } else if(pos_dcl != null) {
+        }
+        else if(pos_dcl != null) {
             return visit(pos_dcl);
 
-        } else if(array_dcl != null) {
+        }
+        else if(array_dcl != null) {
             return visit(array_dcl);
+        }
+        else if(bool_dcl != null) {
+            return visit(bool_dcl);
         }
 
         // No var_dcl (error)
@@ -208,12 +213,15 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String pos = ctx.POS().toString();
 
         PosDclNode posDclNode = new PosDclNode(id);
+        posDclNode.setType(pos);
 
         GEasyParser.Pos_assignContext assign = ctx.pos_assign();
 
         // Note: We need to add this as a child, right?
         if(assign != null){
-            return visitPos_assign(ctx.pos_assign());
+            AstNode posAssignNode = visitPos_assign(ctx.pos_assign());
+            posDclNode.children.add(posAssignNode);
+            return posDclNode;
         }
 
         return null;
@@ -277,7 +285,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 if(childIndex + 1 < childCount) {
                     // We use the helper function 'getArithmeticOPNode' to retrieve the operator we need
                     ParseTree nextChild = ctx.getChild(childIndex + 1);
-                    AstNode arithmNode = getArithmeticOPNode(nextChild);
+                    AstNode arithmNode = VisitArithmeticOPNode(nextChild);
 
                     // If there is an arithmetic operator, we add it as a child to expr
                     if(arithmNode != null) {
@@ -290,7 +298,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     // Helper function to get the aritmethic operator
-    public AstNode getArithmeticOPNode(ParseTree child) {
+    public AstNode VisitArithmeticOPNode(ParseTree child) {
         if(child != null) {
             switch(child.getText()) {
                 case "%":
@@ -605,7 +613,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitFormal_param(GEasyParser.Formal_paramContext ctx) {
-        ParamNode paramNode = new ParamNode();
+        FormalParamNode formalParamNode = new FormalParamNode();
 
         int childrenCount = ctx.getChildCount();
 
@@ -626,11 +634,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             }
 
             if(idNode != null) {
-                paramNode.children.add(idNode);
+                formalParamNode.children.add(idNode);
             }
         }
 
-        return paramNode;
+        return formalParamNode;
     }
 
     @Override

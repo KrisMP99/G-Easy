@@ -59,9 +59,6 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.LogicalExprNode":
                     this.print(localIndent, "(LogicalExpr)");
                     break;
-                case "class com.p4.core.nodes.LogicalNode":
-                    this.print(localIndent, "(Logical) " + ((LogicalNode)node).getToken());
-                    break;
                 case "class com.p4.core.nodes.CompNode":
                     this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
@@ -95,7 +92,12 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.ProgNode":
                     this.print(localIndent, "(prog)");
                     break;
-
+                case "class com.p4.core.nodes.BoolDclNode":
+                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getId());
+                    break;
+                case "class com.p4.cores.node.BoolNode":
+                    this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
+                    break;
             }
 
             for(AstNode childNode : node.getChildren()) {
