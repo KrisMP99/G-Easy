@@ -93,7 +93,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(prog)");
                     break;
                 case "class com.p4.core.nodes.BoolDclNode":
-                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getId());
+                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getID());
                     break;
                 case "class com.p4.cores.node.BoolNode":
                     this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
