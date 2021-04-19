@@ -1,8 +1,6 @@
-package com.p4.core;
+package com.p4.core.symbolTable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Scope {
     private String scopeName;
@@ -10,10 +8,10 @@ public class Scope {
 
     // We use hashmaps to store our symbols and their attributes
     private HashMap<String, String> symbols = new HashMap<>();
-    private HashMap<String, String> params = new HashMap<>();
+    private Map<String, String> params = new LinkedHashMap<>();
 
     // Stores nested scopes
-    private List<Scope> scopeChildren = new ArrayList<>();
+    private final List<Scope> scopeChildren = new ArrayList<>();
 
 
     public Scope(String name) {
@@ -44,11 +42,19 @@ public class Scope {
         symbols.put(id, attribute);
     }
 
-    public HashMap<String, String> getParams() {
+    public Map<String, String> getParams() {
         return this.params;
     }
 
     public void addParams(String id, String attribute) {
         params.put(id, attribute);
+    }
+
+    public List<Scope> getScopeChildren() {
+        return scopeChildren;
+    }
+
+    public void addScopeChild(Scope scopeChild) {
+        scopeChildren.add(scopeChild);
     }
 }
