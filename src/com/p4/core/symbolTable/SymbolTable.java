@@ -52,7 +52,7 @@ public class SymbolTable {
         Scope scope = this.findScope(scopeName, globalScope);
 
         if (scope != null){
-            scopeStack.push(currentScope):
+            scopeStack.push(currentScope);
             currentScope = scope;
         }
     }
@@ -83,7 +83,7 @@ public class SymbolTable {
         return this.findScope(scopeName, globalScope);
     }
 
-    public SymbolAttribute lookupSymbol(String symbol){
+    public SymbolAttributes lookupSymbol(String symbol){
         Scope scope = currentScope;
 
         do {
@@ -101,11 +101,11 @@ public class SymbolTable {
         return null;
     }
 
-    public void insertSymbol(String symbol, SymbolAttribute attribute) {
+    public void insertSymbol(String symbol, SymbolAttributes attribute) {
         currentScope.getSymbols().put(symbol, attribute);
     }
 
-    public void insertParam(String paramId, SymbolAttribute attribute) {
+    public void insertParam(String paramId, SymbolAttributes attribute) {
         currentScope.getParams().put(paramId, attribute);
     }
 
