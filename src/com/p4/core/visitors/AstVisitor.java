@@ -340,9 +340,21 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitActual_param(GEasyParser.Actual_paramContext ctx) {
-        String ID = ctx.ID().toString();
+        ActualParamNode actualParamNode;
 
-        ActualParamNode actualParamNode = new ActualParamNode(ID);
+        if(ctx.XCOORD() != null) {
+            actualParamNode = new ActualParamNode(ctx.XCOORD().toString());
+        }
+        else if(ctx.YCOORD() != null) {
+            actualParamNode = new ActualParamNode(ctx.YCOORD().toString());
+        }
+        else if (ctx.ID() != null) {
+            actualParamNode = new ActualParamNode(ctx.ID().toString());
+        }
+        else {
+            return null;
+        }
+
 
         int childCount = ctx.getChildCount();
 

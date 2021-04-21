@@ -52,4 +52,9 @@ public class SymbolAttributes {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "type: " + type + " datatype: " + dataType + " scope: " + scope + " arrayLength: " + arrayLength;
+    }
 }
