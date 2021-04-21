@@ -90,24 +90,30 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-        SymbolAttributes attributes = new SymbolAttributes("function call");
-
         this.visitChildren(node);
     }
 
     @Override
     public void visit(AssignNode node) {
-
+        this.visitChildren(node);
     }
 
+
+    // Missing a check for if the node already exists
     @Override
     public void visit(ArrayDclNode node) {
+        this.visitChildren(node);
+
+        int arrayLength = node.children.size();
+
+        SymbolAttributes attributes = new SymbolAttributes("array", node.getType(), arrayLength);
+        symbolTable.insertSymbol(node.getID(), attributes);
+
     }
 
-    //It's possible that this visit is not needed and therefore should be deleted
     @Override
     public void visit(VarDclNode node) {
-        this.visitChildren(node);
+
     }
 
     @Override
@@ -231,6 +237,5 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(LineCommentNode node) {
         this.visitChildren(node);
-
     }
 }
