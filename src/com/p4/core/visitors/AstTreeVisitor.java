@@ -84,7 +84,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(Iterative) " + ((IterativeNode)node).getType() + " " + ((IterativeNode)node).getFor_to());
                     break;
                 case "class com.p4.core.nodes.FuncDclNode":
-                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getType() + " " + ((FuncDclNode)node).getID());
+                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + ((FuncDclNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ReturnExprNode":
                     this.print(localIndent, "(ReturnExpr)");

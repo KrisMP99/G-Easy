@@ -3,6 +3,9 @@ package com.p4.core.visitors;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
+import jdk.incubator.foreign.LibraryLookup;
+
+import javax.swing.plaf.synth.SynthButtonUI;
 
 public class SymbolTableVisitor implements INodeVisitor {
     SymbolTable symbolTable;
@@ -90,18 +93,24 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-        SymbolAttributes attributes = new SymbolAttributes("function call", );
-
         this.visitChildren(node);
     }
 
     @Override
     public void visit(AssignNode node) {
-
+        this.visitChildren(node);
     }
 
+
+    // Missing a check for if the node already exists
     @Override
     public void visit(ArrayDclNode node) {
+        this.visitChildren(node);
+
+        int arrayLength = node.children.size();
+
+        SymbolAttributes attributes = new SymbolAttributes("array", node.getType(), arrayLength);
+        symbolTable.insertSymbol(node.getID(), attributes);
 
     }
 
