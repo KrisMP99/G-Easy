@@ -21,13 +21,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(PosDclNode node) {
         declareVarNode(node);
-
     }
 
     @Override
     public void visit(BoolDclNode node) {
         declareVarNode(node);
-
     }
 
     @Override
@@ -65,22 +63,36 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ProgNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(DclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(FuncDclNode node) {
+        // Enter if the function is already declared
+        if(symbolTable.lookupSymbol(node.getID()) != null) {
+            // Error handling here ...
+        }
 
+        // Create the function and add it to the symbol table
+        SymbolAttributes attributes = new SymbolAttributes("function", node.getReturnType());
+        symbolTable.insertSymbol(node.getID(), attributes);
+
+        // Add the function's scope and its children
+        symbolTable.addScope(node.getScopeHash());
+        this.visitChildren(node);
+        symbolTable.leaveScope();
     }
 
     @Override
     public void visit(FuncCallNode node) {
+        SymbolAttributes attributes = new SymbolAttributes("function call", );
 
+        this.visitChildren(node);
     }
 
     @Override
