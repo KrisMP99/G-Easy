@@ -90,7 +90,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-        SymbolAttributes attributes = new SymbolAttributes("function call", );
+        SymbolAttributes attributes = new SymbolAttributes("function call");
 
         this.visitChildren(node);
     }
@@ -102,116 +102,134 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayDclNode node) {
-
     }
 
+    //It's possible that this visit is not needed
     @Override
     public void visit(VarDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(PosAssignNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ArrayAccessNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(SelectionNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IterativeNode node) {
-
+        symbolTable.addScope(node.getNodesHash());
+        this.visitChildren(node);
+        symbolTable.leaveScope(node.getNodesHash());
     }
 
     @Override
     public void visit(LogicalExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(FormalParamNode node) {
+        String scopeName = symbolTable.getCurrentScope().getScopeName();
 
+        for (AstNode child : node.getChildren()){
+            IDNode param = (IDNode)child;
+            SymbolAttributes attributes = new SymbolAttributes("Formal Param", param.type);
+            attributes.setScope(scopeName);
+            symbolTable.insertParam(param.getID(), attributes);
+        }
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ActualParamNode node) {
+        String scopeName = symbolTable.getCurrentScope().getScopeName();
 
+        for (AstNode child : node.getChildren()){
+            IDNode param = (IDNode)child;
+            SymbolAttributes attributes = new SymbolAttributes("Actual Param", param.type);
+            attributes.setScope(scopeName);
+            symbolTable.insertParam(param.getID(), attributes);
+        }
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BlockNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ReturnExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ArithmeticNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(CompNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BoolExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(CompExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IDNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BoolNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IntNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(DoubleNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(PosNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(LogicalOPNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(LineCommentNode node) {
-
+        this.visitChildren(node);
     }
 }
