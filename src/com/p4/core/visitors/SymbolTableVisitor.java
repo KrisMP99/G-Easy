@@ -104,7 +104,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(ArrayDclNode node) {
     }
 
-    //It's possible that this visit is not needed
+    //It's possible that this visit is not needed and therefore should be deleted
     @Override
     public void visit(VarDclNode node) {
         this.visitChildren(node);
@@ -231,5 +231,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(LineCommentNode node) {
         this.visitChildren(node);
+
     }
 }
