@@ -25,7 +25,7 @@ public class SymbolAttributes {
         return this.scope;
     }
 
-    public void setScope() {
+    public void setScope(String scope) {
         this.scope = scope;
     }
 
