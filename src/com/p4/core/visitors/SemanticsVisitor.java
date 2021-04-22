@@ -1,11 +1,20 @@
 package com.p4.core.visitors;
 
 import com.p4.core.nodes.*;
+import com.p4.core.symbolTable.SymbolTable;
 
 public class SemanticsVisitor implements INodeVisitor {
+    SymbolTable symbolTable;
+
+    public SemanticsVisitor(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
+
     @Override
     public void visitChildren(AstNode node) {
-
+        for (AstNode child : node.children) {
+            child.accept(this);
+        }
     }
 
     @Override
