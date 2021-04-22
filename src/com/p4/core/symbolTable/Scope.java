@@ -1,16 +1,14 @@
-package com.p4.core;
+package com.p4.core.symbolTable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Scope {
     private String scopeName;
     private Scope parentScope;
 
     // We use hashmaps to store our symbols and their attributes
-    private HashMap<String, String> symbols = new HashMap<>();
-    private HashMap<String, String> params = new HashMap<>();
+    private HashMap<String, SymbolAttributes> symbols = new HashMap<>();
+    private Map<String, SymbolAttributes> params = new LinkedHashMap<>();
 
     // Stores nested scopes
     private List<Scope> scopeChildren = new ArrayList<>();
@@ -36,19 +34,27 @@ public class Scope {
         this.parentScope = parentScope;
     }
 
-    public HashMap<String, String> getSymbols() {
+    public HashMap<String, SymbolAttributes> getSymbols() {
         return this.symbols;
     }
 
-    public void setSymbol(String id, String attribute) {
+    public void setSymbol(String id, SymbolAttributes attribute) {
         symbols.put(id, attribute);
     }
 
-    public HashMap<String, String> getParams() {
+    public Map<String, SymbolAttributes> getParams() {
         return this.params;
     }
 
-    public void addParams(String id, String attribute) {
+    public void addParams(String id, SymbolAttributes attribute) {
         params.put(id, attribute);
+    }
+
+    public List<Scope> getScopeChildren() {
+        return scopeChildren;
+    }
+
+    public void addScopeChild(Scope scopeChild) {
+        scopeChildren.add(scopeChild);
     }
 }

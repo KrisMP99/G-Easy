@@ -340,9 +340,21 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitActual_param(GEasyParser.Actual_paramContext ctx) {
-        String ID = ctx.ID().toString();
+        ActualParamNode actualParamNode;
 
-        ActualParamNode actualParamNode = new ActualParamNode(ID);
+        if(ctx.XCOORD() != null) {
+            actualParamNode = new ActualParamNode(ctx.XCOORD().toString());
+        }
+        else if(ctx.YCOORD() != null) {
+            actualParamNode = new ActualParamNode(ctx.YCOORD().toString());
+        }
+        else if (ctx.ID() != null) {
+            actualParamNode = new ActualParamNode(ctx.ID().toString());
+        }
+        else {
+            return null;
+        }
+
 
         int childCount = ctx.getChildCount();
 
@@ -580,18 +592,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitFunc_dcl(GEasyParser.Func_dclContext ctx) {
-        String id = ctx.ID().toString();
+        String ID = ctx.ID().toString();
 
         FuncDclNode funcDclNode;
 
         if(ctx.TYPE() != null) {
-            funcDclNode = new FuncDclNode(id, ctx.TYPE().toString());
+            funcDclNode = new FuncDclNode(ID, ctx.TYPE().toString());
         }
         else if(ctx.VOID() != null) {
-            funcDclNode = new FuncDclNode(id, ctx.VOID().toString());
+            funcDclNode = new FuncDclNode(ID, ctx.VOID().toString());
         }
         else if(ctx.BOOL_T() != null) {
-            funcDclNode = new FuncDclNode(id, ctx.BOOL_T().toString());
+            funcDclNode = new FuncDclNode(ID, ctx.BOOL_T().toString());
         } else {
             return null;
         }
