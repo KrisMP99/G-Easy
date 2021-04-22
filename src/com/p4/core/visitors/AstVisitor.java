@@ -578,9 +578,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         if(child != null) {
             switch (child.getText()) {
                 case "true":
-                    return new BoolNode(true);
+                    return new BoolNode(true, "bool");
                 case "false":
-                    return new BoolNode(false);
+                    return new BoolNode(false, "bool");
                 default:
                     return null;
             }
@@ -673,7 +673,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return returnExprNode;
         }
         else if (ctx.BOOL() != null) {
-            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()));
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()), "bool");
             returnExprNode.children.add(boolNode);
             return returnExprNode;
         }

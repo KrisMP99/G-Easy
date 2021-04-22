@@ -10,6 +10,7 @@ import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 import com.p4.core.visitors.AstTreeVisitor;
 import com.p4.core.visitors.AstVisitor;
+import com.p4.core.visitors.SemanticsVisitor;
 import com.p4.core.visitors.SymbolTableVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -37,6 +38,9 @@ public class Main {
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable);
         symbolTableVisitor.visit(ast);
 
+        //Semantic visitor
+        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable);
+        semanticsVisitor.visit(ast);
 
         // Text in console
         System.out.println("ParseTree: ");
@@ -46,5 +50,4 @@ public class Main {
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();
     }
-
 }
