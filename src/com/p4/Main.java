@@ -40,26 +40,22 @@ public class Main {
         // symboltable
         HashMap<String, SymbolAttributes> symbols = symbolTable.getCurrentScope().getSymbols();
         symbols.entrySet().forEach(entry -> {
-            System.out.println("Current scope: ");
+            System.out.println(symbolTable.getCurrentScope().getScopeName());
             System.out.println(entry.getKey() + " " + entry.getValue());
 
 
         });
 
         List<Scope> scopeChildren = symbolTable.getCurrentScope().getScopeChildren();
-        System.out.println(scopeChildren.size());
 
-        String scopeChildName = scopeChildren.get(0).getScopeName();
+        for(Scope scope : scopeChildren) {
+            HashMap<String, SymbolAttributes> childSymbols =  symbolTable.lookupScope(scope.getScopeName()).getSymbols();
 
-        Scope scope = symbolTable.lookupScope(scopeChildName);
-
-        HashMap<String, SymbolAttributes> childSymbols = scope.getSymbols();
-
-        childSymbols.entrySet().forEach(childEntry -> {
-            System.out.print("Child scope: ");
-            System.out.println(childEntry.getKey() + " " + childEntry.getValue());
-        });
-
+            childSymbols.entrySet().forEach(childEntry -> {
+                System.out.println(scope.getScopeName());
+                System.out.println(childEntry.getKey() + " " + childEntry.getValue());
+            });
+        }
 
 
 

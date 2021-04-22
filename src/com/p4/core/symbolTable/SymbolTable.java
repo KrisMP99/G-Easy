@@ -13,7 +13,7 @@ public class SymbolTable {
 
     public SymbolTable() {
         globalScope = new Scope("global");
-        currentScope = new Scope("local");
+        currentScope = globalScope;
     }
 
     public Scope getCurrentScope() {
@@ -69,9 +69,8 @@ public class SymbolTable {
         for (Scope childScope : currentScope.getScopeChildren()) {
             scope = this.findScope(scopeName, childScope);
 
-            //Enter if the scope we're looking for is found
-            if (scope != null){
-                return scope;
+            if(scope != null) {
+                break;
             }
         }
 

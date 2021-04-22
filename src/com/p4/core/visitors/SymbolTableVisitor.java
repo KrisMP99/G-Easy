@@ -45,6 +45,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     private void declareVarNode(VarDclNode<?> node) {
         if(!isNodeDeclared(node)) {
             SymbolAttributes attributes = new SymbolAttributes("dcl", node.type);
+            attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);
         }
 
@@ -80,6 +81,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         // Create the function and add it to the symbol table
         SymbolAttributes attributes = new SymbolAttributes("function", node.getReturnType());
+        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
         symbolTable.insertSymbol(node.getID(), attributes);
 
         // Add the function's scope and its children
@@ -107,6 +109,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         int arrayLength = node.children.size();
 
         SymbolAttributes attributes = new SymbolAttributes("array", node.getType(), arrayLength);
+        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
         symbolTable.insertSymbol(node.getID(), attributes);
 
     }

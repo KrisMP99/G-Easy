@@ -4,7 +4,7 @@ public class SymbolAttributes {
     private int arrayLength;
     private String type;        // func, dcl, param, array
     private String dataType;    // int, double, bool, pos
-    private String scope;       // used in for, if/else and func dcl, pos?
+    private String scopeName;
 
 
     // Used for dcls
@@ -22,11 +22,11 @@ public class SymbolAttributes {
 
 
     public String getScope() {
-        return this.scope;
+        return this.scopeName;
     }
 
     public void setScope(String scope) {
-        this.scope = scope;
+        this.scopeName = scope;
     }
 
     public void setArrayLength(int arrayLength) {
@@ -55,6 +55,6 @@ public class SymbolAttributes {
 
     @Override
     public String toString() {
-        return "type: " + type + " datatype: " + dataType + " scope: " + scope + " arrayLength: " + arrayLength;
+        return "type: " + type + " datatype: " + dataType + " scope: " + scopeName + " arrayLength: " + arrayLength;
     }
 }
