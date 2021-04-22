@@ -11,7 +11,7 @@ public class Scope {
     private Map<String, SymbolAttributes> params = new LinkedHashMap<>();
 
     // Stores nested scopes
-    private final List<Scope> scopeChildren = new ArrayList<>();
+    private List<Scope> scopeChildren = new ArrayList<>();
 
 
     public Scope(String name) {

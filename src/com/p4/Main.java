@@ -5,6 +5,7 @@ import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
 import com.p4.core.nodes.AstNode;
 import com.p4.core.nodes.ProgNode;
+import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 import com.p4.core.visitors.AstTreeVisitor;
@@ -17,6 +18,7 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -36,13 +38,29 @@ public class Main {
         symbolTableVisitor.visit(ast);
 
         // symboltable
-        System.out.println("Symbol table: ");
-        System.out.println(symbolTable.toString());
-
         HashMap<String, SymbolAttributes> symbols = symbolTable.getCurrentScope().getSymbols();
         symbols.entrySet().forEach(entry -> {
+            System.out.println("Current scope: ");
             System.out.println(entry.getKey() + " " + entry.getValue());
+
+
         });
+
+        List<Scope> scopeChildren = symbolTable.getCurrentScope().getScopeChildren();
+        System.out.println(scopeChildren.size());
+
+        String scopeChildName = scopeChildren.get(0).getScopeName();
+
+        Scope scope = symbolTable.lookupScope(scopeChildName);
+
+        HashMap<String, SymbolAttributes> childSymbols = scope.getSymbols();
+
+        childSymbols.entrySet().forEach(childEntry -> {
+            System.out.print("Child scope: ");
+            System.out.println(childEntry.getKey() + " " + childEntry.getValue());
+        });
+
+
 
 
         // Text in console

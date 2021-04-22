@@ -1,3 +1,5 @@
 for (x to 10) {
-    int b = x + 2;
+    int abc = x + 2;
 }
+
+int t = 2;

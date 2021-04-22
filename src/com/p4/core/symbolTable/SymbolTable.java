@@ -71,11 +71,10 @@ public class SymbolTable {
 
             //Enter if the scope we're looking for is found
             if (scope != null){
-                break;
+                return scope;
             }
         }
 
-        //If none was found, returns null
         return scope;
     }
 
