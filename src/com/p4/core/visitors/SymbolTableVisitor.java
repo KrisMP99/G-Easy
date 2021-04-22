@@ -31,13 +31,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(IntDclNode node) {
         declareVarNode(node);
-
     }
 
     @Override
     public void visit(DoubleDclNode node) {
         declareVarNode(node);
-
     }
 
 
@@ -48,7 +46,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);
         }
-
     }
 
     private boolean isNodeDeclared(VarDclNode<?> node) {
@@ -57,7 +54,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             // Error handling here...
             return true;
         }
-
         return false;
     }
 

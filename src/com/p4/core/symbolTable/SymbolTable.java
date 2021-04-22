@@ -7,9 +7,7 @@ import java.util.Stack;
 public class SymbolTable {
     private Scope currentScope;
     final private Scope globalScope;
-    final private Stack<Scope> scopeStack = new Stack<Scope>();
-    public ArrayList<String> declaredFunctions = new ArrayList<>();
-    public ArrayList<String> calledFunctions = new ArrayList<>();
+    final private Stack<Scope> scopeStack = new Stack<>();
 
     public SymbolTable() {
         globalScope = new Scope("global");
@@ -105,9 +103,5 @@ public class SymbolTable {
 
     public void insertParam(String paramId, SymbolAttributes attribute) {
         currentScope.getParams().put(paramId, attribute);
-    }
-
-    public boolean isFunctionsAndLoopDefined() {
-        return (declaredFunctions.contains("function") && declaredFunctions.contains("loop"));
     }
 }

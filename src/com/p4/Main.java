@@ -37,27 +37,6 @@ public class Main {
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable);
         symbolTableVisitor.visit(ast);
 
-        // symboltable
-        HashMap<String, SymbolAttributes> symbols = symbolTable.getCurrentScope().getSymbols();
-        symbols.entrySet().forEach(entry -> {
-            System.out.println(symbolTable.getCurrentScope().getScopeName());
-            System.out.println(entry.getKey() + " " + entry.getValue());
-
-
-        });
-
-        List<Scope> scopeChildren = symbolTable.getCurrentScope().getScopeChildren();
-
-        for(Scope scope : scopeChildren) {
-            HashMap<String, SymbolAttributes> childSymbols =  symbolTable.lookupScope(scope.getScopeName()).getSymbols();
-
-            childSymbols.entrySet().forEach(childEntry -> {
-                System.out.println(scope.getScopeName());
-                System.out.println(childEntry.getKey() + " " + childEntry.getValue());
-            });
-        }
-
-
 
         // Text in console
         System.out.println("ParseTree: ");
@@ -67,4 +46,5 @@ public class Main {
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();
     }
+
 }
