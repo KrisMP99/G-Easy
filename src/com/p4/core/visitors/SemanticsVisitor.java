@@ -39,7 +39,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
             if (funcReturnType != "void"){
 
-                for (AstNode blockNode : node.children){
+                for (AstNode blockNode : node.children.get(0).children){
                     if (blockNode instanceof ReturnExprNode){
                         if (!isEqualFunctionType(funcReturnType, blockNode.type)){
                             System.out.println("Wrong return type");
@@ -79,77 +79,78 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncCallNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(AssignNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ArrayDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(PosDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(VarDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(PosAssignNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ArrayAccessNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(SelectionNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IterativeNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(LogicalExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(FormalParamNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ActualParamNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BlockNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ReturnExprNode node) {
-
+        this.visitChildren(node);
+        node.type = node.children.get(0).type;
     }
 
     @Override
@@ -159,22 +160,22 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(CompNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BoolDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(BoolExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(CompExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
