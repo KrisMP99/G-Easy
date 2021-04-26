@@ -81,7 +81,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.insertSymbol(node.getID(), attributes);
 
         // Add the function's scope and its children
-        symbolTable.addScope(node.getScopeHash());
+        symbolTable.addScope(node.getNodesHash());
         this.visitChildren(node);
         symbolTable.leaveScope();
     }

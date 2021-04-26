@@ -98,6 +98,9 @@ public class AstTreeVisitor {
                 case "class com.p4.cores.node.BoolNode":
                     this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
                     break;
+                case "class com.p4.core.nodes.FormalParamNode":
+                    this.print(localIndent, "(Formal Param)");
+                    break;
             }
 
             for(AstNode childNode : node.getChildren()) {

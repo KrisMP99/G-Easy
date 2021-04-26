@@ -27,7 +27,8 @@ public class FuncDclNode extends AstNode {
         this.returnType = returnType;
     }
 
-    public String getScopeHash() {
+    @Override
+    public String getNodesHash() {
         return "Func: " + id;
     }
 

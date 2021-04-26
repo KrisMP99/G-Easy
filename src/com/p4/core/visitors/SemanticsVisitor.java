@@ -1,7 +1,11 @@
 package com.p4.core.visitors;
 
 import com.p4.core.nodes.*;
+import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
     SymbolTable symbolTable;
@@ -32,12 +36,15 @@ public class SemanticsVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
+        // Get the return type of the function
         String funcReturnType = symbolTable.lookupSymbol(node.getID()).getDataType();
 
         //Checks if the return type is a valid
         if (isValidReturnType(funcReturnType)){
 
+            // If the returntype is void, a return statement is not needed.
             if (funcReturnType != "void"){
+
 
                 for (AstNode blockNode : node.children.get(0).children){
                     if (blockNode instanceof ReturnExprNode){
@@ -115,6 +122,7 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(ExprNode node) {
         this.visitChildren(node);
+        node.type = node.children.get(0).type;
     }
 
     @Override
@@ -180,7 +188,10 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(IDNode node) {
-        this.visitChildren(node);
+        Map<String, SymbolAttributes> params = symbolTable.getCurrentScope().getParams();
+        SymbolAttributes paramAttributes = params.get(node.id);
+        node.type = paramAttributes.getDataType();
+
     }
 
     @Override
