@@ -101,6 +101,21 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.FormalParamNode":
                     this.print(localIndent, "(Formal Param)");
                     break;
+                case "class com.p4.core.nodes.AddNode":
+                    this.print(localIndent, "(Add)");
+                    break;
+                case "class com.p4.core.nodes.SubNode":
+                    this.print(localIndent, "(Sub)");
+                    break;
+                case "class com.p4.core.nodes.ModNode":
+                    this.print(localIndent, "(Mod)");
+                    break;
+                case "class com.p4.core.nodes.MultNode":
+                    this.print(localIndent, "(Mult)");
+                    break;
+                case "class com.p4.core.nodes.DivNode":
+                    this.print(localIndent, "(Div)");
+                    break;
             }
 
             for(AstNode childNode : node.getChildren()) {

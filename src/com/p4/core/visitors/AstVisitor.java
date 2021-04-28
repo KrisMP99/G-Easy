@@ -259,55 +259,67 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     private AstNode visitExprChildren(GEasyParser.ExprContext parent, ParseTree child, int operatorIndex){
+        AstNode node;
 
+        int termIndex = (operatorIndex - 1) / 2;
+        int nextOperator = operatorIndex + 2;
 
+        switch(child.getText()) {
+            case "+":
+                node = new AddNode();
+                break;
+            case "-":
+                node = new SubNode();
+                break;
+            case "*":
+                node = new MultNode();
+                break;
+            case "/":
+                node = new DivNode();
+                break;
+            case "%":
+                node = new ModNode();
+                break;
+            default:
+                return null;
+        }
 
-        return null;
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visitTerm(parent.term(termIndex)));
+            node.children.add(visitExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+
+        }
+        else {
+            node.children.add(visitTerm(parent.term(termIndex)));
+            node.children.add(visitTerm(parent.term(termIndex + 1)));
+        }
+
+        return node;
     }
 
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
-        // Create empty ExprNode to add children to later
-        ExprNode exprNode = new ExprNode();
-
-
-
-
-
-
-
-        // Go through all the children of our expression
-        // First we get the number of children, and then use it in the for-loop
-        int childCount = ctx.getChildCount();
-
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            // We create a ParseTree from the child
-            // We do this, so we travese it's children easily
-            ParseTree child = ctx.getChild(childIndex);
-
-            // Since we're not interested in all of the children in the expression, we only deal with those we neeed in our AST
-            // In our case, it's the non-terminals: val, array_access and expr.
-            if(child instanceof GEasyParser.TermContext)  {
-                // We create a new AstNode where we visit the child
-                // and add it as a child
-                AstNode childNode = visit(child);
-                exprNode.children.add(childNode);
-
-                // We also need to grab all the arithmetic operators, as we need them when type checking
-                // We add 1 to childIndex as, from our grammar, we know a value/array_access always will be followed by an arithmetic operator
-                if(childIndex + 1 < childCount) {
-                    // We use the helper function 'getArithmeticOPNode' to retrieve the operator we need
-                    ParseTree nextChild = ctx.getChild(childIndex + 1);
-                    AstNode arithmNode = VisitArithmeticOPNode(nextChild);
-
-                    // If there is an arithmetic operator, we add it as a child to expr
-                    if(arithmNode != null) {
-                        exprNode.children.add(arithmNode);
-                    }
-                }
-            }
+        // only one term
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.term(0));
         }
-        return exprNode;
+        else {
+            // Multiple terms
+            return visitExprChildren(ctx, ctx.getChild(1),1);
+
+        }
+    }
+
+    @Override
+    public AstNode visitTerm(GEasyParser.TermContext ctx){
+        if(ctx.val_expr() != null) {
+            return visit(ctx.val_expr());
+        }
+        else if(ctx.expr() != null) {
+            return visit(ctx.expr());
+        }
+
+        return null;
     }
 
     @Override
@@ -326,26 +338,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     }
 
-    // Helper function to get the aritmethic operator
-    private AstNode VisitArithmeticOPNode(ParseTree child) {
-        if(child != null) {
-            switch(child.getText()) {
-                case "%":
-                    return new ArithmeticNode(GEasyParser.MOD);
-                case "+":
-                    return new ArithmeticNode(GEasyParser.PLUS);
-                case "-":
-                    return new ArithmeticNode(GEasyParser.MINUS);
-                case "*":
-                    return new ArithmeticNode(GEasyParser.MULT);
-                case "/":
-                    return new ArithmeticNode(GEasyParser.DIV);
-                default:
-                    return null;
-            }
-        }
-        return null;
-    }
 
     @Override
     public AstNode visitFunc_call(GEasyParser.Func_callContext ctx) {
@@ -485,28 +477,29 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return iterativeNode;
     }
 
+    private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
+
+
+
+        return null;
+    }
+
     @Override
     public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
-        LogicalExprNode logicalExprNode = new LogicalExprNode();
-
-        int childCount = ctx.getChildCount();
-
-        // Go through all the children
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if((child instanceof GEasyParser.Logical_exprContext) || (child instanceof GEasyParser.Comp_exprContext) || (child instanceof GEasyParser.Bool_exprContext)) {
-                AstNode childNode = visit(child);
-                logicalExprNode.children.add(childNode);
+        // only one child
+        if(ctx.getChildCount() == 1) {
+            if(ctx.comp_expr()!= null) {
+                return visit(ctx.comp_expr());
             }
-
-            // If there is a comp operator we add it
-            if(visitLogicalOperatorNode(child) != null) {
-                logicalExprNode.children.add(visitLogicalOperatorNode(child));
+            else if(ctx.bool_expr() != null) {
+                return visit(ctx.bool_expr());
             }
+        } else {
+            return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
         }
 
-        return logicalExprNode;
+
+        return null;
     }
 
     private AstNode visitLogicalOperatorNode(ParseTree child) {

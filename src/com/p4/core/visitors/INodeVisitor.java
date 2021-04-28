@@ -44,6 +44,12 @@ public interface INodeVisitor {
     void visit(PosNode node);
     void visit(LogicalOPNode node);
 
+    void visit(AddNode node);
+    void visit(SubNode node);
+    void visit(DivNode node);
+    void visit(MultNode node);
+    void visit(ModNode node);
+
     void visit(LineCommentNode node);
 
 }

@@ -230,6 +230,31 @@ public class SemanticsVisitor implements INodeVisitor {
 
     }
 
+    @Override
+    public void visit(AddNode node) {
+
+    }
+
+    @Override
+    public void visit(SubNode node) {
+
+    }
+
+    @Override
+    public void visit(DivNode node) {
+
+    }
+
+    @Override
+    public void visit(MultNode node) {
+
+    }
+
+    @Override
+    public void visit(ModNode node) {
+
+    }
+
 
     //Not sure what to do here
     @Override

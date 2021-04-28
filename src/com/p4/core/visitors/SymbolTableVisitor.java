@@ -236,6 +236,31 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(AddNode node) {
+
+    }
+
+    @Override
+    public void visit(SubNode node) {
+
+    }
+
+    @Override
+    public void visit(DivNode node) {
+
+    }
+
+    @Override
+    public void visit(MultNode node) {
+
+    }
+
+    @Override
+    public void visit(ModNode node) {
+
+    }
+
+    @Override
     public void visit(LineCommentNode node) {
         this.visitChildren(node);
     }
