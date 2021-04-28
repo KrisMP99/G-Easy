@@ -24,6 +24,19 @@ class GEasyParserTest {
         assertTrue(f.getText().contains("1;"));
     }
 
+    @Test
+    public void testBoolDecl() {
+        var noParam = createParserNoError(Arrays.asList(
+                new TestToken("1", GEasyLexer.NUMBER),
+                new TestToken("+", GEasyLexer.ARITHMETIC_OP),
+                new TestToken("1", GEasyLexer.NUMBER),
+                new TestToken(";", GEasyLexer.SEMICOLON)
+        ));
+
+        var f = noParam.prog();
+        assertTrue(f.getText().contains("1+1;"));
+    }
+
     private GEasyParser createParserNoError(List<TestToken> tokens) {
         var ts = new ListTokenSource(tokens);
         var c = new CommonTokenStream(ts);

@@ -32,6 +32,38 @@ class GEasyLexerTest {
         Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(0).getType());
     }
 
+    @Test
+    public void testDouble() {
+        var tokens = getTokensFromText("1.1");
+
+        assertEquals(2, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(0).getType());
+    }
+
+    @Test
+    public void testExpression() {
+        var tokens = getTokensFromText("1+1");
+
+        assertEquals(4, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(0).getType());
+        Assertions.assertEquals(GEasyLexer.ARITHMETIC_OP, tokens.get(1).getType());
+        Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(2).getType());
+    }
+
+    @Test
+    public void testBoolDecl() {
+        var tokens = getTokensFromText("bool t = true");
+
+        assertEquals(8, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.BOOL_T, tokens.get(0).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(1).getType());
+        Assertions.assertEquals(GEasyLexer.ID, tokens.get(2).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(3).getType());
+        Assertions.assertEquals(GEasyLexer.ASSIGN_OP, tokens.get(4).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(5).getType());
+        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(6).getType());
+    }
+
     private List<Token> getTokensFromText(String txt) {
         CharStream charStream = CharStreams.fromString(txt);
         Lexer lexer = new GEasyLexer(charStream);
