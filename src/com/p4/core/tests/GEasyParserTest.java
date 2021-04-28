@@ -25,7 +25,7 @@ class GEasyParserTest {
     }
 
     @Test
-    public void testBoolDecl() {
+    public void testNumberExpr() {
         var noParam = createParserNoError(Arrays.asList(
                 new TestToken("1", GEasyLexer.NUMBER),
                 new TestToken("+", GEasyLexer.ARITHMETIC_OP),
@@ -35,6 +35,19 @@ class GEasyParserTest {
 
         var f = noParam.prog();
         assertTrue(f.getText().contains("1+1;"));
+    }
+
+    @Test
+    public void testEquals() {
+        var noParam = createParserNoError(Arrays.asList(
+                new TestToken("true", GEasyLexer.BOOL),
+                new TestToken("&&", GEasyLexer.AND),
+                new TestToken("true", GEasyLexer.BOOL),
+                new TestToken(";", GEasyLexer.SEMICOLON)
+        ));
+
+        var f = noParam.prog();
+        assertTrue(f.getText().contains("true&&true;"));
     }
 
     private GEasyParser createParserNoError(List<TestToken> tokens) {

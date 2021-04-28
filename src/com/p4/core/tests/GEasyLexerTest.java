@@ -51,18 +51,70 @@ class GEasyLexerTest {
     }
 
     @Test
-    public void testBoolDecl() {
-        var tokens = getTokensFromText("bool t = true");
+    public void testAnd() {
+        var tokens = getTokensFromText("&&");
 
-        assertEquals(8, tokens.size()); // includes EOF
-        Assertions.assertEquals(GEasyLexer.BOOL_T, tokens.get(0).getType());
-        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(1).getType());
-        Assertions.assertEquals(GEasyLexer.ID, tokens.get(2).getType());
-        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(3).getType());
-        Assertions.assertEquals(GEasyLexer.ASSIGN_OP, tokens.get(4).getType());
-        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(5).getType());
-        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(6).getType());
+        assertEquals(2, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.AND, tokens.get(0).getType());
     }
+
+    @Test
+    public void testOr() {
+        var tokens = getTokensFromText("||");
+
+        assertEquals(2, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.OR, tokens.get(0).getType());
+    }
+
+    @Test
+    public void testBoolExprAnd() {
+        var tokens = getTokensFromText("true && true");
+
+        assertEquals(6, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(0).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(1).getType());
+        Assertions.assertEquals(GEasyLexer.AND, tokens.get(2).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(3).getType());
+        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(4).getType());
+    }
+
+    @Test
+    public void testBoolExprOr() {
+        var tokens = getTokensFromText("true || true");
+
+        assertEquals(6, tokens.size()); // includes EOF
+        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(0).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(1).getType());
+        Assertions.assertEquals(GEasyLexer.OR, tokens.get(2).getType());
+        Assertions.assertEquals(GEasyLexer.WHITESPACE, tokens.get(3).getType());
+        Assertions.assertEquals(GEasyLexer.BOOL, tokens.get(4).getType());
+    }
+
+    @Test
+    public void testNumberAndBool_ExpectsFail() {
+        var tokens = getTokensFromText("1 && TRUE");
+
+        assertEquals(6, tokens.size()); // includes EOF
+        Assertions.fail();
+    }
+
+    @Test
+    public void testLtAndLt_ExpectsFail() {
+        var tokens = getTokensFromText("< && <");
+
+        assertEquals(6, tokens.size()); // includes EOF
+        Assertions.fail();
+    }
+
+    @Test
+    public void testRandomInput_ExpectsFail() {
+        var tokens = getTokensFromText("<>21321zz>");
+
+        assertEquals(6, tokens.size()); // includes EOF
+        Assertions.fail();
+    }
+
+
 
     private List<Token> getTokensFromText(String txt) {
         CharStream charStream = CharStreams.fromString(txt);
