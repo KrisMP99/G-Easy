@@ -249,6 +249,104 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
+    public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
+        // only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
+        }
+        else {
+            return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
+        }
+    }
+
+    private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
+        LogicalExprNode node = new LogicalExprNode();
+
+        int nextOperator = operatorIndex + 2;
+
+        switch(child.getText()) {
+            case "&&":
+                node.setToken(GEasyParser.AND);
+                break;
+            case "||":
+                node.setToken(GEasyParser.OR);
+                break;
+            case "<":
+                node.setToken(GEasyParser.LESS_THAN);
+                break;
+            case ">":
+                node.setToken(GEasyParser.GREATER_THAN);
+                break;
+            case "<=":
+                node.setToken(GEasyParser.LESS_THAN_EQ);
+                break;
+            case ">=":
+                node.setToken(GEasyParser.GREATER_THAN_EQ);
+                break;
+            case "==":
+                node.setToken(GEasyParser.IS_EQ);
+                break;
+            case "!=":
+                node.setToken(GEasyParser.NOT_EQ);
+                break;
+            default:
+                return null;
+        }
+
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
+            node.children.add(visitLogicalExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+
+        }
+        else {
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
+            node.children.add(visit(parent.getChild(operatorIndex + 1)));
+        }
+
+        return node;
+    }
+
+    @Override
+    public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
+
+        // If there is only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
+        }
+
+        CompExprNode compExprNode = new CompExprNode();
+
+        switch (ctx.getChild(1).getText()) {
+            case "<":
+                compExprNode.setToken(GEasyParser.LESS_THAN);
+                break;
+            case ">":
+                compExprNode.setToken(GEasyParser.GREATER_THAN);
+                break;
+            case "<=":
+                compExprNode.setToken(GEasyParser.LESS_THAN_EQ);
+                break;
+            case ">=":
+                compExprNode.setToken(GEasyParser.GREATER_THAN_EQ);
+                break;
+            case "==":
+                compExprNode.setToken(GEasyParser.IS_EQ);
+                break;
+            case "!=":
+                compExprNode.setToken(GEasyParser.NOT_EQ);
+                break;
+            default:
+                return null;
+        }
+
+        // Add the children
+        compExprNode.children.add(visit(ctx.getChild(0)));
+        compExprNode.children.add(visit(ctx.getChild(2)));
+
+        return compExprNode;
+    }
+
+    @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
         // only one term
         if(ctx.getChildCount() == 1) {
@@ -325,9 +423,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         return null;
-
     }
-
 
     @Override
     public AstNode visitFunc_call(GEasyParser.Func_callContext ctx) {
@@ -465,167 +561,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         return iterativeNode;
-    }
-
-
-    @Override
-    public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
-        // only one child
-        if(ctx.getChildCount() == 1) {
-            return visit(ctx.getChild(0));
-        }
-        else {
-            return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
-        }
-    }
-
-    private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
-        LogicalExprNode node = new LogicalExprNode();
-
-        int termIndex = (operatorIndex - 1) / 2;
-        int nextOperator = operatorIndex + 2;
-
-        switch(child.getText()) {
-            case "&&":
-                node.setToken(GEasyParser.AND);
-                break;
-            case "||":
-                node.setToken(GEasyParser.OR);
-                break;
-            case "<":
-                node.setToken(GEasyParser.LESS_THAN);
-                break;
-            case ">":
-                node.setToken(GEasyParser.GREATER_THAN);
-                break;
-            case "<=":
-                node.setToken(GEasyParser.LESS_THAN_EQ);
-                break;
-            case ">=":
-                node.setToken(GEasyParser.GREATER_THAN_EQ);
-                break;
-            case "==":
-                node.setToken(GEasyParser.IS_EQ);
-                break;
-            case "!=":
-                node.setToken(GEasyParser.NOT_EQ);
-                break;
-            default:
-                return null;
-        }
-
-        if(parent.getChild(nextOperator) != null) {
-            node.children.add(visit(parent.getChild(operatorIndex - 1)));
-            node.children.add(visitLogicalExprChildren(parent, parent.getChild(nextOperator), nextOperator));
-
-        }
-        else {
-            node.children.add(visit(parent.getChild(operatorIndex - 1)));
-            node.children.add(visit(parent.getChild(operatorIndex + 1)));
-        }
-
-        return node;
-    }
-
-    @Override
-    public AstNode visitLogical_term(GEasyParser.Logical_termContext ctx){
-        if(ctx.logical_val() != null) {
-            return visit(ctx.logical_val());
-        }
-        else if(ctx.logical_expr() != null) {
-            return visit(ctx.logical_expr());
-        }
-        return null;
-    }
-
-    @Override
-    public AstNode visitLogical_val(GEasyParser.Logical_valContext ctx) {
-        if(ctx.comp_expr() != null) {
-            return visit(ctx.comp_expr());
-        }
-        else if(ctx.bool_expr() != null) {
-            return visit(ctx.bool_expr());
-        }
-        return null;
-    }
-
-    @Override
-    public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
-        CompExprNode compExprNode = new CompExprNode();
-
-        switch (ctx.getChild(1).getText()) {
-            case "<":
-                compExprNode.setToken(GEasyParser.LESS_THAN);
-                break;
-            case ">":
-                compExprNode.setToken(GEasyParser.GREATER_THAN);
-                break;
-            case "<=":
-                compExprNode.setToken(GEasyParser.LESS_THAN_EQ);
-                break;
-            case ">=":
-                compExprNode.setToken(GEasyParser.GREATER_THAN_EQ);
-                break;
-            case "==":
-                compExprNode.setToken(GEasyParser.IS_EQ);
-                break;
-            case "!=":
-                compExprNode.setToken(GEasyParser.NOT_EQ);
-                break;
-            default:
-                return null;
-        }
-
-        // Add the children
-        compExprNode.children.add(visit(ctx.getChild(0)));
-        compExprNode.children.add(visit(ctx.getChild(2)));
-
-        return compExprNode;
-    }
-
-    @Override
-    public AstNode visitBool_expr(GEasyParser.Bool_exprContext ctx) {
-        BoolExprNode boolExprNode = new BoolExprNode();
-
-        int childCount = ctx.getChildCount();
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if(visitBoolNode(child) != null) {
-                AstNode childNode = visitBoolNode(child);
-                boolExprNode.children.add(childNode);
-            }
-            else if(visitIDNode(child) != null) {
-                boolExprNode.children.add(visitIDNode(child));
-            }
-        }
-        // error
-        return boolExprNode;
-    }
-
-    private AstNode visitIDNode(ParseTree child) {
-        if(child != null) {
-            return new IDNode(child.getText());
-        }
-
-        // error
-        return null;
-    }
-
-    private AstNode visitBoolNode(ParseTree child) {
-        if(child != null) {
-            switch (child.getText()) {
-                case "true":
-                    return new BoolNode(true, "bool");
-                case "false":
-                    return new BoolNode(false, "bool");
-                default:
-                    return null;
-            }
-        }
-
-        // error
-        return null;
     }
 
     @Override

@@ -71,6 +71,18 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray_access(GEasyParser.Array_accessContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GEasyParser#logical_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GEasyParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -118,36 +130,6 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIterative(GEasyParser.IterativeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#logical_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#logical_term}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogical_term(GEasyParser.Logical_termContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#logical_val}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogical_val(GEasyParser.Logical_valContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#comp_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComp_expr(GEasyParser.Comp_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#bool_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBool_expr(GEasyParser.Bool_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree
