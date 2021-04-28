@@ -472,18 +472,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
         // only one child
         if(ctx.getChildCount() == 1) {
-            if(ctx.comp_expr()!= null) {
-                return visit(ctx.comp_expr(0));
-            }
-            else if(ctx.bool_expr() != null) {
-                return visit(ctx.bool_expr(0));
-            }
+            return visit(ctx.getChild(0));
         }
         else {
             return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
         }
-
-        return null;
     }
 
     private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
@@ -532,6 +525,28 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         return node;
+    }
+
+    @Override
+    public AstNode visitLogical_term(GEasyParser.Logical_termContext ctx){
+        if(ctx.logical_val() != null) {
+            return visit(ctx.logical_val());
+        }
+        else if(ctx.logical_expr() != null) {
+            return visit(ctx.logical_expr());
+        }
+        return null;
+    }
+
+    @Override
+    public AstNode visitLogical_val(GEasyParser.Logical_valContext ctx) {
+        if(ctx.comp_expr() != null) {
+            return visit(ctx.comp_expr());
+        }
+        else if(ctx.bool_expr() != null) {
+            return visit(ctx.bool_expr());
+        }
+        return null;
     }
 
     @Override

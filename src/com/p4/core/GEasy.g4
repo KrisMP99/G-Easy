@@ -20,6 +20,10 @@ pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
+logical_expr : comp_expr ((AND | OR) comp_expr)* ;
+
+comp_expr : expr (COMPARER_OP expr)? ;
+
 expr : term ((PLUS | MINUS | MULT | DIV | MOD) term)*;
 
 term : val_expr | ((MINUS)? LP expr RP);
@@ -42,16 +46,6 @@ selection : IF LP logical_expr RP block (ELSE block)? ;
 
 iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
-logical_expr : logical_term ((AND | OR) logical_term)* ;
-
-logical_term : logical_val | (LP logical_expr RP) ;
-
-logical_val : comp_expr | bool_expr ;
-
-comp_expr : expr COMPARER_OP expr ;
-
-bool_expr : (ID | BOOL) (COMPARER_OP (ID | BOOL))? ;
-
 func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
 
 formal_param : TYPE ID (COMMA TYPE ID)* ;
@@ -62,6 +56,7 @@ return_expr : RETURN (expr | BOOL) SEMICOLON ;
 
 val : ID
     | NUMBER
+    | BOOL
     ;
 
 comment : LINE_COMMENT ;
