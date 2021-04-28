@@ -42,7 +42,11 @@ selection : IF LP logical_expr RP block (ELSE block)? ;
 
 iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
-logical_expr : (comp_expr | bool_expr) ((AND | OR) logical_expr)? ;
+logical_expr : logical_term ((AND | OR) logical_term)* ;
+
+logical_term : logical_val | (LP logical_expr RP) ;
+
+logical_val : comp_expr | bool_expr ;
 
 comp_expr : expr COMPARER_OP expr ;
 

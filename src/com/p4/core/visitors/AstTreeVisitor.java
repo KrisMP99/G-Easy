@@ -57,13 +57,13 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.LogicalExprNode":
-                    this.print(localIndent, "(LogicalExpr)");
+                    this.print(localIndent, "(LogicalExpr) " + ((LogicalExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompNode":
                     this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
-                    this.print(localIndent, "(CompExpr)");
+                    this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.BoolExprNode":
                     this.print(localIndent, "(BoolExpr)");
