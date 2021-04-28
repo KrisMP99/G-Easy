@@ -5,6 +5,7 @@ import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
@@ -399,11 +400,32 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitTerm(GEasyParser.TermContext ctx){
-        if(ctx.val_expr() != null) {
+        // We need to know if the term has parenthesis
+        ParseTree child = ctx.getChild(0);
+
+        if(child instanceof GEasyParser.Val_exprContext){
             return visit(ctx.val_expr());
         }
-        else if(ctx.expr() != null) {
-            return visit(ctx.expr());
+        else if(child instanceof TerminalNodeImpl) {
+            if(child.getText().equals("(")) {
+                AstNode node = visit(ctx.logical_expr());
+                return addParen(node);
+            }
+
+        }
+        return null;
+    }
+
+    private AstNode addParen(AstNode node) {
+        String nodeClass = node.getClass().getSimpleName();
+        System.out.print(nodeClass);
+
+        switch(nodeClass) {
+            case "AddNode":
+                AddNode addNode = (AddNode) node;
+                addNode.setParentheses(true);
+                return addNode;
+
         }
 
         return null;
@@ -411,9 +433,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitVal_expr(GEasyParser.Val_exprContext ctx) {
-        // We need to know if the value has parenthesis
-        ParseTree child = ctx.getChild(0);
-
         if(ctx.val() != null) {
             return visit(ctx.val());
         }
