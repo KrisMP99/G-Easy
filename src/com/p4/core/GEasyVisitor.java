@@ -77,6 +77,18 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpr(GEasyParser.ExprContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVal_expr(GEasyParser.Val_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GEasyParser#func_call}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

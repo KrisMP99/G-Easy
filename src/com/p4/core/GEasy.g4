@@ -14,13 +14,17 @@ bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 
 array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (val (COMMA val)*) R_BRACE ;
 
-assign : (ID | array_access) ASSIGN_OP (expr | func_call | pos_assign) SEMICOLON;
+assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
 pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
-expr : (MINUS)? (val | array_access) (ARITHMETIC_OP (val | array_access) (ARITHMETIC_OP expr)? )? ;
+expr : term ((PLUS | MINUS | MULT | DIV | MOD) term)*;
+
+term : val_expr | ((MINUS)? LP expr RP);
+
+val_expr : (MINUS)? (val | array_access | func_call);
 
 func_call : ID LP actual_param RP ;
 
@@ -122,19 +126,12 @@ AND : '&&' ;
 NEGATION : '!' ;
 ASSIGN_OP : '=' ;
 
-
-ARITHMETIC_OP : MOD
-              | PLUS
-              | MINUS
-              | MULTIPLICATION
-              | DIVISION
-              ;
-
 MINUS : '-';
 MOD : '%' ;
 PLUS : '+';
-MULTIPLICATION : '*' ;
-DIVISION : '/' ;
+MULT : '*' ;
+DIV : '/' ;
+
 
 NUMBER : [0-9]+('.'[0-9]+)? ;
 ID :  ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')* ;

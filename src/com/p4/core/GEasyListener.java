@@ -118,6 +118,26 @@ public interface GEasyListener extends ParseTreeListener {
 	 */
 	void exitExpr(GEasyParser.ExprContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void enterTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void exitTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterVal_expr(GEasyParser.Val_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitVal_expr(GEasyParser.Val_exprContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link GEasyParser#func_call}.
 	 * @param ctx the parse tree
 	 */

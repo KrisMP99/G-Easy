@@ -4,8 +4,10 @@ import com.p4.core.visitors.INodeVisitor;
 
 public class IntNode extends AstNode {
     public int value;
-    public IntNode(int value) {
+    public boolean isNegative;
+    public IntNode(int value, boolean isNegative) {
         this.value = value;
+        this.isNegative = isNegative;
     }
 
     @Override

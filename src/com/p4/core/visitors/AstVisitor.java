@@ -258,10 +258,23 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return arrayAccessNode;
     }
 
+    private AstNode visitExprChildren(GEasyParser.ExprContext parent, ParseTree child, int operatorIndex){
+
+
+
+        return null;
+    }
+
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
         // Create empty ExprNode to add children to later
         ExprNode exprNode = new ExprNode();
+
+
+
+
+
+
 
         // Go through all the children of our expression
         // First we get the number of children, and then use it in the for-loop
@@ -274,7 +287,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             // Since we're not interested in all of the children in the expression, we only deal with those we neeed in our AST
             // In our case, it's the non-terminals: val, array_access and expr.
-            if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.Array_accessContext))  {
+            if(child instanceof GEasyParser.TermContext)  {
                 // We create a new AstNode where we visit the child
                 // and add it as a child
                 AstNode childNode = visit(child);
@@ -297,8 +310,24 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         return exprNode;
     }
 
+    @Override
+    public AstNode visitVal_expr(GEasyParser.Val_exprContext ctx) {
+        if(ctx.val() != null) {
+            return visit(ctx.val());
+        }
+        else if(ctx.array_access() != null) {
+            return visit(ctx.array_access());
+        }
+        else if(ctx.func_call() != null) {
+            return visit(ctx.func_call());
+        }
+
+        return null;
+
+    }
+
     // Helper function to get the aritmethic operator
-    public AstNode VisitArithmeticOPNode(ParseTree child) {
+    private AstNode VisitArithmeticOPNode(ParseTree child) {
         if(child != null) {
             switch(child.getText()) {
                 case "%":
@@ -308,9 +337,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 case "-":
                     return new ArithmeticNode(GEasyParser.MINUS);
                 case "*":
-                    return new ArithmeticNode(GEasyParser.MULTIPLICATION);
+                    return new ArithmeticNode(GEasyParser.MULT);
                 case "/":
-                    return new ArithmeticNode(GEasyParser.DIVISION);
+                    return new ArithmeticNode(GEasyParser.DIV);
                 default:
                     return null;
             }
@@ -320,7 +349,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitFunc_call(GEasyParser.Func_callContext ctx) {
-        FuncCallNode funcCallNode = new FuncCallNode(ctx.ID().toString());
+        boolean isNegative = false;
+
+        if(ctx.getParent().getChild(0).getText().equals("-")) {
+            isNegative = true;
+        }
+
+        FuncCallNode funcCallNode = new FuncCallNode(ctx.ID().toString(), isNegative);
 
         int childCount = ctx.getChildCount();
 
@@ -686,16 +721,23 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // A number can then be either an int or double (the only number types in G-Easy)
     @Override
     public AstNode visitVal(GEasyParser.ValContext ctx){
+        boolean isNeg = false;
+
+        ParseTree parent = ctx.getParent();
+        if(parent.getChild(0).getText().equals("-")) {
+            isNeg = true;
+        }
+
         if(ctx.NUMBER() != null) {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
-                return new DoubleNode(Double.parseDouble(ctx.getText()));
+                return new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
             } else {
                 // If not a double, it is an int
-                return new IntNode(Integer.parseInt(ctx.getText()));
+                return new IntNode(Integer.parseInt(ctx.getText()), isNeg);
             }
         } else if (ctx.ID() != null){
-            return new IDNode(ctx.getText());
+            return new IDNode(ctx.getText(), isNeg);
         } else {
             return null;
         }
