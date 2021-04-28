@@ -4,7 +4,6 @@ import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -120,6 +119,12 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(LogicalExprNode node) {
+        this.visitChildren(node);
+    }
+
+
+    @Override
     public void visit(ExprNode node) {
         this.visitChildren(node);
         node.type = node.children.get(0).type;
@@ -132,11 +137,6 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(LogicalExprNode node) {
         this.visitChildren(node);
     }
 

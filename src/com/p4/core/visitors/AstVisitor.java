@@ -171,8 +171,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         // Find out which one
         if(array_access != null) {
-            AstNode arrayAccessNode = visitArray_access(array_access);
-            return arrayAccessNode;
+            return visitArray_access(array_access);
         }
         else if(expr != null){
             String id = ctx.ID().toString();
@@ -412,6 +411,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitVal_expr(GEasyParser.Val_exprContext ctx) {
+        // We need to know if the value has parenthesis
+        ParseTree child = ctx.getChild(0);
+
         if(ctx.val() != null) {
             return visit(ctx.val());
         }
@@ -421,6 +423,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if(ctx.func_call() != null) {
             return visit(ctx.func_call());
         }
+
 
         return null;
     }

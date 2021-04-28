@@ -26,7 +26,7 @@ comp_expr : expr (COMPARER_OP expr)? ;
 
 expr : term ((PLUS | MINUS | MULT | DIV | MOD) term)*;
 
-term : val_expr | ((MINUS)? LP expr RP);
+term : val_expr | ((MINUS)? LP logical_expr RP);
 
 val_expr : (MINUS)? (val | array_access | func_call);
 
