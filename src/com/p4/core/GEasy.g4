@@ -30,9 +30,9 @@ term : val_expr | ((MINUS)? LP logical_expr RP);
 
 val_expr : (MINUS)? (val | array_access | func_call);
 
-func_call : ID LP actual_param RP ;
+func_call : ID LP (actual_param (COMMA actual_param)*)? RP ;
 
-actual_param : ((ID COLON | XCOORD | YCOORD) expr ( COMMA actual_param)*)? ;
+actual_param : (ID COLON | XCOORD | YCOORD) expr ;
 
 stmt : assign SEMICOLON
      | expr SEMICOLON
@@ -48,7 +48,7 @@ iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
 func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
 
-formal_param : TYPE ID (COMMA formal_param)* ;
+formal_param : TYPE ID (COMMA TYPE ID)* ;
 
 block : L_BRACE (dcl | stmt | return_expr)+ R_BRACE ;
 

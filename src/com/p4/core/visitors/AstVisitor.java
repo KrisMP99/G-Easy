@@ -105,6 +105,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 return null;
         }
 
+        // Add line number
+        dclNode.lineNumber = ctx.start.getLine();
+
         // A variable can be initialized to either an expression or func call
         // If it's an expr/func_call we visit the given node and add it as a child to our dclNode
         if(expr != null) {
@@ -128,6 +131,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.TYPE().toString();
 
         ArrayDclNode arrayDclNode = new ArrayDclNode(id, type);
+        arrayDclNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
 
@@ -149,6 +153,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.BOOL_T().toString();
 
         BoolDclNode boolDclNode = new BoolDclNode(ID, type);
+        boolDclNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.Logical_exprContext logicalExpr = ctx.logical_expr();
 
@@ -180,6 +185,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             AstNode exprNode = visitExpr(expr);
             assignNode.children.add(exprNode);
+            assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
         }
@@ -189,6 +195,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             AstNode posAssignNode = visitPos_assign(pos_assign);
             assignNode.children.add(posAssignNode);
+            assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
         } else {
@@ -204,6 +211,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         PosDclNode posDclNode = new PosDclNode(id);
         posDclNode.setType(pos);
+        posDclNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.Pos_assignContext assign = ctx.pos_assign();
 
@@ -226,6 +234,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         PosNode posNode = new PosNode<>(xCordVal, yCordVal);
         posAssignNode.children.add(posNode);
+        posNode.lineNumber = ctx.start.getLine();
 
         return posAssignNode;
     }
@@ -239,9 +248,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString(), isNegative);
+        arrayAccessNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
-
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
@@ -267,6 +276,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
         LogicalExprNode node = new LogicalExprNode();
+        node.lineNumber = parent.start.getLine();
 
         int nextOperator = operatorIndex + 2;
 
@@ -321,6 +331,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         CompExprNode compExprNode = new CompExprNode();
+        compExprNode.lineNumber = ctx.start.getLine();
 
         switch (ctx.getChild(1).getText()) {
             case "<":
@@ -401,6 +412,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             node.children.add(visitTerm(parent.term(termIndex + 1)));
         }
 
+        node.lineNumber = parent.start.getLine();
+
         return node;
     }
 
@@ -415,6 +428,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if(child instanceof TerminalNodeImpl) {
             if(child.getText().equals("(")) {
                 AstNode node = visit(ctx.logical_expr());
+                node.lineNumber = ctx.start.getLine();
                 return addParen(node);
             }
 
@@ -461,6 +475,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
 
         FuncCallNode funcCallNode = new FuncCallNode(ctx.ID().toString(), isNegative);
+        funcCallNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
 
@@ -495,19 +510,22 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return null;
         }
 
+        actualParamNode.children.add(visit(ctx.expr()));
+        actualParamNode.type = actualParamNode.children.get(0).type;
 
-        int childCount = ctx.getChildCount();
+        //int childCount = ctx.getChildCount();
 
         // We go through all the children and add those we need for our Ast
         // In our case it's the non-terminal expr
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
+        //for(int childIndex = 0; childIndex < childCount; childIndex++) {
+            //ParseTree child = ctx.getChild(childIndex);
 
-            if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.Actual_paramContext)) {
-                AstNode childNode = visit(child);
-                actualParamNode.children.add(childNode);
-            }
-        }
+            //if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.Actual_paramContext)) {
+                //AstNode childNode = visit(child);
+                //actualParamNode.children.add(childNode);
+            //}
+        //}
+        actualParamNode.lineNumber = ctx.start.getLine();
 
         return actualParamNode;
     }
@@ -566,6 +584,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             selectionNode.children.add(visitBlock(block));
         }
 
+        selectionNode.lineNumber = ctx.start.getLine();
+
         return selectionNode;
     }
 
@@ -574,6 +594,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.FOR().toString();
         String for_to = ctx.TO().toString();
         IterativeNode iterativeNode = new IterativeNode(type, for_to);
+        iterativeNode.lineNumber = ctx.start.getLine();
 
         // Visit children
         int childCount = ctx.getChildCount();
@@ -586,7 +607,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 iterativeNode.children.add(childNode);
             }
         }
-
         return iterativeNode;
     }
 
@@ -620,6 +640,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             }
         }
 
+        funcDclNode.lineNumber = ctx.start.getLine();
+
         return funcDclNode;
     }
 
@@ -650,12 +672,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             }
         }
 
+        formalParamNode.lineNumber = ctx.start.getLine();
         return formalParamNode;
     }
 
     @Override
     public AstNode visitBlock(GEasyParser.BlockContext ctx) {
         BlockNode blockNode = new BlockNode();
+        blockNode.lineNumber = ctx.start.getLine();
 
         // Since a block can contain a lot of different constructs,
         // we use the visitChildren() function
@@ -665,6 +689,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitReturn_expr(GEasyParser.Return_exprContext ctx) {
         ReturnExprNode returnExprNode = new ReturnExprNode();
+        returnExprNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.ExprContext expr = ctx.expr();
 
@@ -696,13 +721,21 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         if(ctx.NUMBER() != null) {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
-                return new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
+                DoubleNode doubleNode = new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
+                doubleNode.type = "double";
+                doubleNode.lineNumber = ctx.start.getLine();
+                return doubleNode;
             } else {
                 // If not a double, it is an int
-                return new IntNode(Integer.parseInt(ctx.getText()), isNeg);
+                IntNode intNode = new IntNode(Integer.parseInt(ctx.getText()), isNeg);
+                intNode.type = "int";
+                intNode.lineNumber = ctx.start.getLine();
+                return intNode;
             }
         } else if (ctx.ID() != null){
-            return new IDNode(ctx.getText(), isNeg);
+            IDNode idNode = new IDNode(ctx.getText(), isNeg);
+            idNode.lineNumber = ctx.start.getLine();
+            return idNode;
         } else {
             return null;
         }
@@ -715,6 +748,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         if(lineComment != null) {
             LineCommentNode commentNode = new LineCommentNode(lineComment);
+            commentNode.lineNumber = ctx.start.getLine();
             return commentNode;
         }
         // error

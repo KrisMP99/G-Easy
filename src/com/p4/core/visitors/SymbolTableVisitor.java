@@ -4,6 +4,8 @@ import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
+import java.util.jar.Attributes;
+
 public class SymbolTableVisitor implements INodeVisitor {
     SymbolTable symbolTable;
 
@@ -48,7 +50,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
-    private boolean isNodeDeclared(VarDclNode<?> node) {
+    private boolean isNodeDeclared(AstNode node) {
         // We enter here, if the variable is already declared
         if(symbolTable.lookupSymbol(node.getID()) != null) {
             // Error handling here...
@@ -71,23 +73,32 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         // Enter if the function is already declared
-        if(symbolTable.lookupSymbol(node.getID()) != null) {
+        if(symbolTable.declaredFunctions.contains(node.getID())) {
             // Error handling here ...
         }
+        else {
+            // Create the function and add it to the symbol table
+            SymbolAttributes attributes = new SymbolAttributes("function", node.getReturnType());
+            attributes.setScope(symbolTable.getCurrentScope().getScopeName());
+            symbolTable.insertSymbol(node.getID(), attributes);
 
-        // Create the function and add it to the symbol table
-        SymbolAttributes attributes = new SymbolAttributes("function", node.getReturnType());
-        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
-        symbolTable.insertSymbol(node.getID(), attributes);
+            // Insert it into the declared functions
+            symbolTable.declaredFunctions.add(node.getID());
 
-        // Add the function's scope and its children
-        symbolTable.addScope(node.getNodesHash());
-        this.visitChildren(node);
-        symbolTable.leaveScope();
+            // Add the function's scope and its children
+            symbolTable.addScope(node.getNodesHash());
+            this.visitChildren(node);
+            symbolTable.leaveScope();
+        }
     }
 
     @Override
     public void visit(FuncCallNode node) {
+        // We need to handle our predefined functions here, to avoid getting undeclared function errors
+        // rapid_move();     cut_line();    cut_clockwise_circular();
+        String functionID = node.getID();
+        symbolTable.calledFunctions.add(functionID);
+
         this.visitChildren(node);
     }
 
@@ -112,7 +123,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(VarDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
@@ -237,27 +248,27 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(AddNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(SubNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(DivNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(MultNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ModNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override

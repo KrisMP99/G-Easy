@@ -1,9 +1,11 @@
 package com.p4.core.visitors;
 
 import com.p4.core.nodes.*;
+import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
+import java.util.List;
 import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -41,20 +43,32 @@ public class SemanticsVisitor implements INodeVisitor {
         //Checks if the return type is a valid
         if (isValidReturnType(funcReturnType)){
 
-            // If the returntype is void, a return statement is not needed.
-            if (funcReturnType != "void"){
+            int childIndex = node.getChildren().size() > 1 ? 1 : 0;
 
+            // Goes through all the children in the function block to check if they're well typed
+            // Looks for a return statement as well.
+            for(AstNode blockChild : node.children.get(childIndex).children) {
+                if(blockChild instanceof ReturnExprNode) {
 
-                for (AstNode blockNode : node.children.get(0).children){
-                    if (blockNode instanceof ReturnExprNode){
-                        if (!isEqualFunctionType(funcReturnType, blockNode.type)){
-                            System.out.println("Wrong return type");
-                        }
+                    // If the return type is void, there must not be a return statement
+                    if(funcReturnType.equals("void")) {
+                        System.out.println("A function of type void cannot have a return statement");
+                    }
+                    // Check if the return type is well typed
+                    else if(!blockChild.type.equals(funcReturnType)) {
+                        // error!!!
+                        System.out.println("Return type not valid!");
                     }
                 }
             }
         }
         this.symbolTable.leaveScope();
+    }
+
+    @Override
+    public void visit(ReturnExprNode node) {
+        this.visitChildren(node);
+        node.type = node.children.get(0).type;
     }
 
     private boolean isValidReturnType(String returnType){
@@ -69,23 +83,48 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    private boolean isEqualFunctionType(String type1, String type2){
-
-        if (type1.equals(type2)){
-            return true;
-        }
-        //if you have a double function, you can return an int
-        else if (type1.equals("double") && type2.equals("int")){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
     @Override
     public void visit(FuncCallNode node) {
         this.visitChildren(node);
+
+        String functionID = node.getID();
+        int child = 0;
+
+        // First we check if the function has been declared
+        if(symbolTable.declaredFunctions.contains(functionID)) {
+
+            // Now we need to check if there are the same number of actual and formal parameters
+            Scope funcScope = this.symbolTable.lookupScope("Func: " + functionID);
+
+            // If the function is found:
+            if (funcScope != null) {
+                if(node.children.size() != funcScope.getParams().size()) {
+                    // Error
+                    System.out.println("Number of params does not correspond!");
+                }
+                else {
+                    // Now we need to check if the parameters are valid
+                    // We do this by going through all the parameters and compare each actual parameter with the formal parameters
+                    for(Map.Entry<String, SymbolAttributes> formalParams : funcScope.getParams().entrySet()) {
+                        String actualParamType = node.children.get(child).type;
+                        String formalParamType = formalParams.getValue().getDataType();
+                        String actualParamID = node.children.get(child).getID(); // Does this work?
+
+                        if(actualParamType == null || actualParamType.equals("error")){
+                            // error
+                            System.out.println("The actual params has no valid type");
+                        }
+                        else if(formalParamType != null) {
+                            if(!formalParamType.equals(actualParamType)){
+                                // Error if they're not equal
+                                System.out.println("Actual parameter does not match type of the formal parameter");
+                            }
+                        }
+                        child++;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -119,15 +158,13 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(LogicalExprNode node) {
+    public void visit(ExprNode node) {
         this.visitChildren(node);
     }
 
-
     @Override
-    public void visit(ExprNode node) {
+    public void visit(LogicalExprNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
     }
 
     @Override
@@ -153,12 +190,6 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(BlockNode node) {
         this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(ReturnExprNode node) {
-        this.visitChildren(node);
-        node.type = node.children.get(0).type;
     }
 
     @Override
@@ -188,10 +219,15 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(IDNode node) {
-        Map<String, SymbolAttributes> params = symbolTable.getCurrentScope().getParams();
-        SymbolAttributes paramAttributes = params.get(node.id);
-        node.type = paramAttributes.getDataType();
-
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        if(attributes == null) {
+            // Error handling here
+            // The variable could not be found in the scope (local + global)
+            System.out.println("Could not find variable: " + node.getID() + " in the scope");
+        }
+        else {
+            node.type = attributes.getDataType();
+        }
     }
 
     @Override
