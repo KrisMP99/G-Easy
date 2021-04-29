@@ -34,7 +34,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     // We won't add dcl as a node in our Ast, as it contains only non-terminals
-    // Basically, it will only clutter the Ast with an unecessary node
+    // Basically, it will only clutter the Ast with an unnecessary node
     @Override
     public AstNode visitDcl(GEasyParser.DclContext ctx) {
         // A dcl can be one of the following non-terminals:
@@ -134,7 +134,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if(child instanceof GEasyParser.ValContext) {
+            if(child instanceof GEasyParser.TermContext) {
                 AstNode childNode = visit(child);
                 arrayDclNode.children.add(childNode);
             }
@@ -221,8 +221,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
         PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
 
-        AstNode xCordVal = visit(ctx.val(0));
-        AstNode yCordVal = visit(ctx.val(1));
+        AstNode xCordVal = visit(ctx.term(0));
+        AstNode yCordVal = visit(ctx.term(1));
 
         PosNode posNode = new PosNode<>(xCordVal, yCordVal);
         posAssignNode.children.add(posNode);
@@ -232,7 +232,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitArray_access(GEasyParser.Array_accessContext ctx) {
-        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString());
+        boolean isNegative = false;
+
+        if(ctx.getParent().getChild(0).getText().equals("-")) {
+            isNegative = true;
+        }
+
+        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString(), isNegative);
 
         int childCount = ctx.getChildCount();
 
@@ -442,7 +448,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if(ctx.func_call() != null) {
             return visit(ctx.func_call());
         }
-
 
         return null;
     }

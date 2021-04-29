@@ -12,11 +12,11 @@ pos_dcl : POS ID ASSIGN_OP pos_assign ;
 
 bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 
-array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (val (COMMA val)*) R_BRACE ;
+array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R_BRACE ;
 
 assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
-pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
+pos_assign : (L_BRACE XCOORD term COMMA YCOORD term R_BRACE) ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
@@ -48,7 +48,7 @@ iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
 func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
 
-formal_param : TYPE ID (COMMA TYPE ID)* ;
+formal_param : TYPE ID (COMMA formal_param)* ;
 
 block : L_BRACE (dcl | stmt | return_expr)+ R_BRACE ;
 
