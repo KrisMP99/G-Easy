@@ -538,13 +538,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitActual_param(GEasyParser.Actual_paramContext ctx) {
         ActualParamNode actualParamNode;
 
-        if(ctx.XCOORD() != null) {
-            actualParamNode = new ActualParamNode(ctx.XCOORD().toString());
-        }
-        else if(ctx.YCOORD() != null) {
-            actualParamNode = new ActualParamNode(ctx.YCOORD().toString());
-        }
-        else if (ctx.ID() != null) {
+        if (ctx.ID() != null) {
             actualParamNode = new ActualParamNode(ctx.ID().toString());
         }
         else {
@@ -554,18 +548,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         actualParamNode.children.add(visit(ctx.expr()));
         actualParamNode.type = actualParamNode.children.get(0).type;
 
-        //int childCount = ctx.getChildCount();
-
-        // We go through all the children and add those we need for our Ast
-        // In our case it's the non-terminal expr
-        //for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            //ParseTree child = ctx.getChild(childIndex);
-
-            //if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.Actual_paramContext)) {
-                //AstNode childNode = visit(child);
-                //actualParamNode.children.add(childNode);
-            //}
-        //}
         actualParamNode.lineNumber = ctx.start.getLine();
 
         return actualParamNode;

@@ -6,6 +6,7 @@ import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -54,15 +55,27 @@ public class SemanticsVisitor implements INodeVisitor {
                     if(funcReturnType.equals("void")) {
                         System.out.println("A function of type void cannot have a return statement");
                     }
-                    // Check if the return type is well typed
-                    else if(!blockChild.type.equals(funcReturnType)) {
+                    // Check if the function return type is valid with the actual return type
+                    else if(!isReturnOK(funcReturnType, blockChild.type)) {
                         // error!!!
-                        System.out.println("Return type not valid!");
+                        System.out.println("The actual return type " + blockChild.type + " is not compatible with the function return type " + funcReturnType);
                     }
                 }
             }
         }
         this.symbolTable.leaveScope();
+    }
+
+    private boolean isReturnOK(String funcReturnType, String actualReturnType) {
+        if(funcReturnType.equals(actualReturnType)) {
+            return true;
+        }
+        else if(funcReturnType.equals("double") && actualReturnType.equals("int")) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     @Override
@@ -87,43 +100,87 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(FuncCallNode node) {
         this.visitChildren(node);
 
-        String functionID = node.getID();
-        int child = 0;
-
         // First we check if the function has been declared
-        if(symbolTable.declaredFunctions.contains(functionID)) {
+        if(symbolTable.declaredFunctions.contains(node.getID())) {
 
-            // Now we need to check if there are the same number of actual and formal parameters
-            Scope funcScope = this.symbolTable.lookupScope("Func: " + functionID);
+            // Check the functions params
+            checkNumberOfFunctionParams(node);
 
-            // If the function is found:
-            if (funcScope != null) {
-                if(node.children.size() != funcScope.getParams().size()) {
-                    // Error
-                    System.out.println("Number of params does not correspond!");
+        }
+    }
+
+    private void checkNumberOfFunctionParams(FuncCallNode node) {
+        // First we check if the scope is found
+        Scope funcScope = this.symbolTable.lookupScope("Func: " + node.getID());
+
+        if (funcScope != null) {
+            // Check if the number of actual params corresponds with the number of formal params
+            if(node.children.size() != funcScope.getParams().size()) {
+                // Error
+                System.out.println("Number of params does not correspond!");
+            }
+            else {
+                checkIfParamsAreValid(node, funcScope);
+            }
+        }
+    }
+
+    private void checkIfParamsAreValid(FuncCallNode node, Scope funcScope) {
+        // Go through all the parameters and compare each actual parameter with the formal parameters
+        int child = 0;
+        for(Map.Entry<String, SymbolAttributes> formalParams : funcScope.getParams().entrySet()) {
+            String actualParamType = node.children.get(child).type;
+            String actualParamID = node.children.get(child).getID();
+
+            String formalParamType = formalParams.getValue().getDataType();
+            String formalParamID = formalParams.getKey();
+
+            if(actualParamType == null || actualParamType.equals("error")){
+                // error
+                System.out.println("The actual params has no valid type");
+            }
+            else if(formalParamType != null) {
+                if(!isReturnOK(formalParams.getValue().getDataType(), node.children.get(child).type)) {
+                    // Types not compatible...
+                    System.out.println("Actual param " + actualParamID + " of type " + node.children.get(child).type + " not compatible with formal param " + formalParamID + " of type: " + formalParams.getValue().getDataType());
                 }
                 else {
-                    // Now we need to check if the parameters are valid
-                    // We do this by going through all the parameters and compare each actual parameter with the formal parameters
-                    for(Map.Entry<String, SymbolAttributes> formalParams : funcScope.getParams().entrySet()) {
-                        String actualParamType = node.children.get(child).type;
-                        String formalParamType = formalParams.getValue().getDataType();
-                        String actualParamID = node.children.get(child).getID(); // Does this work?
-
-                        if(actualParamType == null || actualParamType.equals("error")){
-                            // error
-                            System.out.println("The actual params has no valid type");
-                        }
-                        else if(formalParamType != null) {
-                            if(!formalParamType.equals(actualParamType)){
-                                // Error if they're not equal
-                                System.out.println("Actual parameter does not match type of the formal parameter");
-                            }
-                        }
-                        child++;
-                    }
+                    // Check the names of the parameters
+                    checkParamID(formalParamID, actualParamID);
                 }
             }
+            child++;
+        }
+    }
+
+    // Checks if the name of the actual parameter in a func call is the same as the name of the formal parameter in the func dcl
+    private void checkParamID(String formalParamID, String actualParamID) {
+        // Make the two strings to lowercase
+        String formalLower = formalParamID.toLowerCase();
+        String actualLower = actualParamID.toLowerCase();
+
+        // Check if they're equal
+        if(!actualLower.equals(formalLower)) {
+            // Error
+            System.out.println("Actual parameter " + actualParamID + " does not match the name of " + formalParamID);
+        }
+    }
+
+
+    // Checks if the two types are compatible (semantic rules)
+    private String typeOperationResult(String type1, String type2) {
+        if(type1.equals(type2)) {
+            return type1;
+        }
+        else if((type1.equals("int") || type1.equals("double")) && ((type2.equals("double")) || type2.equals("int"))) {
+            return "double";
+        }
+        else if(((type1.equals("int") || type1.equals("double") || type1.equals("pos")) &&
+                ((type2.equals("pos") || type2.equals("int") || type2.equals("double"))))) {
+            return "pos";
+        }
+        else {
+            return "error";
         }
     }
 

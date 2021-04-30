@@ -16,7 +16,7 @@ array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R
 
 assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
-pos_assign : (L_BRACE XCOORD term COMMA YCOORD term R_BRACE) ;
+pos_assign : (L_BRACE ID term COMMA ID term R_BRACE) ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
@@ -34,7 +34,7 @@ val_expr : (MINUS)? (val | array_access | func_call);
 
 func_call : ID LP (actual_param (COMMA actual_param)*)? RP ;
 
-actual_param : (ID COLON | XCOORD | YCOORD) expr ;
+actual_param : ID COLON expr ;
 
 stmt : assign SEMICOLON
      | expr SEMICOLON
@@ -75,16 +75,12 @@ R_BRACE : '}' ;
 LP : '(' ;
 RP : ')' ;
 
-
-
 IF : 'if' ;
 ELSE : 'else' ;
 FOR : 'for' ;
 TO: 'to' ;
 
 POS : 'pos' ;
-XCOORD : 'x:';
-YCOORD : 'y:';
 
 VOID : 'void' ;
 RETURN : 'return' ;
