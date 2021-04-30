@@ -365,12 +365,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
-        // only one term
+        // only one term_expr
         if(ctx.getChildCount() == 1) {
-            return visit(ctx.term(0));
+            return visit(ctx.term_expr(0));
         }
         else {
-            // Multiple terms
+            // Multiple term_exprs
             return visitExprChildren(ctx, ctx.getChild(1),1);
 
         }
@@ -389,6 +389,46 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             case "-":
                 node = new SubNode();
                 break;
+            default:
+                return null;
+        }
+
+        // If there are more than one operator
+        // Uses recursion
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex)));
+            node.children.add(visitExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+
+        }
+        // Only one child left
+        else {
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex)));
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex + 1)));
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        return node;
+    }
+
+    @Override
+    public AstNode visitTerm_expr(GEasyParser.Term_exprContext ctx) {
+        // If there is only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
+        }
+        // Multiple terms
+        else {
+            return visitTermExprChildren(ctx, ctx.getChild(1), 1);
+        }
+    }
+
+    private AstNode visitTermExprChildren(GEasyParser.Term_exprContext parent, ParseTree child, int operatorIndex) {
+        int termIndex = (operatorIndex - 1) / 2;
+        int nextOperator = operatorIndex + 2;
+        AstNode node;
+
+        switch (child.getText()) {
             case "*":
                 node = new MultNode();
                 break;
@@ -402,17 +442,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 return null;
         }
 
-        if(parent.getChild(nextOperator) != null) {
-            node.children.add(visitTerm(parent.term(termIndex)));
-            node.children.add(visitExprChildren(parent, parent.getChild(nextOperator), nextOperator));
-
-        }
-        else {
-            node.children.add(visitTerm(parent.term(termIndex)));
-            node.children.add(visitTerm(parent.term(termIndex + 1)));
-        }
-
         node.lineNumber = parent.start.getLine();
+
+        // If there are more than one operator in the expression
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visit(parent.term(termIndex)));
+            node.children.add(visitTermExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+        }
+        // If there is only one operator left
+        else {
+            node.children.add(visit(parent.term(termIndex)));
+            node.children.add(visit(parent.term(termIndex + 1)));
+        }
 
         return node;
     }

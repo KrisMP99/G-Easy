@@ -24,7 +24,9 @@ logical_expr : comp_expr ((AND | OR) comp_expr)* ;
 
 comp_expr : expr (COMPARER_OP expr)? ;
 
-expr : term ((PLUS | MINUS | MULT | DIV | MOD) term)*;
+expr : term_expr ((PLUS | MINUS) term_expr)*;
+
+term_expr : term ((MULT | DIV | MOD) term)*;
 
 term : val_expr | ((MINUS)? LP logical_expr RP);
 

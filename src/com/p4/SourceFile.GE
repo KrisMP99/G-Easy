@@ -1,5 +1,1 @@
-int addNum(int x, int y) {
-    return x;
-}
-
-int x = addNum(x: 2, y: 2);
+int x = 2 + 2 * 4 + 2;

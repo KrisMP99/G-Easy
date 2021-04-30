@@ -172,6 +172,18 @@ public class GEasyBaseListener implements GEasyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTerm_expr(GEasyParser.Term_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_expr(GEasyParser.Term_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTerm(GEasyParser.TermContext ctx) { }
 	/**
 	 * {@inheritDoc}
