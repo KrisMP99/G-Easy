@@ -47,7 +47,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(PosAssign) ");
                     break;
                 case "class com.p4.core.nodes.PosNode":
-                    this.print(localIndent, "(Pos) x: " + ((PosNode)node).p1.getX() + " y: " + ((PosNode)node).p1.getY());
+                    this.print(localIndent, "(Pos) " + ((PosNode)node).getxID() + ": " + ((PosNode)node).p1.getX() + " " + ((PosNode)node).getyID() + ": " + ((PosNode)node).p1.getY());
                     break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";

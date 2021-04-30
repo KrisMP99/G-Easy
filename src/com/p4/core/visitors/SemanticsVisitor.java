@@ -1,12 +1,11 @@
 package com.p4.core.visitors;
 
+import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -66,6 +65,8 @@ public class SemanticsVisitor implements INodeVisitor {
         this.symbolTable.leaveScope();
     }
 
+    // Used to compare the return type of the function and its return statements
+    // Also used in dcl
     private boolean isReturnOK(String funcReturnType, String actualReturnType) {
         if(funcReturnType.equals(actualReturnType)) {
             return true;
@@ -170,23 +171,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
 
-    // Checks if the two types are compatible (semantic rules)
-    private String typeOperationResult(String type1, String type2) {
-        if(type1.equals(type2)) {
-            return type1;
-        }
-        else if((type1.equals("int") || type1.equals("double")) && ((type2.equals("double")) || type2.equals("int"))) {
-            return "double";
-        }
-        else if(((type1.equals("int") || type1.equals("double") || type1.equals("pos")) &&
-                ((type2.equals("pos") || type2.equals("int") || type2.equals("double"))))) {
-            return "pos";
-        }
-        else {
-            return "error";
-        }
-    }
-
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
@@ -208,17 +192,23 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(PosNode node) {
+        node.type = "pos";
+
+        // We need to make sure that the ID of the x- and y-coordinate are 'x' and 'y'
+        if(!(node.getxID().equalsIgnoreCase("x") && node.getyID().equalsIgnoreCase("y"))) {
+            System.out.print("The coordinates must be named 'x' and 'y'! ");
+        }
+
+    }
+
+    @Override
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
     }
 
     @Override
     public void visit(ExprNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(LogicalExprNode node) {
         this.visitChildren(node);
     }
 
@@ -258,12 +248,56 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(BoolExprNode node) {
+    public void visit(LogicalExprNode node) {
         this.visitChildren(node);
+        node.type = "bool";
+
+        // All the children of a logical expr node must be a CompExpr
+        // We check this by going through all the children and verifying their node type
+        for(int child = 0; child < node.getChildren().size(); child++) {
+            String currChildName = node.children.get(child).getClass().toString();
+            if(!currChildName.equals("class com.p4.core.nodes.CompExprNode")) {
+                System.out.println("Illegal comparison");
+            }
+        }
     }
 
     @Override
     public void visit(CompExprNode node) {
+        this.visitChildren(node);
+        node.type = "bool";
+
+        // Get both children
+        AstNode leftNode = node.children.get(0);
+        AstNode rightNode = node.children.get(1);
+
+        if(leftNode != null && rightNode != null) {
+            if(!isComparisonOK(leftNode.getType(), rightNode.getType(), node.getToken())) {
+                System.out.println("Illegal comparison");
+            }
+        }
+    }
+
+    // Used to check if comparisons are OK (that is <, >, <=, >=, ==)
+    private boolean isComparisonOK(String type1, String type2, int compOperator) {
+        // First check if one of the sides are null
+        if(type1 == null || type2 == null) {
+            return false;
+        }
+
+        if(compOperator == GEasyParser.LESS_THAN || compOperator == GEasyParser.GREATER_THAN ||
+           compOperator == GEasyParser.LESS_THAN_EQ || compOperator == GEasyParser.GREATER_THAN_EQ ||
+           compOperator == GEasyParser.NOT_EQ || compOperator == GEasyParser.IS_EQ) {
+            // True if both sides are of the same type, but not bool or pos
+            if(type1.equals(type2) &&  !((type1.equals("bool") || type1.equals("pos")) && type2.equals("bool") || type2.equals("pos"))    ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void visit(BoolExprNode node) {
         this.visitChildren(node);
     }
 
@@ -300,11 +334,8 @@ public class SemanticsVisitor implements INodeVisitor {
     // Example: int x = true;    NOT OKAY
     // Example: int x = 22;      OKAY
     private void checkIfTypeDCLisCorrect(String dclType, String exprType) {
-        if(!dclType.equals(exprType)) {
-            if(!(dclType.equals("double") && exprType.equals("int"))) {
-                // error
-                System.out.println("The types in the declaration does not match");
-            }
+        if(!isReturnOK(dclType, exprType)) {
+            System.out.println("The types in the declaration does not match");
         }
     }
 
@@ -338,40 +369,62 @@ public class SemanticsVisitor implements INodeVisitor {
         checkIfTypeDCLisCorrect(leftType, rightType);
     }
 
-    @Override
-    public void visit(PosNode node) {
-        node.type = "pos";
-    }
 
     @Override
     public void visit(LogicalOPNode node) {
         this.visitChildren(node);
-
     }
 
     @Override
     public void visit(AddNode node) {
-
+        this.visitChildren(node);
+        node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(SubNode node) {
+        this.visitChildren(node);
+        node.type = typeArithmeticOperationResult(node);
+    }
 
+    // Gets the type result type of add, mins, div, mod and mult operations
+    private String typeArithmeticOperationResult(AstNode node) {
+        // Get the left and right child
+        String leftType = node.children.get(0).getType();
+        String rightType = node.children.get(1).getType();
+
+        // Semantics rules for addition and minus
+        if(leftType.equals(rightType)) {
+            return leftType;
+        }
+        else if((leftType.equals("int") || leftType.equals("double")) && ((rightType.equals("double")) || rightType.equals("int"))) {
+            return "double";
+        }
+        else if(((leftType.equals("int") || leftType.equals("double") || leftType.equals("pos")) &&
+                ((rightType.equals("pos") || rightType.equals("int") || rightType.equals("double"))))) {
+            return "pos";
+        }
+        else {
+            return "error";
+        }
     }
 
     @Override
     public void visit(DivNode node) {
-
+        this.visitChildren(node);
+        node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(MultNode node) {
-
+        this.visitChildren(node);
+        node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(ModNode node) {
-
+        this.visitChildren(node);
+        node.type = typeArithmeticOperationResult(node);
     }
 
     //Not sure what to do here

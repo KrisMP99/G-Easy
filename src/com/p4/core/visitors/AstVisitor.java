@@ -239,6 +239,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         AstNode yCordVal = visit(ctx.term(1));
 
         PosNode posNode = new PosNode<>(xCordVal, yCordVal);
+        posNode.setxID(ctx.ID(0).toString());
+        posNode.setyID(ctx.ID(1).toString());
+
         posAssignNode.children.add(posNode);
         posNode.lineNumber = ctx.start.getLine();
 
