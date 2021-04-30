@@ -89,7 +89,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String ID = ctx.ID().toString();
 
         GEasyParser.ExprContext expr = ctx.expr();
-        GEasyParser.Func_callContext func_call = ctx.func_call();
 
         // Find what kind of var_dcl we're dealing with
         // Should we add pos here somehow? (Requires a change in our grammar)
@@ -113,11 +112,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         if(expr != null) {
             AstNode exprNode = visit(ctx.expr());
             dclNode.children.add(exprNode);
-            return dclNode;
-        }
-        else if(func_call != null) {
-            AstNode funcCallNode = visit(ctx.func_call());
-            dclNode.children.add(funcCallNode);
             return dclNode;
         }
 
@@ -177,7 +171,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         // Find out which one
         if(array_access != null) {
-            return visitArray_access(array_access);
+            AstNode arrayAccessNode = visitArray_access(array_access);
+            AssignNode assignNode = new AssignNode(arrayAccessNode.getID());
+            if(expr != null) {
+                assignNode.children.add(visitExpr(expr));
+            }
+            else {
+                assignNode.children.add(visitPos_assign(pos_assign));
+            }
+
+            assignNode.lineNumber = ctx.start.getLine();
+
+            return assignNode;
         }
         else if(expr != null){
             String id = ctx.ID().toString();
@@ -198,7 +203,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
-        } else {
+        }
+        else {
             // error...
             return null;
         }
@@ -748,20 +754,27 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 doubleNode.type = "double";
                 doubleNode.lineNumber = ctx.start.getLine();
                 return doubleNode;
-            } else {
+            }
+            else {
                 // If not a double, it is an int
                 IntNode intNode = new IntNode(Integer.parseInt(ctx.getText()), isNeg);
                 intNode.type = "int";
                 intNode.lineNumber = ctx.start.getLine();
                 return intNode;
             }
-        } else if (ctx.ID() != null){
+        }
+        else if (ctx.ID() != null){
             IDNode idNode = new IDNode(ctx.getText(), isNeg);
             idNode.lineNumber = ctx.start.getLine();
             return idNode;
-        } else {
-            return null;
         }
+        else if (ctx.BOOL() != null) {
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.getText()), "bool");
+            boolNode.lineNumber = ctx.start.getLine();
+            return boolNode;
+        }
+
+        return null;
     }
 
     // Is this needed, as the parser ignores comments ...?

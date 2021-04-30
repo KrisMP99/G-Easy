@@ -14,7 +14,6 @@ public interface INodeVisitor {
     void visit(AssignNode node);
     void visit(ArrayDclNode node);
     void visit(PosDclNode node);
-    void visit(VarDclNode node);
 
     void visit(PosAssignNode node);
     void visit(ArrayAccessNode node);

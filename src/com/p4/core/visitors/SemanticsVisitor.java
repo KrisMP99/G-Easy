@@ -107,6 +107,9 @@ public class SemanticsVisitor implements INodeVisitor {
             checkNumberOfFunctionParams(node);
 
         }
+        else {
+            System.out.println("Function " + node.getID() + " has not been declared!");
+        }
     }
 
     private void checkNumberOfFunctionParams(FuncCallNode node) {
@@ -200,11 +203,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(VarDclNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
     public void visit(PosAssignNode node) {
         this.visitChildren(node);
     }
@@ -251,16 +249,11 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArithmeticNode node) {
-
-    }
-
-    @Override
-    public void visit(CompNode node) {
         this.visitChildren(node);
     }
 
     @Override
-    public void visit(BoolDclNode node) {
+    public void visit(CompNode node) {
         this.visitChildren(node);
     }
 
@@ -295,6 +288,24 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(IntDclNode node) {
         this.visitChildren(node);
+
+        String leftType = node.getType();
+        String rightType = node.children.get(0).type;
+
+        checkIfTypeDCLisCorrect(leftType, rightType);
+
+    }
+
+    // When declaring variables this checks if the type of the variable matches the type of the expression its being assigned to
+    // Example: int x = true;    NOT OKAY
+    // Example: int x = 22;      OKAY
+    private void checkIfTypeDCLisCorrect(String dclType, String exprType) {
+        if(!dclType.equals(exprType)) {
+            if(!(dclType.equals("double") && exprType.equals("int"))) {
+                // error
+                System.out.println("The types in the declaration does not match");
+            }
+        }
     }
 
     @Override
@@ -305,11 +316,26 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(DoubleDclNode node) {
         this.visitChildren(node);
+
+        String leftType = node.getType();
+        String rightType = node.children.get(0).getType();
+
+        checkIfTypeDCLisCorrect(leftType, rightType);
     }
 
     @Override
     public void visit(DoubleNode node) {
         node.type = "double";
+    }
+
+    @Override
+    public void visit(BoolDclNode node) {
+        this.visitChildren(node);
+
+        String leftType = node.getType();
+        String rightType = node.children.get(0).getType();
+
+        checkIfTypeDCLisCorrect(leftType, rightType);
     }
 
     @Override
@@ -347,7 +373,6 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(ModNode node) {
 
     }
-
 
     //Not sure what to do here
     @Override

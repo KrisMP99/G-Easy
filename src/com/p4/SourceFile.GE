@@ -1,5 +1,1 @@
-int addNum(int x, double y) {
-    return x;
-}
-
-int x = addNum(x: 2, y: 2);
+pos p1 = {x: 2, y: 2};

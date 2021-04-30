@@ -6,7 +6,7 @@ dcl : (assign | var_dcl | func_dcl) ;
 
 var_dcl : (num_dcl | pos_dcl | array_dcl | bool_dcl) SEMICOLON ;
 
-num_dcl : TYPE ID ASSIGN_OP (expr | func_call) ;
+num_dcl : TYPE ID ASSIGN_OP expr ;
 
 pos_dcl : POS ID ASSIGN_OP pos_assign ;
 
@@ -16,7 +16,7 @@ array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R
 
 assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
-pos_assign : (L_BRACE ID term COMMA ID term R_BRACE) ;
+pos_assign : (L_BRACE ID COLON term COMMA ID COLON term R_BRACE) ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
