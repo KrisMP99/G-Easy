@@ -8,6 +8,7 @@ import com.p4.core.symbolTable.SymbolTable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes;
 
 public class SemanticsVisitor implements INodeVisitor {
     SymbolTable symbolTable;
@@ -104,6 +105,8 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // First we check if the function has been declared
         if(symbolTable.declaredFunctions.contains(node.getID())) {
+            SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+            node.setType(attributes.getDataType());
 
             // Check the functions params
             checkNumberOfFunctionParams(node);
@@ -175,11 +178,23 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
+
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        node.type = attributes.getDataType();
+        String rightType = node.children.get(0).getType();
+
+        if(!isReturnOK(node.type, rightType)) {
+            System.out.println("Type error");
+        }
+
     }
 
     @Override
     public void visit(ArrayDclNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
+        this.symbolTable.leaveScope();
+
         String leftType = node.getType();
         node.setType(leftType);
 
@@ -251,11 +266,32 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
-    }
 
-    @Override
-    public void visit(ExprNode node) {
-        this.visitChildren(node);
+        // Check if the type of index i legal (you cannot access an array using a double
+        String indexType = node.children.get(0).getType();
+
+        if(!indexType.equals("int")) {
+            System.out.println("You can only access an array with an int type!");
+        }
+
+        // Check if the index the user is trying to reach is not out of bounds
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        int arrayLength = attributes.getArrayLength();
+        AstNode indexChild = node.children.get(0);
+        IntNode intIndex = (IntNode)indexChild;
+        int index = intIndex.value;
+
+        if(intIndex.isNegative) {
+            System.out.println("Negative index is illegal");
+        }
+        else if(index > arrayLength) {
+            System.out.println("Index is out of bounds of the array");
+        }
+
+        // Get the result type of the array access
+        node.setType(attributes.getArrayChildren().get(index).getType());
+
+
     }
 
     @Override

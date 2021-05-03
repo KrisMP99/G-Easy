@@ -64,18 +64,6 @@ public class GEasyBaseListener implements GEasyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPos_dcl(GEasyParser.Pos_dclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPos_dcl(GEasyParser.Pos_dclContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterBool_dcl(GEasyParser.Bool_dclContext ctx) { }
 	/**
 	 * {@inheritDoc}

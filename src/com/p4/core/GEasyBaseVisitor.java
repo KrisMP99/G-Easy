@@ -45,13 +45,6 @@ public class GEasyBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements 
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPos_dcl(GEasyParser.Pos_dclContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitBool_dcl(GEasyParser.Bool_dclContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
