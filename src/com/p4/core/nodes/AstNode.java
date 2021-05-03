@@ -9,18 +9,12 @@ public abstract class AstNode {
     public List<AstNode> children = new ArrayList<>();
     public int lineNumber = 0;
     public String type;
+    private String ID;
 
     public List<AstNode> getChildren() {
         return children;
     }
 
-    //public String getType() {
-        //return this.type;
-    //}
-
-    //public void setType(String type) {
-        //this.type = type;
-    //}
 
     public String getNodesHash(){
         return String.valueOf(this.hashCode());
@@ -29,4 +23,19 @@ public abstract class AstNode {
 
     public abstract void accept(INodeVisitor visitor);
 
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }

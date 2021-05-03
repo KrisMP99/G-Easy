@@ -4,9 +4,14 @@ import com.p4.core.visitors.INodeVisitor;
 
 public class IDNode extends AstNode {
     public String id;
+    public boolean isNegative;
 
     public IDNode(String id){
         this.id = id;
+    }
+    public IDNode(String id, boolean isNegative){
+        this.id = id;
+        this.isNegative = isNegative;
     }
 
     // Used in param

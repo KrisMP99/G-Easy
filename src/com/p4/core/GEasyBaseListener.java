@@ -136,6 +136,30 @@ public class GEasyBaseListener implements GEasyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLogical_expr(GEasyParser.Logical_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLogical_expr(GEasyParser.Logical_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComp_expr(GEasyParser.Comp_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComp_expr(GEasyParser.Comp_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterExpr(GEasyParser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -143,6 +167,42 @@ public class GEasyBaseListener implements GEasyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpr(GEasyParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm_expr(GEasyParser.Term_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm_expr(GEasyParser.Term_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTerm(GEasyParser.TermContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTerm(GEasyParser.TermContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVal_expr(GEasyParser.Val_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVal_expr(GEasyParser.Val_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -203,42 +263,6 @@ public class GEasyBaseListener implements GEasyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIterative(GEasyParser.IterativeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterLogical_expr(GEasyParser.Logical_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLogical_expr(GEasyParser.Logical_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterComp_expr(GEasyParser.Comp_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitComp_expr(GEasyParser.Comp_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBool_expr(GEasyParser.Bool_exprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBool_expr(GEasyParser.Bool_exprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

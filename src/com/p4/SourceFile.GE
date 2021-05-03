@@ -1,9 +1,1 @@
-int t = 2;
-
-for (x to 10) {
-    int abc = x + 2;
-
-    if(x < 10) {
-        int y = 22;
-    }
-}
+int x[] = {1, 2.4, 3, 4, 5};

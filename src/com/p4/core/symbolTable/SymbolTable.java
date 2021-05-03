@@ -8,6 +8,8 @@ public class SymbolTable {
     private Scope currentScope;
     final private Scope globalScope;
     final private Stack<Scope> scopeStack = new Stack<>();
+    public ArrayList<String> declaredFunctions = new ArrayList<>();
+    public ArrayList<String> calledFunctions = new ArrayList<>();
 
     public SymbolTable() {
         globalScope = new Scope("global");

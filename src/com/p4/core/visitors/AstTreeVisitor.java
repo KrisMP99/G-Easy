@@ -47,7 +47,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(PosAssign) ");
                     break;
                 case "class com.p4.core.nodes.PosNode":
-                    this.print(localIndent, "(Pos) x: " + ((PosNode)node).p1.getX() + " y: " + ((PosNode)node).p1.getY());
+                    this.print(localIndent, "(Pos) " + ((PosNode)node).getxID() + ": " + ((PosNode)node).p1.getX() + " " + ((PosNode)node).getyID() + ": " + ((PosNode)node).p1.getY());
                     break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
@@ -57,19 +57,19 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.LogicalExprNode":
-                    this.print(localIndent, "(LogicalExpr)");
+                    this.print(localIndent, "(LogicalExpr) " + ((LogicalExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompNode":
                     this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
-                    this.print(localIndent, "(CompExpr)");
+                    this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.BoolExprNode":
                     this.print(localIndent, "(BoolExpr)");
                     break;
                 case "class com.p4.core.nodes.BoolNode":
-                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getType());
+                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getValue());
                     break;
                 case "class com.p4.core.nodes.IDNode":
                     this.print(localIndent, "(ID) " + ((IDNode)node).getID());
@@ -97,6 +97,24 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.cores.node.BoolNode":
                     this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
+                    break;
+                case "class com.p4.core.nodes.FormalParamNode":
+                    this.print(localIndent, "(Formal Param)");
+                    break;
+                case "class com.p4.core.nodes.AddNode":
+                    this.print(localIndent, "(Add)");
+                    break;
+                case "class com.p4.core.nodes.SubNode":
+                    this.print(localIndent, "(Sub)");
+                    break;
+                case "class com.p4.core.nodes.ModNode":
+                    this.print(localIndent, "(Mod)");
+                    break;
+                case "class com.p4.core.nodes.MultNode":
+                    this.print(localIndent, "(Mult)");
+                    break;
+                case "class com.p4.core.nodes.DivNode":
+                    this.print(localIndent, "(Div)");
                     break;
             }
 

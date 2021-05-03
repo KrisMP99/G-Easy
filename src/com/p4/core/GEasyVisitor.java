@@ -71,11 +71,41 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArray_access(GEasyParser.Array_accessContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GEasyParser#logical_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GEasyParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExpr(GEasyParser.ExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#term_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTerm_expr(GEasyParser.Term_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVal_expr(GEasyParser.Val_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#func_call}.
 	 * @param ctx the parse tree
@@ -106,24 +136,6 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIterative(GEasyParser.IterativeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#logical_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogical_expr(GEasyParser.Logical_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#comp_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComp_expr(GEasyParser.Comp_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GEasyParser#bool_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBool_expr(GEasyParser.Bool_exprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree

@@ -5,6 +5,7 @@ import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
@@ -33,7 +34,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     // We won't add dcl as a node in our Ast, as it contains only non-terminals
-    // Basically, it will only clutter the Ast with an unecessary node
+    // Basically, it will only clutter the Ast with an unnecessary node
     @Override
     public AstNode visitDcl(GEasyParser.DclContext ctx) {
         // A dcl can be one of the following non-terminals:
@@ -88,7 +89,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String ID = ctx.ID().toString();
 
         GEasyParser.ExprContext expr = ctx.expr();
-        GEasyParser.Func_callContext func_call = ctx.func_call();
 
         // Find what kind of var_dcl we're dealing with
         // Should we add pos here somehow? (Requires a change in our grammar)
@@ -104,16 +104,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 return null;
         }
 
+        // Add line number
+        dclNode.lineNumber = ctx.start.getLine();
+
         // A variable can be initialized to either an expression or func call
         // If it's an expr/func_call we visit the given node and add it as a child to our dclNode
         if(expr != null) {
             AstNode exprNode = visit(ctx.expr());
             dclNode.children.add(exprNode);
-            return dclNode;
-        }
-        else if(func_call != null) {
-            AstNode funcCallNode = visit(ctx.func_call());
-            dclNode.children.add(funcCallNode);
             return dclNode;
         }
 
@@ -127,13 +125,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.TYPE().toString();
 
         ArrayDclNode arrayDclNode = new ArrayDclNode(id, type);
+        arrayDclNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
 
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if(child instanceof GEasyParser.ValContext) {
+            if(child instanceof GEasyParser.TermContext) {
                 AstNode childNode = visit(child);
                 arrayDclNode.children.add(childNode);
             }
@@ -148,6 +147,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.BOOL_T().toString();
 
         BoolDclNode boolDclNode = new BoolDclNode(ID, type);
+        boolDclNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.Logical_exprContext logicalExpr = ctx.logical_expr();
 
@@ -166,14 +166,23 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         // A assign node can consist of either an array_access, expr, func_call or pos_assign
         GEasyParser.Array_accessContext array_access = ctx.array_access();
         GEasyParser.ExprContext expr = ctx.expr();
-        GEasyParser.Func_callContext func_call = ctx.func_call();
         GEasyParser.Pos_assignContext pos_assign = ctx.pos_assign();
 
 
         // Find out which one
         if(array_access != null) {
             AstNode arrayAccessNode = visitArray_access(array_access);
-            return arrayAccessNode;
+            AssignNode assignNode = new AssignNode(arrayAccessNode.getID());
+            if(expr != null) {
+                assignNode.children.add(visitExpr(expr));
+            }
+            else {
+                assignNode.children.add(visitPos_assign(pos_assign));
+            }
+
+            assignNode.lineNumber = ctx.start.getLine();
+
+            return assignNode;
         }
         else if(expr != null){
             String id = ctx.ID().toString();
@@ -181,15 +190,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             AstNode exprNode = visitExpr(expr);
             assignNode.children.add(exprNode);
-
-            return assignNode;
-        }
-        else if (func_call != null) {
-            String id = ctx.ID().toString();
-            AssignNode assignNode = new AssignNode(id);
-
-            AstNode funcCallNode = visitFunc_call(func_call);
-            assignNode.children.add(funcCallNode);
+            assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
         }
@@ -199,9 +200,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
             AstNode posAssignNode = visitPos_assign(pos_assign);
             assignNode.children.add(posAssignNode);
+            assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
-        } else {
+        }
+        else {
             // error...
             return null;
         }
@@ -214,13 +217,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         PosDclNode posDclNode = new PosDclNode(id);
         posDclNode.setType(pos);
+        posDclNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.Pos_assignContext assign = ctx.pos_assign();
+        GEasyParser.ExprContext expr = ctx.expr();
 
-        // Note: We need to add this as a child, right?
         if(assign != null){
-            AstNode posAssignNode = visitPos_assign(ctx.pos_assign());
+            AstNode posAssignNode = visitPos_assign(assign);
             posDclNode.children.add(posAssignNode);
+            return posDclNode;
+        }
+        else if(expr != null) {
+            posDclNode.children.add(visit(expr));
             return posDclNode;
         }
 
@@ -229,23 +237,33 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
-        PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
+        //PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
 
-        AstNode xCordVal = visit(ctx.val(0));
-        AstNode yCordVal = visit(ctx.val(1));
+        AstNode xCordVal = visit(ctx.term(0));
+        AstNode yCordVal = visit(ctx.term(1));
 
         PosNode posNode = new PosNode<>(xCordVal, yCordVal);
-        posAssignNode.children.add(posNode);
+        posNode.setxID(ctx.ID(0).toString());
+        posNode.setyID(ctx.ID(1).toString());
 
-        return posAssignNode;
+        //posAssignNode.children.add(posNode);
+        posNode.lineNumber = ctx.start.getLine();
+
+        return posNode;
     }
 
     @Override
     public AstNode visitArray_access(GEasyParser.Array_accessContext ctx) {
-        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString());
+        boolean isNegative = false;
+
+        if(ctx.getParent().getChild(0).getText().equals("-")) {
+            isNegative = true;
+        }
+
+        ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString(), isNegative);
+        arrayAccessNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
-
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
@@ -259,68 +277,259 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitExpr(GEasyParser.ExprContext ctx) {
-        // Create empty ExprNode to add children to later
-        ExprNode exprNode = new ExprNode();
-
-        // Go through all the children of our expression
-        // First we get the number of children, and then use it in the for-loop
-        int childCount = ctx.getChildCount();
-
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            // We create a ParseTree from the child
-            // We do this, so we travese it's children easily
-            ParseTree child = ctx.getChild(childIndex);
-
-            // Since we're not interested in all of the children in the expression, we only deal with those we neeed in our AST
-            // In our case, it's the non-terminals: val, array_access and expr.
-            if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.Array_accessContext))  {
-                // We create a new AstNode where we visit the child
-                // and add it as a child
-                AstNode childNode = visit(child);
-                exprNode.children.add(childNode);
-
-                // We also need to grab all the arithmetic operators, as we need them when type checking
-                // We add 1 to childIndex as, from our grammar, we know a value/array_access always will be followed by an arithmetic operator
-                if(childIndex + 1 < childCount) {
-                    // We use the helper function 'getArithmeticOPNode' to retrieve the operator we need
-                    ParseTree nextChild = ctx.getChild(childIndex + 1);
-                    AstNode arithmNode = VisitArithmeticOPNode(nextChild);
-
-                    // If there is an arithmetic operator, we add it as a child to expr
-                    if(arithmNode != null) {
-                        exprNode.children.add(arithmNode);
-                    }
-                }
-            }
+    public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
+        // only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
         }
-        return exprNode;
+        else {
+            return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
+        }
     }
 
-    // Helper function to get the aritmethic operator
-    public AstNode VisitArithmeticOPNode(ParseTree child) {
-        if(child != null) {
-            switch(child.getText()) {
-                case "%":
-                    return new ArithmeticNode(GEasyParser.MOD);
-                case "+":
-                    return new ArithmeticNode(GEasyParser.PLUS);
-                case "-":
-                    return new ArithmeticNode(GEasyParser.MINUS);
-                case "*":
-                    return new ArithmeticNode(GEasyParser.MULTIPLICATION);
-                case "/":
-                    return new ArithmeticNode(GEasyParser.DIVISION);
-                default:
-                    return null;
-            }
+    private AstNode visitLogicalExprChildren(GEasyParser.Logical_exprContext parent, ParseTree child, int operatorIndex) {
+        LogicalExprNode node = new LogicalExprNode();
+        node.lineNumber = parent.start.getLine();
+
+        int nextOperator = operatorIndex + 2;
+
+        switch(child.getText()) {
+            case "&&":
+                node.setToken(GEasyParser.AND);
+                break;
+            case "||":
+                node.setToken(GEasyParser.OR);
+                break;
+            case "<":
+                node.setToken(GEasyParser.LESS_THAN);
+                break;
+            case ">":
+                node.setToken(GEasyParser.GREATER_THAN);
+                break;
+            case "<=":
+                node.setToken(GEasyParser.LESS_THAN_EQ);
+                break;
+            case ">=":
+                node.setToken(GEasyParser.GREATER_THAN_EQ);
+                break;
+            case "==":
+                node.setToken(GEasyParser.IS_EQ);
+                break;
+            case "!=":
+                node.setToken(GEasyParser.NOT_EQ);
+                break;
+            default:
+                return null;
         }
+
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
+            node.children.add(visitLogicalExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+
+        }
+        else {
+            node.children.add(visit(parent.getChild(operatorIndex - 1)));
+            node.children.add(visit(parent.getChild(operatorIndex + 1)));
+        }
+
+        return node;
+    }
+
+    @Override
+    public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
+
+        // If there is only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
+        }
+
+        CompExprNode compExprNode = new CompExprNode();
+        compExprNode.lineNumber = ctx.start.getLine();
+
+        switch (ctx.getChild(1).getText()) {
+            case "<":
+                compExprNode.setToken(GEasyParser.LESS_THAN);
+                break;
+            case ">":
+                compExprNode.setToken(GEasyParser.GREATER_THAN);
+                break;
+            case "<=":
+                compExprNode.setToken(GEasyParser.LESS_THAN_EQ);
+                break;
+            case ">=":
+                compExprNode.setToken(GEasyParser.GREATER_THAN_EQ);
+                break;
+            case "==":
+                compExprNode.setToken(GEasyParser.IS_EQ);
+                break;
+            case "!=":
+                compExprNode.setToken(GEasyParser.NOT_EQ);
+                break;
+            default:
+                return null;
+        }
+
+        // Add the children
+        compExprNode.children.add(visit(ctx.getChild(0)));
+        compExprNode.children.add(visit(ctx.getChild(2)));
+
+        return compExprNode;
+    }
+
+    @Override
+    public AstNode visitExpr(GEasyParser.ExprContext ctx) {
+        // only one term_expr
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.term_expr(0));
+        }
+        else {
+            // Multiple term_exprs
+            return visitExprChildren(ctx, ctx.getChild(1),1);
+
+        }
+    }
+
+    private AstNode visitExprChildren(GEasyParser.ExprContext parent, ParseTree child, int operatorIndex){
+        AstNode node;
+
+        int termIndex = (operatorIndex - 1) / 2;
+        int nextOperator = operatorIndex + 2;
+
+        switch(child.getText()) {
+            case "+":
+                node = new AddNode();
+                break;
+            case "-":
+                node = new SubNode();
+                break;
+            default:
+                return null;
+        }
+
+        // If there are more than one operator
+        // Uses recursion
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex)));
+            node.children.add(visitExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+
+        }
+        // Only one child left
+        else {
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex)));
+            node.children.add(visitTerm_expr(parent.term_expr(termIndex + 1)));
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        return node;
+    }
+
+    @Override
+    public AstNode visitTerm_expr(GEasyParser.Term_exprContext ctx) {
+        // If there is only one child
+        if(ctx.getChildCount() == 1) {
+            return visit(ctx.getChild(0));
+        }
+        // Multiple terms
+        else {
+            return visitTermExprChildren(ctx, ctx.getChild(1), 1);
+        }
+    }
+
+    private AstNode visitTermExprChildren(GEasyParser.Term_exprContext parent, ParseTree child, int operatorIndex) {
+        int termIndex = (operatorIndex - 1) / 2;
+        int nextOperator = operatorIndex + 2;
+        AstNode node;
+
+        switch (child.getText()) {
+            case "*":
+                node = new MultNode();
+                break;
+            case "/":
+                node = new DivNode();
+                break;
+            case "%":
+                node = new ModNode();
+                break;
+            default:
+                return null;
+        }
+
+        node.lineNumber = parent.start.getLine();
+
+        // If there are more than one operator in the expression
+        if(parent.getChild(nextOperator) != null) {
+            node.children.add(visit(parent.term(termIndex)));
+            node.children.add(visitTermExprChildren(parent, parent.getChild(nextOperator), nextOperator));
+        }
+        // If there is only one operator left
+        else {
+            node.children.add(visit(parent.term(termIndex)));
+            node.children.add(visit(parent.term(termIndex + 1)));
+        }
+
+        return node;
+    }
+
+    @Override
+    public AstNode visitTerm(GEasyParser.TermContext ctx){
+        // We need to know if the term has parenthesis
+        ParseTree child = ctx.getChild(0);
+
+        if(child instanceof GEasyParser.Val_exprContext){
+            return visit(ctx.val_expr());
+        }
+        else if(child instanceof TerminalNodeImpl) {
+            if(child.getText().equals("(")) {
+                AstNode node = visit(ctx.logical_expr());
+                node.lineNumber = ctx.start.getLine();
+                return addParen(node);
+            }
+
+        }
+        return null;
+    }
+
+    private AstNode addParen(AstNode node) {
+        String nodeClass = node.getClass().getSimpleName();
+        System.out.print(nodeClass);
+
+        switch(nodeClass) {
+            case "AddNode":
+                AddNode addNode = (AddNode) node;
+                addNode.setParentheses(true);
+                return addNode;
+
+        }
+
+        return null;
+    }
+
+    @Override
+    public AstNode visitVal_expr(GEasyParser.Val_exprContext ctx) {
+        if(ctx.val() != null) {
+            return visit(ctx.val());
+        }
+        else if(ctx.array_access() != null) {
+            return visit(ctx.array_access());
+        }
+        else if(ctx.func_call() != null) {
+            return visit(ctx.func_call());
+        }
+
         return null;
     }
 
     @Override
     public AstNode visitFunc_call(GEasyParser.Func_callContext ctx) {
-        FuncCallNode funcCallNode = new FuncCallNode(ctx.ID().toString());
+        boolean isNegative = false;
+
+        if(ctx.getParent().getChild(0).getText().equals("-")) {
+            isNegative = true;
+        }
+
+        FuncCallNode funcCallNode = new FuncCallNode(ctx.ID().toString(), isNegative);
+        funcCallNode.lineNumber = ctx.start.getLine();
 
         int childCount = ctx.getChildCount();
 
@@ -342,32 +551,17 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitActual_param(GEasyParser.Actual_paramContext ctx) {
         ActualParamNode actualParamNode;
 
-        if(ctx.XCOORD() != null) {
-            actualParamNode = new ActualParamNode(ctx.XCOORD().toString());
-        }
-        else if(ctx.YCOORD() != null) {
-            actualParamNode = new ActualParamNode(ctx.YCOORD().toString());
-        }
-        else if (ctx.ID() != null) {
+        if (ctx.ID() != null) {
             actualParamNode = new ActualParamNode(ctx.ID().toString());
         }
         else {
             return null;
         }
 
+        actualParamNode.children.add(visit(ctx.expr()));
+        actualParamNode.type = actualParamNode.children.get(0).type;
 
-        int childCount = ctx.getChildCount();
-
-        // We go through all the children and add those we need for our Ast
-        // In our case it's the non-terminal expr
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if((child instanceof GEasyParser.ExprContext) || (child instanceof GEasyParser.Actual_paramContext)) {
-                AstNode childNode = visit(child);
-                actualParamNode.children.add(childNode);
-            }
-        }
+        actualParamNode.lineNumber = ctx.start.getLine();
 
         return actualParamNode;
     }
@@ -426,6 +620,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             selectionNode.children.add(visitBlock(block));
         }
 
+        selectionNode.lineNumber = ctx.start.getLine();
+
         return selectionNode;
     }
 
@@ -434,6 +630,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String type = ctx.FOR().toString();
         String for_to = ctx.TO().toString();
         IterativeNode iterativeNode = new IterativeNode(type, for_to);
+        iterativeNode.lineNumber = ctx.start.getLine();
 
         // Visit children
         int childCount = ctx.getChildCount();
@@ -446,148 +643,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 iterativeNode.children.add(childNode);
             }
         }
-
         return iterativeNode;
-    }
-
-    @Override
-    public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
-        LogicalExprNode logicalExprNode = new LogicalExprNode();
-
-        int childCount = ctx.getChildCount();
-
-        // Go through all the children
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if((child instanceof GEasyParser.Logical_exprContext) || (child instanceof GEasyParser.Comp_exprContext) || (child instanceof GEasyParser.Bool_exprContext)) {
-                AstNode childNode = visit(child);
-                logicalExprNode.children.add(childNode);
-            }
-
-            // If there is a comp operator we add it
-            if(visitLogicalOperatorNode(child) != null) {
-                logicalExprNode.children.add(visitLogicalOperatorNode(child));
-            }
-        }
-
-        return logicalExprNode;
-    }
-
-    private AstNode visitLogicalOperatorNode(ParseTree child) {
-        if(child != null) {
-            switch (child.getText()) {
-                case "&&":
-                    return new LogicalOPNode(GEasyParser.AND);
-                case "||":
-                    return new LogicalOPNode(GEasyParser.OR);
-                default:
-                    return null;
-            }
-        }
-
-        return null;
-    }
-
-    private AstNode getCompNode(ParseTree child) {
-        if(child != null) {
-            CompNode compNode = new CompNode();
-
-            switch (child.getText()) {
-                case "<":
-                    compNode.setToken(GEasyParser.LESS_THAN);
-                    return compNode;
-                case ">":
-                    compNode.setToken(GEasyParser.GREATER_THAN);
-                    return compNode;
-                case "<=":
-                    compNode.setToken(GEasyParser.LESS_THAN_EQ);
-                    return compNode;
-                case ">=":
-                    compNode.setToken(GEasyParser.GREATER_THAN_EQ);
-                    return compNode;
-                case "==":
-                    compNode.setToken(GEasyParser.IS_EQ);
-                    return compNode;
-                case "!=":
-                    compNode.setToken(GEasyParser.NOT_EQ);
-                    return compNode;
-                default:
-                    // Error
-                    return null;
-            }
-        }
-        // error
-        return null;
-    }
-
-    @Override
-    public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
-        CompExprNode compExprNode = new CompExprNode();
-
-        int childCount = ctx.getChildCount();
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if(child instanceof GEasyParser.ExprContext) {
-                AstNode childNode = visit(child);
-                compExprNode.children.add(childNode);
-            }
-
-            if(getCompNode(child) != null) {
-                compExprNode.children.add(getCompNode(child));
-            }
-        }
-
-        return compExprNode;
-    }
-
-    @Override
-    public AstNode visitBool_expr(GEasyParser.Bool_exprContext ctx) {
-        BoolExprNode boolExprNode = new BoolExprNode();
-
-        int childCount = ctx.getChildCount();
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if(visitBoolNode(child) != null) {
-                AstNode childNode = visitBoolNode(child);
-                boolExprNode.children.add(childNode);
-            }
-            else if(getCompNode(child) != null) {
-                boolExprNode.children.add(getCompNode(child));
-            }
-            else if(visitIDNode(child) != null) {
-                boolExprNode.children.add(visitIDNode(child));
-            }
-        }
-        // error
-        return boolExprNode;
-    }
-
-    private AstNode visitIDNode(ParseTree child) {
-        if(child != null) {
-            return new IDNode(child.getText());
-        }
-
-        // error
-        return null;
-    }
-
-    private AstNode visitBoolNode(ParseTree child) {
-        if(child != null) {
-            switch (child.getText()) {
-                case "true":
-                    return new BoolNode(true);
-                case "false":
-                    return new BoolNode(false);
-                default:
-                    return null;
-            }
-        }
-
-        // error
-        return null;
     }
 
     @Override
@@ -614,11 +670,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         for(int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if((child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.BlockContext)) {
+            if((child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.BlockContext) || (child instanceof  GEasyParser.Formal_paramContext) ) {
                 AstNode childNode = visit(child);
                 funcDclNode.children.add(childNode);
             }
         }
+
+        funcDclNode.lineNumber = ctx.start.getLine();
 
         return funcDclNode;
     }
@@ -650,12 +708,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             }
         }
 
+        formalParamNode.lineNumber = ctx.start.getLine();
         return formalParamNode;
     }
 
     @Override
     public AstNode visitBlock(GEasyParser.BlockContext ctx) {
         BlockNode blockNode = new BlockNode();
+        blockNode.lineNumber = ctx.start.getLine();
 
         // Since a block can contain a lot of different constructs,
         // we use the visitChildren() function
@@ -665,6 +725,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitReturn_expr(GEasyParser.Return_exprContext ctx) {
         ReturnExprNode returnExprNode = new ReturnExprNode();
+        returnExprNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.ExprContext expr = ctx.expr();
 
@@ -673,7 +734,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return returnExprNode;
         }
         else if (ctx.BOOL() != null) {
-            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()));
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.BOOL().toString()), "bool");
             returnExprNode.children.add(boolNode);
             return returnExprNode;
         }
@@ -686,19 +747,41 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // A number can then be either an int or double (the only number types in G-Easy)
     @Override
     public AstNode visitVal(GEasyParser.ValContext ctx){
+        boolean isNeg = false;
+
+        ParseTree parent = ctx.getParent();
+        if(parent.getChild(0).getText().equals("-")) {
+            isNeg = true;
+        }
+
         if(ctx.NUMBER() != null) {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
-                return new DoubleNode(Double.parseDouble(ctx.getText()));
-            } else {
-                // If not a double, it is an int
-                return new IntNode(Integer.parseInt(ctx.getText()));
+                DoubleNode doubleNode = new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
+                doubleNode.type = "double";
+                doubleNode.lineNumber = ctx.start.getLine();
+                return doubleNode;
             }
-        } else if (ctx.ID() != null){
-            return new IDNode(ctx.getText());
-        } else {
-            return null;
+            else {
+                // If not a double, it is an int
+                IntNode intNode = new IntNode(Integer.parseInt(ctx.getText()), isNeg);
+                intNode.type = "int";
+                intNode.lineNumber = ctx.start.getLine();
+                return intNode;
+            }
         }
+        else if (ctx.ID() != null){
+            IDNode idNode = new IDNode(ctx.getText(), isNeg);
+            idNode.lineNumber = ctx.start.getLine();
+            return idNode;
+        }
+        else if (ctx.BOOL() != null) {
+            BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.getText()), "bool");
+            boolNode.lineNumber = ctx.start.getLine();
+            return boolNode;
+        }
+
+        return null;
     }
 
     // Is this needed, as the parser ignores comments ...?
@@ -708,6 +791,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         if(lineComment != null) {
             LineCommentNode commentNode = new LineCommentNode(lineComment);
+            commentNode.lineNumber = ctx.start.getLine();
             return commentNode;
         }
         // error

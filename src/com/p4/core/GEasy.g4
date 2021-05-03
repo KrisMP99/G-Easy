@@ -6,25 +6,35 @@ dcl : (assign | var_dcl | func_dcl) ;
 
 var_dcl : (num_dcl | pos_dcl | array_dcl | bool_dcl) SEMICOLON ;
 
-num_dcl : TYPE ID ASSIGN_OP (expr | func_call) ;
+num_dcl : TYPE ID ASSIGN_OP expr ;
 
-pos_dcl : POS ID ASSIGN_OP pos_assign ;
+pos_dcl : POS ID ASSIGN_OP (pos_assign | expr) ;
 
 bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 
-array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (val (COMMA val)*) R_BRACE ;
+array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R_BRACE ;
 
-assign : (ID | array_access) ASSIGN_OP (expr | func_call | pos_assign) SEMICOLON;
+assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
-pos_assign : (L_BRACE XCOORD (MINUS)? val COMMA YCOORD (MINUS)? val R_BRACE) ;
+pos_assign : L_BRACE ID COLON term COMMA ID COLON term R_BRACE ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
-expr : (MINUS)? (val | array_access) (ARITHMETIC_OP (val | array_access) (ARITHMETIC_OP expr)? )? ;
+logical_expr : comp_expr ((AND | OR) comp_expr)* ;
 
-func_call : ID LP actual_param RP ;
+comp_expr : expr (COMPARER_OP expr)? ;
 
-actual_param : ((ID COLON | XCOORD | YCOORD) expr ( COMMA actual_param)*)? ;
+expr : term_expr ((PLUS | MINUS) term_expr)*;
+
+term_expr : term ((MULT | DIV | MOD) term)*;
+
+term : val_expr | ((MINUS)? LP logical_expr RP);
+
+val_expr : (MINUS)? (val | array_access | func_call);
+
+func_call : ID LP (actual_param (COMMA actual_param)*)? RP ;
+
+actual_param : ID COLON expr ;
 
 stmt : assign SEMICOLON
      | expr SEMICOLON
@@ -38,12 +48,6 @@ selection : IF LP logical_expr RP block (ELSE block)? ;
 
 iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
-logical_expr : (comp_expr | bool_expr) ((AND | OR) logical_expr)? ;
-
-comp_expr : expr COMPARER_OP expr ;
-
-bool_expr : (ID | BOOL) (COMPARER_OP (ID | BOOL))? ;
-
 func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
 
 formal_param : TYPE ID (COMMA TYPE ID)* ;
@@ -54,6 +58,7 @@ return_expr : RETURN (expr | BOOL) SEMICOLON ;
 
 val : ID
     | NUMBER
+    | BOOL
     ;
 
 comment : LINE_COMMENT ;
@@ -70,16 +75,12 @@ R_BRACE : '}' ;
 LP : '(' ;
 RP : ')' ;
 
-
-
 IF : 'if' ;
 ELSE : 'else' ;
 FOR : 'for' ;
 TO: 'to' ;
 
 POS : 'pos' ;
-XCOORD : 'x:';
-YCOORD : 'y:';
 
 VOID : 'void' ;
 RETURN : 'return' ;
@@ -122,19 +123,12 @@ AND : '&&' ;
 NEGATION : '!' ;
 ASSIGN_OP : '=' ;
 
-
-ARITHMETIC_OP : MOD
-              | PLUS
-              | MINUS
-              | MULTIPLICATION
-              | DIVISION
-              ;
-
 MINUS : '-';
 MOD : '%' ;
 PLUS : '+';
-MULTIPLICATION : '*' ;
-DIVISION : '/' ;
+MULT : '*' ;
+DIV : '/' ;
+
 
 NUMBER : [0-9]+('.'[0-9]+)? ;
 ID :  ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '_' | '0'..'9')* ;

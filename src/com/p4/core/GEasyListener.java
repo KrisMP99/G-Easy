@@ -108,6 +108,26 @@ public interface GEasyListener extends ParseTreeListener {
 	 */
 	void exitArray_access(GEasyParser.Array_accessContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link GEasyParser#logical_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#logical_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitLogical_expr(GEasyParser.Logical_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#comp_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitComp_expr(GEasyParser.Comp_exprContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link GEasyParser#expr}.
 	 * @param ctx the parse tree
 	 */
@@ -117,6 +137,36 @@ public interface GEasyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpr(GEasyParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#term_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTerm_expr(GEasyParser.Term_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#term_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTerm_expr(GEasyParser.Term_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void enterTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#term}.
+	 * @param ctx the parse tree
+	 */
+	void exitTerm(GEasyParser.TermContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterVal_expr(GEasyParser.Val_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GEasyParser#val_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitVal_expr(GEasyParser.Val_exprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GEasyParser#func_call}.
 	 * @param ctx the parse tree
@@ -167,36 +217,6 @@ public interface GEasyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIterative(GEasyParser.IterativeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GEasyParser#logical_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogical_expr(GEasyParser.Logical_exprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GEasyParser#logical_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogical_expr(GEasyParser.Logical_exprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GEasyParser#comp_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterComp_expr(GEasyParser.Comp_exprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GEasyParser#comp_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitComp_expr(GEasyParser.Comp_exprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GEasyParser#bool_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterBool_expr(GEasyParser.Bool_exprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GEasyParser#bool_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitBool_expr(GEasyParser.Bool_exprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GEasyParser#func_dcl}.
 	 * @param ctx the parse tree
