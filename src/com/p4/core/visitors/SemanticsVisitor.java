@@ -6,6 +6,7 @@ import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
+import java.util.List;
 import java.util.Map;
 
 public class SemanticsVisitor implements INodeVisitor {
@@ -179,16 +180,61 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(ArrayDclNode node) {
         this.visitChildren(node);
+        String leftType = node.getType();
+        node.setType(leftType);
+
+        // Get the array elements
+        List<AstNode> arrayElements = node.getChildren();
+
+        for(AstNode arrayElement : arrayElements) {
+            String type = arrayElement.getType();
+
+            if(!isReturnOK(leftType, type)) {
+                System.out.println("Illegal type in array!");
+            }
+        }
     }
 
     @Override
     public void visit(PosDclNode node) {
         this.visitChildren(node);
+
+        String leftType = node.type;
+        String rightType = node.children.get(0).getType();
+
+        checkIfTypeDCLisCorrect(leftType, rightType);
+
+        if(node.children.get(0).getID() != null) {
+            checkPosDclOperation(node);
+        }
     }
 
-    @Override
-    public void visit(PosAssignNode node) {
-        this.visitChildren(node);
+    private void checkPosDclOperation(PosDclNode node) {
+        String operation = node.children.get(0).getID(); // +, -, *, /, %
+        String leftType = node.children.get(0).children.get(0).getType();     // Get the type of left operand
+        String rightType = node.children.get(0).children.get(1).getType();    // Get the type of right operand
+
+
+        // You can't multiply, divide or do mod on two posistions
+        if(operation.equals("mult")) {
+            if((leftType.equals("pos") && (rightType.equals("int") || rightType.equals("double"))) ||
+                rightType.equals("pos") && (leftType.equals("int") || leftType.equals("double"))) {
+                // Operation OK
+            }
+            else {
+                // Operation not OK
+                System.out.println("It is only possible to multiply a position with a scalar.");
+            }
+        }
+        // You can only add or subtract to positions
+        else if(operation.equals("add") || operation.equals("sub")) {
+            if(leftType.equals("pos") && rightType.equals("pos")) {
+                // Operation OK
+            } else {
+                System.out.println("Illegal add or subtraction with position");
+            }
+        }
+
     }
 
     @Override
@@ -378,12 +424,14 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(AddNode node) {
         this.visitChildren(node);
+        node.setID("add");
         node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(SubNode node) {
         this.visitChildren(node);
+        node.setID("sub");
         node.type = typeArithmeticOperationResult(node);
     }
 
@@ -412,18 +460,21 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(DivNode node) {
         this.visitChildren(node);
+        node.setID("div");
         node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(MultNode node) {
         this.visitChildren(node);
+        node.setID("mult");
         node.type = typeArithmeticOperationResult(node);
     }
 
     @Override
     public void visit(ModNode node) {
         this.visitChildren(node);
+        node.setID("mod");
         node.type = typeArithmeticOperationResult(node);
     }
 

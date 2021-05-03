@@ -8,7 +8,7 @@ var_dcl : (num_dcl | pos_dcl | array_dcl | bool_dcl) SEMICOLON ;
 
 num_dcl : TYPE ID ASSIGN_OP expr ;
 
-pos_dcl : POS ID ASSIGN_OP pos_assign ;
+pos_dcl : POS ID ASSIGN_OP (pos_assign | expr) ;
 
 bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 

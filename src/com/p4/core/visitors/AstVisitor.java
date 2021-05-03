@@ -220,11 +220,15 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         posDclNode.lineNumber = ctx.start.getLine();
 
         GEasyParser.Pos_assignContext assign = ctx.pos_assign();
+        GEasyParser.ExprContext expr = ctx.expr();
 
-        // Note: We need to add this as a child, right?
         if(assign != null){
-            AstNode posAssignNode = visitPos_assign(ctx.pos_assign());
+            AstNode posAssignNode = visitPos_assign(assign);
             posDclNode.children.add(posAssignNode);
+            return posDclNode;
+        }
+        else if(expr != null) {
+            posDclNode.children.add(visit(expr));
             return posDclNode;
         }
 
@@ -233,7 +237,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
-        PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
+        //PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
 
         AstNode xCordVal = visit(ctx.term(0));
         AstNode yCordVal = visit(ctx.term(1));
@@ -242,10 +246,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         posNode.setxID(ctx.ID(0).toString());
         posNode.setyID(ctx.ID(1).toString());
 
-        posAssignNode.children.add(posNode);
+        //posAssignNode.children.add(posNode);
         posNode.lineNumber = ctx.start.getLine();
 
-        return posAssignNode;
+        return posNode;
     }
 
     @Override

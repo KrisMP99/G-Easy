@@ -122,11 +122,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(PosAssignNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
     }
