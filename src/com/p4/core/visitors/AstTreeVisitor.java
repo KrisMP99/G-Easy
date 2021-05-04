@@ -16,9 +16,6 @@ public class AstTreeVisitor {
                 case "class com.p4.core.nodes.PosDclNode":
                     this.print(localIndent,"(PosDcl) " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
                     break;
-                case "class com.p4.core.nodes.ExprNode":
-                    this.print(localIndent, "(Expr) ");
-                    break;
                 case "class com.p4.core.nodes.ArithmeticNode":
                     this.print(localIndent, "(Arthm) " + ((ArithmeticNode)node).getToken());
                     break;
@@ -32,10 +29,10 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(ArrayDcl) " + ((ArrayDclNode)node).getType() + " " + ((ArrayDclNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
-                    this.print(localIndent, "(ArrayAccess) " + ((ArrayAccessNode)node).ID);
+                    this.print(localIndent, "(ArrayAccess) " + ((ArrayAccessNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.FuncCallNode":
-                    this.print(localIndent, "(FunCall) " + ((FuncCallNode)node).getID());
+                    this.print(localIndent, "(FuncCall) " + ((FuncCallNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ActualParamNode":
                     this.print(localIndent, "(ActualParm) " + ((ActualParamNode)node).getID());
@@ -47,7 +44,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(PosAssign) ");
                     break;
                 case "class com.p4.core.nodes.PosNode":
-                    this.print(localIndent, "(Pos) x: " + ((PosNode)node).p1.getX() + " y: " + ((PosNode)node).p1.getY());
+                    this.print(localIndent, "(Pos) " + ((PosNode)node).getxID() + ": " + ((PosNode)node).p1.getX() + " " + ((PosNode)node).getyID() + ": " + ((PosNode)node).p1.getY());
                     break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
@@ -57,19 +54,19 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.LogicalExprNode":
-                    this.print(localIndent, "(LogicalExpr)");
+                    this.print(localIndent, "(LogicalExpr) " + ((LogicalExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompNode":
                     this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
-                    this.print(localIndent, "(CompExpr)");
+                    this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.BoolExprNode":
                     this.print(localIndent, "(BoolExpr)");
                     break;
                 case "class com.p4.core.nodes.BoolNode":
-                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getType());
+                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getValue());
                     break;
                 case "class com.p4.core.nodes.IDNode":
                     this.print(localIndent, "(ID) " + ((IDNode)node).getID());
@@ -84,7 +81,7 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(Iterative) " + ((IterativeNode)node).getType() + " " + ((IterativeNode)node).getFor_to());
                     break;
                 case "class com.p4.core.nodes.FuncDclNode":
-                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getType() + " " + ((FuncDclNode)node).getID());
+                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + ((FuncDclNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ReturnExprNode":
                     this.print(localIndent, "(ReturnExpr)");
@@ -93,10 +90,28 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(prog)");
                     break;
                 case "class com.p4.core.nodes.BoolDclNode":
-                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getId());
+                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getID());
                     break;
                 case "class com.p4.cores.node.BoolNode":
                     this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
+                    break;
+                case "class com.p4.core.nodes.FormalParamNode":
+                    this.print(localIndent, "(Formal Param)");
+                    break;
+                case "class com.p4.core.nodes.AddNode":
+                    this.print(localIndent, "(Add)");
+                    break;
+                case "class com.p4.core.nodes.SubNode":
+                    this.print(localIndent, "(Sub)");
+                    break;
+                case "class com.p4.core.nodes.ModNode":
+                    this.print(localIndent, "(Mod)");
+                    break;
+                case "class com.p4.core.nodes.MultNode":
+                    this.print(localIndent, "(Mult)");
+                    break;
+                case "class com.p4.core.nodes.DivNode":
+                    this.print(localIndent, "(Div)");
                     break;
             }
 

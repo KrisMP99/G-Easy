@@ -3,14 +3,23 @@ package com.p4;
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
+import com.p4.core.nodes.AstNode;
 import com.p4.core.nodes.ProgNode;
+import com.p4.core.symbolTable.Scope;
+import com.p4.core.symbolTable.SymbolAttributes;
+import com.p4.core.symbolTable.SymbolTable;
 import com.p4.core.visitors.AstTreeVisitor;
 import com.p4.core.visitors.AstVisitor;
+import com.p4.core.visitors.SemanticsVisitor;
+import com.p4.core.visitors.SymbolTableVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -25,10 +34,16 @@ public class Main {
         AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
         astTreeVisitor.visit(0, ast);
 
-        // ast
-        System.out.println(ast.toString());
+        SymbolTable symbolTable = new SymbolTable();
+        SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable);
+        symbolTableVisitor.visit(ast);
+
+        //Semantic visitor
+        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable);
+        semanticsVisitor.visit(ast);
 
         // Text in console
+        System.out.println("ParseTree: ");
         System.out.println(parseTree.toStringTree(parser));
 
         //ParseTree in GUI

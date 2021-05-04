@@ -1,13 +1,12 @@
 package com.p4.core.nodes;
 
 import com.p4.core.visitors.INodeVisitor;
-import org.antlr.v4.runtime.CommonToken;
 
-public class ExprNode extends AstNode {
+public class AddNode extends AstNode {
     private boolean parentheses = false;
-    private CommonToken token;
+    public int lineNumber = 0;
 
-    public boolean getParentheses() {
+    public boolean isParentheses() {
         return parentheses;
     }
 
@@ -18,13 +17,5 @@ public class ExprNode extends AstNode {
     @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
-    }
-
-    public int getToken() {
-        return token.getType();
-    }
-
-    public void setToken(int operator) {
-        this.token = new CommonToken(operator);
     }
 }

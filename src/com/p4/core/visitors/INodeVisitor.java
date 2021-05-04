@@ -14,11 +14,8 @@ public interface INodeVisitor {
     void visit(AssignNode node);
     void visit(ArrayDclNode node);
     void visit(PosDclNode node);
-    void visit(VarDclNode node);
 
-    void visit(PosAssignNode node);
     void visit(ArrayAccessNode node);
-    void visit(ExprNode node);
 
     void visit(SelectionNode node);
     void visit(IterativeNode node);
@@ -43,6 +40,12 @@ public interface INodeVisitor {
     void visit(DoubleNode node);
     void visit(PosNode node);
     void visit(LogicalOPNode node);
+
+    void visit(AddNode node);
+    void visit(SubNode node);
+    void visit(DivNode node);
+    void visit(MultNode node);
+    void visit(ModNode node);
 
     void visit(LineCommentNode node);
 
