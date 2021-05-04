@@ -40,14 +40,15 @@ class GEasyParserTest {
     @Test
     public void testEquals() {
         var noParam = createParserNoError(Arrays.asList(
-                new TestToken("true", GEasyLexer.BOOL),
-                new TestToken("&&", GEasyLexer.AND),
-                new TestToken("true", GEasyLexer.BOOL),
+                new TestToken("int", GEasyLexer.TYPE),
+                new TestToken("x", GEasyLexer.ID),
+                new TestToken("=", GEasyLexer.ASSIGN_OP),
+                new TestToken("1", GEasyLexer.NUMBER),
                 new TestToken(";", GEasyLexer.SEMICOLON)
         ));
 
         var f = noParam.prog();
-        assertTrue(f.getText().contains("true&&true;"));
+        assertTrue(f.getText().contains("intx=1;"));
     }
 
     private GEasyParser createParserNoError(List<TestToken> tokens) {
