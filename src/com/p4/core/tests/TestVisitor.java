@@ -8,6 +8,6 @@ public class TestVisitor extends GEasyBaseVisitor<String> {
 
     @Override
     public String visitExpr(GEasyParser.ExprContext ctx) {
-        return visit(ctx.val().get(0)) + " + " + visit(ctx.val().get(0));
+        return visit(ctx.children.get(0)) + " + " + visit(ctx.children.get(1));
     }
 }

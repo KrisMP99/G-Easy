@@ -46,7 +46,7 @@ class GEasyLexerTest {
 
         assertEquals(4, tokens.size()); // includes EOF
         Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(0).getType());
-        Assertions.assertEquals(GEasyLexer.ARITHMETIC_OP, tokens.get(1).getType());
+        Assertions.assertEquals(GEasyLexer.PLUS, tokens.get(1).getType());
         Assertions.assertEquals(GEasyLexer.NUMBER, tokens.get(2).getType());
     }
 

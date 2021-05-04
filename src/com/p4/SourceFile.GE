@@ -1,3 +1,5 @@
+int x = 1;
+
 pos p1 = {x: 2, y: 2};
 
 cut_line(x: 2, y: 2, speed: 100);
