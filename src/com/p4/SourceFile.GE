@@ -1,5 +1,0 @@
-int addNum(int x) {
-    return 2;
-}
-
-int b = addNum(x: 2.4);
