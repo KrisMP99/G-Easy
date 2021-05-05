@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,13 +54,19 @@ public class Main {
         if(!errorCollector.hasErrors()) {
             CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
             codeVisitor.visit(ast);
-
+          
+          try {
+            codeVisitor.print();
+          }
+          catch (IOException e) {
+            e.printStackTrace();
+          }
         } else {
             // Print errors
             errorCollector.displayErrors();
         }
 
-
+        
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();

@@ -24,4 +24,9 @@ public class CuttingHead {
     public void setYCord(double yCord) {
         this.yCord = yCord;
     }
+
+    public void updateHeadPosition(double xCord, double yCord){
+        this.xCord = xCord;
+        this.yCord = yCord;
+    }
 }
