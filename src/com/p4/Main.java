@@ -28,12 +28,15 @@ public class Main {
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();
 
+        // Text in console (parseTree)
+        // System.out.println("ParseTree: ");
+        // System.out.println(parseTree.toStringTree(parser));
+
         GEasyBaseVisitor<?> visitor = new AstVisitor<>();
         ProgNode ast = (ProgNode) visitor.visit(parseTree);
 
         AstTreePrinterVisitor astTreePrinterVisitor = new AstTreePrinterVisitor();
         astTreePrinterVisitor.visit(0, ast);
-
 
         // Filling symbol table
         SymbolTable symbolTable = new SymbolTable();
@@ -45,15 +48,17 @@ public class Main {
         SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errorCollector);
         semanticsVisitor.visit(ast);
 
-        // Print errors
-        errorCollector.printErrors();
 
-        // Text in console (parseTree)
-        // System.out.println("ParseTree: ");
-        // System.out.println(parseTree.toStringTree(parser));
-        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+        // We can only generate code, if there are no error from the semantic analysis
+        if(!errorCollector.hasErrors()) {
+            CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+            codeVisitor.visit(ast);
 
-        codeVisitor.visit(ast);
+        } else {
+            // Print errors
+            errorCollector.displayErrors();
+        }
+
 
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
