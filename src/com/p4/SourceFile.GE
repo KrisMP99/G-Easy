@@ -1,3 +1,5 @@
-pos p1 = {x: 2, y: 2};
+int addNum(int x) {
+    return 2;
+}
 
-cut_line(x: 2, y: 2, speed: 100);
+int b = addNum(x: 2.4);

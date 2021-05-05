@@ -1,6 +1,8 @@
 package com.p4.core.visitors;
 
 import com.p4.core.GEasyParser;
+import com.p4.core.errorHandling.ErrorCollector;
+import com.p4.core.errorHandling.ErrorType;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
@@ -8,13 +10,15 @@ import com.p4.core.symbolTable.SymbolTable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.jar.Attributes;
 
 public class SemanticsVisitor implements INodeVisitor {
     SymbolTable symbolTable;
+    ErrorCollector errorCollector;
 
-    public SemanticsVisitor(SymbolTable symbolTable) {
+
+    public SemanticsVisitor(SymbolTable symbolTable, ErrorCollector errorCollector) {
         this.symbolTable = symbolTable;
+        this.errorCollector = errorCollector;
     }
 
     @Override
@@ -54,12 +58,12 @@ public class SemanticsVisitor implements INodeVisitor {
 
                     // If the return type is void, there must not be a return statement
                     if(funcReturnType.equals("void")) {
-                        System.out.println("A function of type void cannot have a return statement");
+                        errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
                     // Check if the function return type is valid with the actual return type
                     else if(!isReturnOK(funcReturnType, blockChild.type)) {
                         // error!!!
-                        System.out.println("The actual return type " + blockChild.type + " is not compatible with the function return type " + funcReturnType);
+                        errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
                 }
             }
@@ -113,7 +117,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         }
         else {
-            System.out.println("Function " + node.getID() + " has not been declared!");
+            errorCollector.addErrorEntry(ErrorType.UNDECLARED_FUNCTION, printErrorMessage("func dcl not found", node.getID()), node.lineNumber);
         }
     }
 
@@ -125,7 +129,7 @@ public class SemanticsVisitor implements INodeVisitor {
             // Check if the number of actual params corresponds with the number of formal params
             if(node.children.size() != funcScope.getParams().size()) {
                 // Error
-                System.out.println("Number of params does not correspond!");
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("number of params", node.getID()), node.lineNumber);
             }
             else {
                 checkIfParamsAreValid(node, funcScope);
@@ -144,17 +148,15 @@ public class SemanticsVisitor implements INodeVisitor {
             String formalParamID = formalParams.getKey();
 
             if(actualParamType == null || actualParamType.equals("error")){
-                // error
-                System.out.println("The actual params has no valid type");
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", actualParamType), node.lineNumber);
             }
             else if(formalParamType != null) {
                 if(!isReturnOK(formalParams.getValue().getDataType(), node.children.get(child).type)) {
-                    // Types not compatible...
-                    System.out.println("Actual param " + actualParamID + " of type " + node.children.get(child).type + " not compatible with formal param " + formalParamID + " of type: " + formalParams.getValue().getDataType());
+                    errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("actual parameter type", actualParamID, actualParamType, formalParamType), node.lineNumber);
                 }
                 else {
                     // Check the names of the parameters
-                    checkParamID(formalParamID, actualParamID);
+                    checkParamID(formalParamID, actualParamID, node.lineNumber);
                 }
             }
             child++;
@@ -162,7 +164,7 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     // Checks if the name of the actual parameter in a func call is the same as the name of the formal parameter in the func dcl
-    private void checkParamID(String formalParamID, String actualParamID) {
+    private void checkParamID(String formalParamID, String actualParamID, int lineNumber) {
         // Make the two strings to lowercase
         String formalLower = formalParamID.toLowerCase();
         String actualLower = actualParamID.toLowerCase();
@@ -170,7 +172,7 @@ public class SemanticsVisitor implements INodeVisitor {
         // Check if they're equal
         if(!actualLower.equals(formalLower)) {
             // Error
-            System.out.println("Actual parameter " + actualParamID + " does not match the name of " + formalParamID);
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual parameter name", actualParamID, formalParamID), lineNumber);
         }
     }
 
@@ -267,30 +269,26 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
 
+        // Get the type of the array it's trying to access
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        node.type = attributes.getDataType();
+
         // Check if the type of index i legal (you cannot access an array using a double
         String indexType = node.children.get(0).getType();
-
         if(!indexType.equals("int")) {
             System.out.println("You can only access an array with an int type!");
         }
 
-        // Check if the index the user is trying to reach is not out of bounds
-        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        int arrayLength = attributes.getArrayLength();
-        AstNode indexChild = node.children.get(0);
-        IntNode intIndex = (IntNode)indexChild;
-        int index = intIndex.value;
+        // Make sure the user is not trying to access an element that is out of bonds
+        int arrayLength = attributes.getArrayLength() - 1;
+        int intIndex = Integer.parseInt(node.children.get(0).toString());
 
-        if(intIndex.isNegative) {
+        if(intIndex < 0) {
             System.out.println("Negative index is illegal");
         }
-        else if(index > arrayLength) {
+        else if(intIndex > arrayLength) {
             System.out.println("Index is out of bounds of the array");
         }
-
-        // Get the result type of the array access
-        node.setType(attributes.getArrayChildren().get(index).getType());
-
 
     }
 
@@ -338,7 +336,7 @@ public class SemanticsVisitor implements INodeVisitor {
         // We check this by going through all the children and verifying their node type
         for(int child = 0; child < node.getChildren().size(); child++) {
             String currChildName = node.children.get(child).getClass().toString();
-            if(!currChildName.equals("class com.p4.core.nodes.CompExprNode")) {
+            if(!currChildName.equals("class com.p4.core.nodes.CompExprNode") && !currChildName.equals("class com.p4.core.nodes.LogicalExprNode")) {
                 System.out.println("Illegal comparison");
             }
         }
@@ -379,11 +377,6 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(BoolExprNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
     public void visit(IDNode node) {
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
         if(attributes == null) {
@@ -409,7 +402,6 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(0).type;
 
         checkIfTypeDCLisCorrect(leftType, rightType);
-
     }
 
     // When declaring variables this checks if the type of the variable matches the type of the expression its being assigned to
@@ -519,4 +511,23 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(LineCommentNode node) {
         this.visitChildren(node);
     }
+
+
+    public String printErrorMessage(String errorType, String ... info) {
+        switch (errorType) {
+            case "return": case "void return":
+                return "Illegal return type: Cannot return " + info[0] + " from a function of type " + info[1];
+            case "func dcl not found":
+                return "Function '" + info[0] + "' hast not been declared";
+            case "number of params":
+                return "The number of actual parameters does not correspond with the number of formal parameters when calling the function '" + info[0] + "'";
+            case "actual parameter type":
+                return "Illegal parameter type: The actual param '" + info[0] + "' is of type " + info[1] + " but should be of type " + info[2] + " to match the corresponding formal parameter";
+            case "non-valid type":
+                return "Illegal type: The type '" + info[0] + "' is not valid";
+            default:
+                return "dunno fam";
+        }
+    }
+
 }

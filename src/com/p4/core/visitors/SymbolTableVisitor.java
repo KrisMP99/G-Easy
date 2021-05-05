@@ -134,10 +134,6 @@ public class SymbolTableVisitor implements INodeVisitor {
         SymbolAttributes attributes = new SymbolAttributes("array", node.getType(), arrayLength);
         attributes.setScope(symbolTable.getCurrentScope().getScopeName());
 
-        for(AstNode child : node.children) {
-            attributes.addArrayChild(child);
-        }
-
         symbolTable.insertSymbol(node.getID(), attributes);
 
     }
@@ -208,11 +204,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(CompNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(BoolExprNode node) {
         this.visitChildren(node);
     }
 

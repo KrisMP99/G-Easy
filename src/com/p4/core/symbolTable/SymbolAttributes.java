@@ -7,7 +7,6 @@ import java.util.List;
 
 public class SymbolAttributes {
     private int arrayLength;
-    private List<AstNode> children = new ArrayList<>();
     private String type;        // func, dcl, param, array
     private String dataType;    // int, double, bool, pos
     private String scopeName;
@@ -62,26 +61,5 @@ public class SymbolAttributes {
     @Override
     public String toString() {
         return "type: " + type + " datatype: " + dataType + " scope: " + scopeName + " arrayLength: " + arrayLength;
-    }
-
-    public void addArrayChild(AstNode child) {
-        children.add(child);
-    }
-
-    public AstNode getArrayChild(AstNode child) {
-        if(children.contains(child)) {
-            return children.get(children.indexOf(child));
-        }
-        else {
-            return null;
-        }
-    }
-
-    public List<AstNode> getArrayChildren() {
-        return children;
-    }
-
-    public void setArrayChildren(List<AstNode> arrayChildren) {
-        this.children = arrayChildren;
     }
 }

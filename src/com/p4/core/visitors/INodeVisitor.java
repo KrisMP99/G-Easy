@@ -29,7 +29,6 @@ public interface INodeVisitor {
     void visit(ArithmeticNode node);
     void visit(CompNode node);
     void visit(BoolDclNode node);
-    void visit(BoolExprNode node);
     void visit(CompExprNode node);
 
     void visit(IDNode node);

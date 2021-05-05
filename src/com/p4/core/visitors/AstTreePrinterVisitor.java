@@ -3,7 +3,7 @@ package com.p4.core.visitors;
 import com.p4.core.nodes.*;
 
 // Used to visit our Ast and print it to the console
-public class AstTreeVisitor {
+public class AstTreePrinterVisitor {
     public void visit(int localIndent, AstNode node) {
         if(node != null) {
             switch (node.getClass().toString()) {
@@ -61,9 +61,6 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
                     this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
-                    break;
-                case "class com.p4.core.nodes.BoolExprNode":
-                    this.print(localIndent, "(BoolExpr)");
                     break;
                 case "class com.p4.core.nodes.BoolNode":
                     this.print(localIndent, "(Bool) " + ((BoolNode)node).getValue());
