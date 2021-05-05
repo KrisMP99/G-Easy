@@ -1,5 +1,2 @@
-int addNum(int x) {
-    return 2;
-}
+cut_clockwise_circular(x: 0, y: 10, speed: 250);
 
-int b = addNum(x: 2.4);
