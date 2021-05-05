@@ -8,16 +8,14 @@ import com.p4.core.nodes.ProgNode;
 import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
-import com.p4.core.visitors.AstTreeVisitor;
-import com.p4.core.visitors.AstVisitor;
-import com.p4.core.visitors.SemanticsVisitor;
-import com.p4.core.visitors.SymbolTableVisitor;
+import com.p4.core.visitors.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,6 +39,10 @@ public class Main {
         //Semantic visitor
         SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable);
         semanticsVisitor.visit(ast);
+
+        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+
+        codeVisitor.visit(ast);
 
         // Text in console
         System.out.println("ParseTree: ");

@@ -173,10 +173,9 @@ public class SymbolTableVisitor implements INodeVisitor {
         String scopeName = symbolTable.getCurrentScope().getScopeName();
 
         for (AstNode child : node.getChildren()){
-            IDNode param = (IDNode)child;
-            SymbolAttributes attributes = new SymbolAttributes("Actual Param", param.type);
+            SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
-            symbolTable.insertParam(param.getID(), attributes);
+            symbolTable.insertParam(child.getID(), attributes);
         }
         this.visitChildren(node);
     }
