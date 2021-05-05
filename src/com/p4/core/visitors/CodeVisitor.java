@@ -219,8 +219,6 @@ public class CodeVisitor implements INodeVisitor {
 
     }
 
-
-
     @Override
     public void visit(ArrayAccessNode node) {
 
@@ -275,8 +273,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BoolDclNode node) {
 
     }
-
-
+  
     @Override
     public void visit(CompExprNode node) {
 

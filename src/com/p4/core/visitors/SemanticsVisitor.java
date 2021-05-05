@@ -186,7 +186,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String rightType = node.children.get(0).getType();
 
         if(!isReturnOK(node.type, rightType)) {
-            System.out.println("Type error");
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
         }
 
     }
@@ -207,7 +207,7 @@ public class SemanticsVisitor implements INodeVisitor {
             String type = arrayElement.getType();
 
             if(!isReturnOK(leftType, type)) {
-                System.out.println("Illegal type in array!");
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array assign", type, leftType), node.lineNumber);
             }
         }
     }
@@ -219,7 +219,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.type;
         String rightType = node.children.get(0).getType();
 
-        checkIfTypeDCLisCorrect(leftType, rightType);
+        checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
 
         if(node.children.get(0).getID() != null) {
             checkPosDclOperation(node);
@@ -240,7 +240,7 @@ public class SemanticsVisitor implements INodeVisitor {
             }
             else {
                 // Operation not OK
-                System.out.println("It is only possible to multiply a position with a scalar.");
+                errorCollector.addErrorEntry(ErrorType.OPERATION_ERROR, printErrorMessage("pos multiply"), node.lineNumber);
             }
         }
         // You can only add or subtract to positions
@@ -248,7 +248,7 @@ public class SemanticsVisitor implements INodeVisitor {
             if(leftType.equals("pos") && rightType.equals("pos")) {
                 // Operation OK
             } else {
-                System.out.println("Illegal add or subtraction with position");
+                errorCollector.addErrorEntry(ErrorType.OPERATION_ERROR, printErrorMessage("pos add-sub"), node.lineNumber);
             }
         }
 
@@ -260,9 +260,8 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // We need to make sure that the ID of the x- and y-coordinate are 'x' and 'y'
         if(!(node.getxID().equalsIgnoreCase("x") && node.getyID().equalsIgnoreCase("y"))) {
-            System.out.print("The coordinates must be named 'x' and 'y'! ");
+            errorCollector.addErrorEntry(ErrorType.NAME_ERROR, printErrorMessage("pos illegal cord-name"), node.lineNumber);
         }
-
     }
 
     @Override
@@ -273,23 +272,22 @@ public class SemanticsVisitor implements INodeVisitor {
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
         node.type = attributes.getDataType();
 
-        // Check if the type of index i legal (you cannot access an array using a double
-        String indexType = node.children.get(0).getType();
-        if(!indexType.equals("int")) {
-            System.out.println("You can only access an array with an int type!");
-        }
 
         // Make sure the user is not trying to access an element that is out of bonds
         int arrayLength = attributes.getArrayLength() - 1;
-        int intIndex = Integer.parseInt(node.children.get(0).toString());
+        double index = Double.parseDouble(node.children.get(0).toString());
 
-        if(intIndex < 0) {
-            System.out.println("Negative index is illegal");
+        // Check if the type of index i legal (you cannot access an array using a double
+        String indexType = node.children.get(0).getType();
+        if(!indexType.equals("int")) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("index type", indexType), node.lineNumber);
         }
-        else if(intIndex > arrayLength) {
-            System.out.println("Index is out of bounds of the array");
+        else if(index < 0) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array index negative"), node.lineNumber);
         }
-
+        else if(index > arrayLength) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array out of bounds"), node.lineNumber);
+        }
     }
 
     @Override
@@ -337,7 +335,7 @@ public class SemanticsVisitor implements INodeVisitor {
         for(int child = 0; child < node.getChildren().size(); child++) {
             String currChildName = node.children.get(child).getClass().toString();
             if(!currChildName.equals("class com.p4.core.nodes.CompExprNode") && !currChildName.equals("class com.p4.core.nodes.LogicalExprNode")) {
-                System.out.println("Illegal comparison");
+                errorCollector.addErrorEntry(ErrorType.OPERATION_ERROR, printErrorMessage("illegal comparison"), node.lineNumber);
             }
         }
     }
@@ -353,7 +351,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if(leftNode != null && rightNode != null) {
             if(!isComparisonOK(leftNode.getType(), rightNode.getType(), node.getToken())) {
-                System.out.println("Illegal comparison");
+                errorCollector.addErrorEntry(ErrorType.OPERATION_ERROR, printErrorMessage("illegal comparison"), node.lineNumber);
             }
         }
     }
@@ -382,7 +380,7 @@ public class SemanticsVisitor implements INodeVisitor {
         if(attributes == null) {
             // Error handling here
             // The variable could not be found in the scope (local + global)
-            System.out.println("Could not find variable: " + node.getID() + " in the scope");
+            errorCollector.addErrorEntry(ErrorType.UNDECLARED_VAR, printErrorMessage("no var dcl", node.getID()), node.lineNumber);
         }
         else {
             node.type = attributes.getDataType();
@@ -401,15 +399,15 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.getType();
         String rightType = node.children.get(0).type;
 
-        checkIfTypeDCLisCorrect(leftType, rightType);
+        checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
     }
 
     // When declaring variables this checks if the type of the variable matches the type of the expression its being assigned to
     // Example: int x = true;    NOT OKAY
     // Example: int x = 22;      OKAY
-    private void checkIfTypeDCLisCorrect(String dclType, String exprType) {
+    private void checkIfTypeDCLisCorrect(String dclType, String exprType, int lineNumber) {
         if(!isReturnOK(dclType, exprType)) {
-            System.out.println("The types in the declaration does not match");
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", dclType, exprType), lineNumber);
         }
     }
 
@@ -425,7 +423,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.getType();
         String rightType = node.children.get(0).getType();
 
-        checkIfTypeDCLisCorrect(leftType, rightType);
+        checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
     }
 
     @Override
@@ -440,7 +438,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.getType();
         String rightType = node.children.get(0).getType();
 
-        checkIfTypeDCLisCorrect(leftType, rightType);
+        checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
     }
 
 
@@ -525,6 +523,28 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Illegal parameter type: The actual param '" + info[0] + "' is of type " + info[1] + " but should be of type " + info[2] + " to match the corresponding formal parameter";
             case "non-valid type":
                 return "Illegal type: The type '" + info[0] + "' is not valid";
+            case "actual parameter name":
+                return "Illegal parameter name: The actual parameter name '" + info[0] + "' does not match the name of the formal parameter '" + info[1] + "'";
+            case "assign":
+                return "Illegal type conversion: Cannot assign " + info[0] + " to " + info[1];
+            case "array assign":
+                return "Illegal type: Cannot insert type " + info[0] + " into an array of type " + info[1];
+            case "pos multiply":
+                return "Illegal operation: One of the operands is not a scalar";
+            case "pos add-sub":
+                return "Illegal operation: Cannot add/subtract a position";
+            case "pos illegal cord-name":
+                return "Illegal pos declaration: The coordinates must be named 'x' and 'y'";
+            case "index type":
+                return "Illegal indexing type: The index cannot be of type " + info[0];
+            case "array index negative":
+                return "Illegal index: The index cannot be negative";
+            case "array out of bounds":
+                return "Illegal index: The index is out of bounds";
+            case "illegal comparison":
+                return "Illegal operation: The comparison is not valid";
+            case "no var dcl":
+                return "Variable not declared: The variable '" + info[0] + "' has not been declared in an accessible scope";
             default:
                 return "dunno fam";
         }
