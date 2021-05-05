@@ -10,11 +10,16 @@ import com.p4.core.visitors.AstTreePrinterVisitor;
 import com.p4.core.visitors.AstVisitor;
 import com.p4.core.visitors.SemanticsVisitor;
 import com.p4.core.visitors.SymbolTableVisitor;
+import com.p4.core.visitors.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -46,6 +51,9 @@ public class Main {
         // Text in console (parseTree)
         // System.out.println("ParseTree: ");
         // System.out.println(parseTree.toStringTree(parser));
+        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+
+        codeVisitor.visit(ast);
 
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
