@@ -11,6 +11,22 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     public SymbolTableVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
+
+        // Add our predefined functions
+        // They all have the void return type
+        SymbolAttributes attributes = new SymbolAttributes("function", "void");
+        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
+
+        // Insert
+        symbolTable.insertSymbol("cut_line", attributes);
+        symbolTable.insertSymbol("rapid_move", attributes);
+        symbolTable.insertSymbol("cut_clockwise_circular", attributes);
+
+        // Insert it into the declared functions
+        symbolTable.declaredFunctions.add("cut_line");
+        symbolTable.declaredFunctions.add("rapid_move");
+        symbolTable.declaredFunctions.add("cut_clockwise_circular");
+
     }
 
     @Override
@@ -117,22 +133,13 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         SymbolAttributes attributes = new SymbolAttributes("array", node.getType(), arrayLength);
         attributes.setScope(symbolTable.getCurrentScope().getScopeName());
+
         symbolTable.insertSymbol(node.getID(), attributes);
 
     }
 
     @Override
-    public void visit(PosAssignNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
     public void visit(ArrayAccessNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(ExprNode node) {
         this.visitChildren(node);
     }
 
@@ -197,11 +204,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(CompNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(BoolExprNode node) {
         this.visitChildren(node);
     }
 

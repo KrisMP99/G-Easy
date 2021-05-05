@@ -3,11 +3,13 @@ package com.p4;
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
-import com.p4.core.nodes.AstNode;
+import com.p4.core.errorHandling.ErrorCollector;
 import com.p4.core.nodes.ProgNode;
-import com.p4.core.symbolTable.Scope;
-import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
+import com.p4.core.visitors.AstTreePrinterVisitor;
+import com.p4.core.visitors.AstVisitor;
+import com.p4.core.visitors.SemanticsVisitor;
+import com.p4.core.visitors.SymbolTableVisitor;
 import com.p4.core.visitors.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -29,24 +31,29 @@ public class Main {
         GEasyBaseVisitor<?> visitor = new AstVisitor<>();
         ProgNode ast = (ProgNode) visitor.visit(parseTree);
 
-        AstTreeVisitor astTreeVisitor = new AstTreeVisitor();
-        astTreeVisitor.visit(0, ast);
+        AstTreePrinterVisitor astTreePrinterVisitor = new AstTreePrinterVisitor();
+        astTreePrinterVisitor.visit(0, ast);
 
+
+        // Filling symbol table
         SymbolTable symbolTable = new SymbolTable();
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable);
         symbolTableVisitor.visit(ast);
 
         //Semantic visitor
-        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable);
+        ErrorCollector errorCollector = new ErrorCollector();
+        SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errorCollector);
         semanticsVisitor.visit(ast);
 
+        // Print errors
+        errorCollector.printErrors();
+
+        // Text in console (parseTree)
+        // System.out.println("ParseTree: ");
+        // System.out.println(parseTree.toStringTree(parser));
         CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
 
         codeVisitor.visit(ast);
-
-        // Text in console
-        System.out.println("ParseTree: ");
-        System.out.println(parseTree.toStringTree(parser));
 
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);

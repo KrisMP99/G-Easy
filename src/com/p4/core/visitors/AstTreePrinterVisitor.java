@@ -3,7 +3,7 @@ package com.p4.core.visitors;
 import com.p4.core.nodes.*;
 
 // Used to visit our Ast and print it to the console
-public class AstTreeVisitor {
+public class AstTreePrinterVisitor {
     public void visit(int localIndent, AstNode node) {
         if(node != null) {
             switch (node.getClass().toString()) {
@@ -15,9 +15,6 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.core.nodes.PosDclNode":
                     this.print(localIndent,"(PosDcl) " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
-                    break;
-                case "class com.p4.core.nodes.ExprNode":
-                    this.print(localIndent, "(Expr) ");
                     break;
                 case "class com.p4.core.nodes.ArithmeticNode":
                     this.print(localIndent, "(Arthm) " + ((ArithmeticNode)node).getToken());
@@ -32,10 +29,10 @@ public class AstTreeVisitor {
                     this.print(localIndent, "(ArrayDcl) " + ((ArrayDclNode)node).getType() + " " + ((ArrayDclNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
-                    this.print(localIndent, "(ArrayAccess) " + ((ArrayAccessNode)node).ID);
+                    this.print(localIndent, "(ArrayAccess) " + ((ArrayAccessNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.FuncCallNode":
-                    this.print(localIndent, "(FunCall) " + ((FuncCallNode)node).getID());
+                    this.print(localIndent, "(FuncCall) " + ((FuncCallNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.ActualParamNode":
                     this.print(localIndent, "(ActualParm) " + ((ActualParamNode)node).getID());
@@ -64,9 +61,6 @@ public class AstTreeVisitor {
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
                     this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
-                    break;
-                case "class com.p4.core.nodes.BoolExprNode":
-                    this.print(localIndent, "(BoolExpr)");
                     break;
                 case "class com.p4.core.nodes.BoolNode":
                     this.print(localIndent, "(Bool) " + ((BoolNode)node).getValue());

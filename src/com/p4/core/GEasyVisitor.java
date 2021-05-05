@@ -35,12 +35,6 @@ public interface GEasyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNum_dcl(GEasyParser.Num_dclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GEasyParser#pos_dcl}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPos_dcl(GEasyParser.Pos_dclContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link GEasyParser#bool_dcl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
