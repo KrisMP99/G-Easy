@@ -22,7 +22,7 @@ public class CodeVisitor implements INodeVisitor {
     private StringBuilder stringBuilder = new StringBuilder();
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
-    private CuttingHead cuttingHead = new CuttingHead(0,0);
+    private CuttingHead cuttingHead = new CuttingHead(-10,0);
 
     public CodeVisitor(SymbolTable symbolTable){
         this.symbolTable = symbolTable;
@@ -109,11 +109,11 @@ public class CodeVisitor implements INodeVisitor {
         else if(funcName.equals("cut_clockwise_circular")){
             xCord = params.get(0);
             yCord = params.get(1);
-            iCord = cuttingHead.getXCord() * -1;
-            jCord = cuttingHead.getYCord() * -1;
+            iCord = cuttingHead.getXCord() * (-1);
+            jCord = cuttingHead.getYCord() * (-1);
             speed = params.get(2);
 
-            cutclockwiseCircular(xCord, yCord, iCord, jCord, speed);
+            cutClockwiseCircular(xCord, yCord, iCord, jCord, speed);
         }
         else if (funcName.equals("rapid_move")){
             xCord = params.get(0);
@@ -131,9 +131,10 @@ public class CodeVisitor implements INodeVisitor {
                 + " Y" + y
                 + "\n");
         output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
     }
 
-    private void cutclockwiseCircular(double x, double y, double i, double j, double speed){
+    private void cutClockwiseCircular(double x, double y, double i, double j, double speed){
         stringBuilder.append("G2 X" + x
                 + " Y" + y
                 + " I" + i
@@ -141,6 +142,7 @@ public class CodeVisitor implements INodeVisitor {
                 + " F" + speed
                 + "\n");
         output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
     }
 
     private void cutLine(double x, double y, double speed){
@@ -149,6 +151,7 @@ public class CodeVisitor implements INodeVisitor {
                 + " F" + speed
                 + "\n");
         output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
     }
 
     private List<Double> getParamsForBuildInFunction(FuncCallNode node) {
@@ -177,17 +180,19 @@ public class CodeVisitor implements INodeVisitor {
         List<Double> value = new ArrayList<>();
         String nodeType = getNodeType(node);
 
-        switch (nodeType){
-            case "int" :
-            case "double" :
-                value.add(Double.parseDouble(node.toString()));
-                break;
-            case "pos" :
-                value.add(Double.parseDouble(node.children.get(0).toString()));
-                value.add(Double.parseDouble(node.children.get(1).toString()));
-                break;
-            default:
-                //error handling
+        for (AstNode child : node.children) {
+            switch (nodeType) {
+                case "int":
+                case "double":
+                    value.add(Double.parseDouble(child.toString()));
+                    break;
+                case "pos":
+                    value.add(Double.parseDouble(child.children.get(0).toString()));
+                    value.add(Double.parseDouble(child.children.get(1).toString()));
+                    break;
+                default:
+                    //error handling
+            }
         }
         return value;
     }
