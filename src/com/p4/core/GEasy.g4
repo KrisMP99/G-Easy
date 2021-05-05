@@ -4,11 +4,9 @@ grammar GEasy;
 prog: (dcl | stmt | func_call )* EOF ;
 dcl : (assign | var_dcl | func_dcl) ;
 
-var_dcl : (num_dcl | pos_dcl | array_dcl | bool_dcl) SEMICOLON ;
+var_dcl : (num_dcl | array_dcl | bool_dcl) SEMICOLON ;
 
-num_dcl : TYPE ID ASSIGN_OP expr ;
-
-pos_dcl : POS ID ASSIGN_OP (pos_assign | expr) ;
+num_dcl : TYPE ID ASSIGN_OP (expr | pos_assign) ;
 
 bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 
@@ -34,7 +32,7 @@ val_expr : (MINUS)? (val | array_access | func_call);
 
 func_call : ID LP (actual_param (COMMA actual_param)*)? RP ;
 
-actual_param : ID COLON expr ;
+actual_param : (ID | TYPE) COLON expr ;
 
 stmt : assign SEMICOLON
      | expr SEMICOLON
@@ -80,8 +78,6 @@ ELSE : 'else' ;
 FOR : 'for' ;
 TO: 'to' ;
 
-POS : 'pos' ;
-
 VOID : 'void' ;
 RETURN : 'return' ;
 
@@ -93,6 +89,7 @@ WHITESPACE
 
 TYPE : 'int'
      | 'double'
+     | 'pos'
      ;
 
 BOOL_T : 'bool' ;

@@ -27,6 +27,11 @@ public class ArrayDclNode extends AstNode {
     }
 
     @Override
+    public String getNodesHash(){
+        return "Array: " + getID();
+    }
+
+    @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
     }

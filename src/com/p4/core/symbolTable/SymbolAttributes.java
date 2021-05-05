@@ -1,5 +1,10 @@
 package com.p4.core.symbolTable;
 
+import com.p4.core.nodes.AstNode;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class SymbolAttributes {
     private int arrayLength;
     private String type;        // func, dcl, param, array

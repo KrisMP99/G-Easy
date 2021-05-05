@@ -61,16 +61,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitVar_dcl(GEasyParser.Var_dclContext ctx) {
         GEasyParser.Num_dclContext num_dcl = ctx.num_dcl();
-        GEasyParser.Pos_dclContext pos_dcl = ctx.pos_dcl();
         GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
         GEasyParser.Bool_dclContext bool_dcl = ctx.bool_dcl();
 
         if(num_dcl != null) {
             return visit(num_dcl);
-        }
-        else if(pos_dcl != null) {
-            return visit(pos_dcl);
-
         }
         else if(array_dcl != null) {
             return visit(array_dcl);
@@ -89,6 +84,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         String ID = ctx.ID().toString();
 
         GEasyParser.ExprContext expr = ctx.expr();
+        GEasyParser.Pos_assignContext pos_assign = ctx.pos_assign();
 
         // Find what kind of var_dcl we're dealing with
         // Should we add pos here somehow? (Requires a change in our grammar)
@@ -100,6 +96,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             case "double":
                 dclNode = new DoubleDclNode(ID);
                 break;
+            case "pos":
+                dclNode = new PosDclNode(ID);
+                dclNode.type = "pos";
+                break;
             default:
                 return null;
         }
@@ -107,11 +107,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         // Add line number
         dclNode.lineNumber = ctx.start.getLine();
 
-        // A variable can be initialized to either an expression or func call
-        // If it's an expr/func_call we visit the given node and add it as a child to our dclNode
+        // Find out if we assign it to an expression or pos
         if(expr != null) {
-            AstNode exprNode = visit(ctx.expr());
-            dclNode.children.add(exprNode);
+            dclNode.children.add(visit(ctx.expr()));
+            return dclNode;
+        }
+        else if(pos_assign != null) {
+            dclNode.children.add(visit(ctx.pos_assign()));
             return dclNode;
         }
 
@@ -188,8 +190,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             String id = ctx.ID().toString();
             AssignNode assignNode = new AssignNode(id);
 
-            AstNode exprNode = visitExpr(expr);
-            assignNode.children.add(exprNode);
+            assignNode.children.add(visitExpr(expr));
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
@@ -208,31 +209,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             // error...
             return null;
         }
-    }
-
-    @Override
-    public AstNode visitPos_dcl(GEasyParser.Pos_dclContext ctx) {
-        String id = ctx.ID().toString();
-        String pos = ctx.POS().toString();
-
-        PosDclNode posDclNode = new PosDclNode(id);
-        posDclNode.setType(pos);
-        posDclNode.lineNumber = ctx.start.getLine();
-
-        GEasyParser.Pos_assignContext assign = ctx.pos_assign();
-        GEasyParser.ExprContext expr = ctx.expr();
-
-        if(assign != null){
-            AstNode posAssignNode = visitPos_assign(assign);
-            posDclNode.children.add(posAssignNode);
-            return posDclNode;
-        }
-        else if(expr != null) {
-            posDclNode.children.add(visit(expr));
-            return posDclNode;
-        }
-
-        return null;
     }
 
     @Override
@@ -263,15 +239,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         ArrayAccessNode arrayAccessNode = new ArrayAccessNode(ctx.ID().toString(), isNegative);
         arrayAccessNode.lineNumber = ctx.start.getLine();
 
-        int childCount = ctx.getChildCount();
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
-            ParseTree child = ctx.getChild(childIndex);
-
-            if(child instanceof GEasyParser.ExprContext){
-                AstNode exprNode = visit(child);
-                arrayAccessNode.children.add(exprNode);
-            }
-        }
+        arrayAccessNode.children.add(visit(ctx.expr()));
 
         return arrayAccessNode;
     }

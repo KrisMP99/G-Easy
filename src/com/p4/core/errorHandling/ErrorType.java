@@ -1,0 +1,15 @@
+package com.p4.core.errorHandling;
+
+public enum ErrorType {
+    LEXER_ERROR,
+    PARSER_ERROR,
+    TYPE_ERROR,
+    DIVIDE_BY_ZERO,
+    UNDECLARED_FUNCTION,
+    PARAMETER_ERROR,
+    UNDECLARED_VAR,
+    DUPLICATED_VAR,
+    DUPLICATED_FUNCTION_DECLARATION,
+    OPERATION_ERROR,
+    NAME_ERROR;
+}

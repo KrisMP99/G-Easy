@@ -48,16 +48,6 @@ public interface GEasyListener extends ParseTreeListener {
 	 */
 	void exitNum_dcl(GEasyParser.Num_dclContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GEasyParser#pos_dcl}.
-	 * @param ctx the parse tree
-	 */
-	void enterPos_dcl(GEasyParser.Pos_dclContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GEasyParser#pos_dcl}.
-	 * @param ctx the parse tree
-	 */
-	void exitPos_dcl(GEasyParser.Pos_dclContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link GEasyParser#bool_dcl}.
 	 * @param ctx the parse tree
 	 */
