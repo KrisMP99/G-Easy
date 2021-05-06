@@ -275,19 +275,30 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // Make sure the user is not trying to access an element that is out of bonds
         int arrayLength = attributes.getArrayLength() - 1;
-        double index = Double.parseDouble(node.children.get(0).toString());
 
-        // Check if the type of index i legal (you cannot access an array using a double
-        String indexType = node.children.get(0).getType();
-        if(!indexType.equals("int")) {
-            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("index type", indexType), node.lineNumber);
+        // Get the children index node
+        AstNode indexNode = node.children.get(0);
+
+        if(indexNode instanceof IntNode || indexNode instanceof DoubleNode) {
+            double index = Double.parseDouble(indexNode.toString());
+
+            // Check if the type of index is legal (you cannot access an array using a double
+            String indexType = node.children.get(0).getType();
+            if(!indexType.equals("int")) {
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("index type", indexType), node.lineNumber);
+            }
+            else if(index < 0) {
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array index negative"), node.lineNumber);
+            }
+            else if(index > arrayLength) {
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array out of bounds"), node.lineNumber);
+            }
         }
-        else if(index < 0) {
-            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array index negative"), node.lineNumber);
+        else if(indexNode instanceof IDNode) {
+            // We need to get the value of the ID node
+            // Fix later
         }
-        else if(index > arrayLength) {
-            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array out of bounds"), node.lineNumber);
-        }
+
     }
 
     @Override
