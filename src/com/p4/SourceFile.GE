@@ -1,1 +1,1 @@
-cut_line(x: 10, y: 10, speed: 10);
+cut_line(x: 2, y: 2, speed: 100);
