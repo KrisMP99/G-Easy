@@ -39,7 +39,6 @@ public class Main {
         AstTreePrinterVisitor astTreePrinterVisitor = new AstTreePrinterVisitor();
         astTreePrinterVisitor.visit(0, ast);
 
-
         // Filling symbol table
         SymbolTable symbolTable = new SymbolTable();
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(symbolTable);
@@ -50,26 +49,26 @@ public class Main {
         SemanticsVisitor semanticsVisitor = new SemanticsVisitor(symbolTable, errorCollector);
         semanticsVisitor.visit(ast);
 
-        // Print errors
-        errorCollector.printErrors();
 
         // We can only generate code, if there are no error from the semantic analysis
         if(!errorCollector.hasErrors()) {
-            CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+            CodeVisitor codeVisitor = new CodeVisitor(symbolTable, ast);
             codeVisitor.visit(ast);
 
-          try {
+            try {
             codeVisitor.print();
-          }
-          catch (IOException e) {
-            e.printStackTrace();
-          }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Code has been generated!");
         } else {
             // Print errors
             errorCollector.displayErrors();
         }
 
-
+        
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();

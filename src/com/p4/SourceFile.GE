@@ -1,2 +1,1 @@
-pos p = {x: 2, y: 3};
-rapid_move(position: p);
+cut_line(x: 10, y: 10, speed: 10);
