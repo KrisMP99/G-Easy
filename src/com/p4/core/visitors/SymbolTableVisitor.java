@@ -116,6 +116,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     private void addPredefinedFunctionParams(FuncCallNode node) {
+        visitPredefinedFunctionParameters(node);
         String scopeName = symbolTable.getCurrentScope().getScopeName();
 
         for (AstNode child : node.children){
@@ -125,11 +126,24 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    private void visitPredefinedFunctionParameters(AstNode node) {
+        // actual param = child
+        for(AstNode child : node.children) {
+            for(AstNode idChild : child.children) {
+                if(idChild instanceof IDNode) {
+                    SymbolAttributes attributes = symbolTable.lookupSymbol(idChild.getID());
+                    child.setType(attributes.getDataType());
+                }
+            }
+        }
+    }
+
 
     @Override
     public void visit(FuncCallNode node) {
         String functionID = node.getID();
 
+        // Add predefined function names here
         switch (functionID) {
             case "cut_line": case "cut_clockwise_circular": case "rapid_move":
                 addPredefinedFunction(node);
@@ -212,9 +226,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
             symbolTable.insertParam(child.getID(), attributes);
-
-            System.out.println("Child type: " + child.getType() + "  child ID: " + node.getID());
-
         }
     }
 
@@ -249,7 +260,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
         node.setType(attributes.getDataType());
-
     }
 
     @Override

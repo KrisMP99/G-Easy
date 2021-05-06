@@ -1,1 +1,2 @@
-cut_line(x: 2, y: 2, speed: 100);
+pos p1 = {x: 2, y: 2};
+cut_line(position: p1, speed: 100);
