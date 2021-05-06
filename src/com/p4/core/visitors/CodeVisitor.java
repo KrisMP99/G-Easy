@@ -228,10 +228,6 @@ public class CodeVisitor implements INodeVisitor {
         output.add(selection);
     }
 
-    public boolean evaluteBoolearnExpression(String expression){
-
-    }
-
     @Override
     public void visit(IterativeNode node) {
 
