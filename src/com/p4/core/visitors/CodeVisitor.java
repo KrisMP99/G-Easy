@@ -23,9 +23,12 @@ public class CodeVisitor implements INodeVisitor {
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
     private CuttingHead cuttingHead = new CuttingHead(-10,0);
+    private ProgNode progNode;
 
-    public CodeVisitor(SymbolTable symbolTable){
+
+    public CodeVisitor(SymbolTable symbolTable, ProgNode ast){
         this.symbolTable = symbolTable;
+        this.progNode = ast;
     }
 
     //Adds the string builder to the output file
@@ -90,36 +93,23 @@ public class CodeVisitor implements INodeVisitor {
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
-        double xCord;
-        double yCord;
-        double iCord;
-        double jCord;
+        double iCord = cuttingHead.getXCord() * (-1);;
+        double jCord = cuttingHead.getYCord() * (-1);
         double speed;
 
         String funcName = node.getID().toLowerCase();
-        List<Double> params = getParamsForBuildInFunction(node);
+        //List<AstNode> params = getParamsForBuildInFunction(node);
+        List<Double> params = getParamValues(node);
 
         if (funcName.equals("cut_line")){
-            xCord = params.get(0);
-            yCord = params.get(1);
-            speed = params.get(2);
-
-            cutLine(xCord, yCord, speed);
+            cutLine(params.get(0), params.get(1), params.get(2));
         }
         else if(funcName.equals("cut_clockwise_circular")){
-            xCord = params.get(0);
-            yCord = params.get(1);
-            iCord = cuttingHead.getXCord() * (-1);
-            jCord = cuttingHead.getYCord() * (-1);
-            speed = params.get(2);
-
-            cutClockwiseCircular(xCord, yCord, iCord, jCord, speed);
+            speed = Double.parseDouble(params.get(2).toString());
+            cutClockwiseCircular(params.get(0), params.get(1), iCord, jCord, speed);
         }
         else if (funcName.equals("rapid_move")){
-            xCord = params.get(0);
-            yCord = params.get(1);
-
-            rapidMove(xCord, yCord);
+            rapidMove(params.get(0), params.get(1));
         }
         else { //If they've written their own functions
 
@@ -154,51 +144,49 @@ public class CodeVisitor implements INodeVisitor {
         cuttingHead.updateHeadPosition(x, y);
     }
 
-    private List<Double> getParamsForBuildInFunction(FuncCallNode node) {
-        List<Double> params = new ArrayList<>();
-        for (AstNode child : node.children){
-            List<Double> childValues = getNodeValue(child);
+    private List<Double> getParamValues(FuncCallNode node){
+        List<AstNode> params = getParamsForBuildInFunction(node);
+        List<Double> paramValues = new ArrayList<>();
 
-            //child is a pos
-            if (childValues.size() == 2){
-                params.add(childValues.get(0));
-                params.add(childValues.get(1));
+        for (AstNode child : params) {
+            if (child instanceof IntDclNode || child instanceof DoubleDclNode){
+                paramValues.add(Double.parseDouble(child.children.get(0).toString()));
             }
+            else if (child instanceof IntNode || child instanceof DoubleNode) {
+                paramValues.add(Double.parseDouble(child.toString()));
+            }
+            else if (child instanceof PosDclNode) {
+                String[] posValues = child.children.get(0).toString().split(" ");
+                paramValues.add(Double.parseDouble(posValues[0]));
+                paramValues.add(Double.parseDouble(posValues[1]));
+            }
+        }
+        return paramValues;
+    }
 
-            //child is an int  or double
-            else if (childValues.size() == 1){
-                params.add(childValues.get(0));
-            }
-            else{
-                return null;
+    private List<AstNode> getParamsForBuildInFunction(FuncCallNode node) {
+        List<AstNode> params = new ArrayList<>();
+
+        for (AstNode paramChild : node.children){
+            for (AstNode childNode : paramChild.children){
+                if (childNode instanceof IDNode){
+                    params.add(lookupAstNode(childNode.getID()));
+                }
+                else {
+                    params.add(childNode);
+                }
             }
         }
         return params;
     }
 
-    private List<Double> getNodeValue(AstNode node){
-        List<Double> value = new ArrayList<>();
-        String nodeType = getNodeType(node);
-
-        for (AstNode child : node.children) {
-            switch (nodeType) {
-                case "int":
-                case "double":
-                    value.add(Double.parseDouble(child.toString()));
-                    break;
-                case "pos":
-                    value.add(Double.parseDouble(child.children.get(0).toString()));
-                    value.add(Double.parseDouble(child.children.get(1).toString()));
-                    break;
-                default:
-                    //error handling
+    private AstNode lookupAstNode(String id){
+        for (AstNode child : progNode.children){
+            if(child.getID().equals(id)){
+                return child;
             }
         }
-        return value;
-    }
-
-    private String getNodeType(AstNode node){
-        return node.children.get(0).getType();
+        return null;
     }
 
     @Override

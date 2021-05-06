@@ -31,4 +31,9 @@ public class PosNode<T> extends AstNode {
     public void setyID(String yID) {
         this.yID = yID;
     }
+
+    @Override
+    public String toString(){
+        return p1.getX() + " " + p1.getY();
+    }
 }

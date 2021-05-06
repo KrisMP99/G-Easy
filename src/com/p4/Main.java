@@ -52,7 +52,7 @@ public class Main {
         // Text in console (parseTree)
         // System.out.println("ParseTree: ");
         // System.out.println(parseTree.toStringTree(parser));
-        CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+        CodeVisitor codeVisitor = new CodeVisitor(symbolTable, ast);
 
         codeVisitor.visit(ast);
         try {
