@@ -246,21 +246,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
-        String selection = "";
-        for (AstNode child : node.children){
-            if (child instanceof CompExprNode){
-                selection += child.getChildren().get(0) + " ";
-                selection += child.toString() + " ";
-                selection += child.getChildren().get(1);
-            }
-        }
-        int x = 2;
-        boolean sentence = Boolean.parseBoolean(selection);
-        if (sentence){
-            output.add("Hejsa");
-        }
-
-        output.add(selection);
     }
 
     @Override
@@ -270,12 +255,25 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(LogicalExprNode node) {
+        this.visitChildren(node);
+        Boolean leftSide = Boolean.parseBoolean(node.children.get(0).getValue());
+        Boolean rightSide = Boolean.parseBoolean(node.children.get(1).getValue());
+        boolean result;
 
+        switch (node.getToken()) {
+            case 30 -> {
+                result = leftSide || rightSide;
+            }
+            case 31 -> {
+                result = leftSide && rightSide;
+            }
+            default -> result = false;
+        }
+        node.setValue(Boolean.toString(result));
     }
 
     @Override
     public void visit(FormalParamNode node) {
-
     }
 
     @Override
@@ -300,17 +298,42 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(CompNode node) {
-
     }
 
     @Override
     public void visit(BoolDclNode node) {
-
+        this.visitChildren(node);
     }
   
     @Override
     public void visit(CompExprNode node) {
+        this.visitChildren(node);
+        double leftSide = Double.parseDouble(node.children.get(0).getValue());
+        double rightSide = Double.parseDouble(node.children.get(1).getValue());
+        boolean result;
 
+        switch (node.getToken()) {
+            case 24 -> {
+                result = leftSide < rightSide;
+            }
+            case 25 -> {
+                result = leftSide > rightSide;
+            }
+            case 26 -> {
+                result = leftSide <= rightSide;
+            }
+            case 27 -> {
+                result = leftSide >= rightSide;
+            }
+            case 28 -> {
+                result = leftSide == rightSide;
+            }
+            case 29 -> {
+                result = leftSide != rightSide;
+            }
+            default -> result = false;
+        }
+        node.setValue(Boolean.toString(result));
     }
 
     @Override
@@ -323,7 +346,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(BoolNode node) {
-
     }
 
     @Override
@@ -348,7 +370,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(PosNode node) {
-
     }
 
     @Override
