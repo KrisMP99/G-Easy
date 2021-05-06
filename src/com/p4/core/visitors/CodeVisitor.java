@@ -198,6 +198,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayDclNode node) {
+        this.visitChildren(node);
     }
 
     @Override
@@ -211,7 +212,7 @@ public class CodeVisitor implements INodeVisitor {
         AstNode arrayDclNode = lookupAstNode(node.getID());
 
         // Get the index
-        // The index might be represented as a number or as a ID
+        // The index might be represented as an int or as an ID
         AstNode indexNode = node.children.get(0);
         int index;
 
@@ -221,7 +222,6 @@ public class CodeVisitor implements INodeVisitor {
         else {
             index = Integer.parseInt(indexNode.toString());
         }
-
 
         // Get the child node in the array by the index
         AstNode indexChild = arrayDclNode.children.get(index);
@@ -234,8 +234,8 @@ public class CodeVisitor implements INodeVisitor {
         }
         else if (indexChild instanceof IDNode) {
             // Get the ID node:
-            AstNode idNode = lookupAstNode(indexChild.getID());
-            node.setValue(idNode.toString());
+            //AstNode idNode = lookupAstNode(indexChild.getID());
+            node.setValue(indexChild.getValue());
             System.out.println("IDnode: " + indexChild.getValue());
         }
 
@@ -338,8 +338,8 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IDNode node) {
-        // We need to find the value of the IDnode
-        // We do this by finding the dcl node of the id
+        this.visitChildren(node);
+
         AstNode idDclNode = lookupAstNode(node.getID());
         node.setValue(idDclNode.children.get(0).toString());
     }
