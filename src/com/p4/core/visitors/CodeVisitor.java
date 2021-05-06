@@ -385,8 +385,6 @@ public class CodeVisitor implements INodeVisitor {
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide + leftSide;
-        System.out.println(result);
-
         node.setValue(Double.toString(result));
     }
 
@@ -398,8 +396,6 @@ public class CodeVisitor implements INodeVisitor {
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide - leftSide;
-        System.out.println(result);
-
         node.setValue(Double.toString(result));
     }
 
@@ -411,8 +407,6 @@ public class CodeVisitor implements INodeVisitor {
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide / leftSide;
-        System.out.println(result);
-
         node.setValue(Double.toString(result));
     }
 
@@ -424,8 +418,6 @@ public class CodeVisitor implements INodeVisitor {
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide * leftSide;
-        System.out.println(result);
-
         node.setValue(Double.toString(result));
     }
 
@@ -437,8 +429,6 @@ public class CodeVisitor implements INodeVisitor {
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide % leftSide;
-        System.out.println(result);
-
         node.setValue(Double.toString(result));
     }
 
