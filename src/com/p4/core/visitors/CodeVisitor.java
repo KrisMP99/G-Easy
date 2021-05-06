@@ -379,33 +379,67 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(AddNode node) {
+        this.visitChildren(node);
         double result = 0.0;
         double rightSide = Double.parseDouble(node.children.get(0).getValue());
         double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
         result = rightSide + leftSide;
+        System.out.println(result);
 
         node.setValue(Double.toString(result));
     }
 
     @Override
     public void visit(SubNode node) {
+        this.visitChildren(node);
+        double result = 0.0;
+        double rightSide = Double.parseDouble(node.children.get(0).getValue());
+        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
+        result = rightSide - leftSide;
+        System.out.println(result);
+
+        node.setValue(Double.toString(result));
     }
 
     @Override
     public void visit(DivNode node) {
+        this.visitChildren(node);
+        double result = 0.0;
+        double rightSide = Double.parseDouble(node.children.get(0).getValue());
+        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
+        result = rightSide / leftSide;
+        System.out.println(result);
+
+        node.setValue(Double.toString(result));
     }
 
     @Override
     public void visit(MultNode node) {
+        this.visitChildren(node);
+        double result = 0.0;
+        double rightSide = Double.parseDouble(node.children.get(0).getValue());
+        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
+        result = rightSide * leftSide;
+        System.out.println(result);
+
+        node.setValue(Double.toString(result));
     }
 
     @Override
     public void visit(ModNode node) {
+        this.visitChildren(node);
+        double result = 0.0;
+        double rightSide = Double.parseDouble(node.children.get(0).getValue());
+        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
+        result = rightSide % leftSide;
+        System.out.println(result);
+
+        node.setValue(Double.toString(result));
     }
 
     @Override
