@@ -8,6 +8,7 @@ import com.p4.core.symbolTable.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.IDN;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -205,6 +206,30 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayAccessNode node) {
+        // Get the dcl node when the array was declared
+        AstNode arrayDclNode = lookupAstNode(node.getID());
+
+        // Get the index the user is trying to access
+        int index = Integer.parseInt(node.children.get(0).toString());
+
+        // Get the child node in the array by the index
+        AstNode indexChild = arrayDclNode.children.get(index);
+
+        // The child can either be an ID, int or double
+        // If is an int or double we can just look up the value on the node itself
+        if(indexChild instanceof IntNode || indexChild instanceof DoubleNode) {
+            node.setValue(indexChild.getValue());
+            System.out.println("Int/double: " + indexChild.getValue());
+        }
+        else if (indexChild instanceof IDNode) {
+            // Get the ID node:
+            AstNode idNode = lookupAstNode(indexChild.getID());
+            node.setValue(idNode.toString());
+            System.out.println("IDnode: " + indexChild.getValue());
+        }
+
+        // test
+        System.out.println("ArrayAccess value: " + node.getValue());
 
     }
 
@@ -289,7 +314,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IntDclNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override

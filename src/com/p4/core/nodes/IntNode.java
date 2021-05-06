@@ -8,6 +8,7 @@ public class IntNode extends AstNode {
     public IntNode(int value, boolean isNegative) {
         this.value = value;
         this.isNegative = isNegative;
+        setValue(Integer.toString(value));
     }
 
     @Override

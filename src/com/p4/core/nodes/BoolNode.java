@@ -8,7 +8,9 @@ public class BoolNode extends AstNode {
 
 
     public BoolNode(boolean value, String type) {
-        this.type = type; this.boolValue = value;
+        this.type = type;
+        this.boolValue = value;
+        setValue(Boolean.toString(value));
     }
 
 

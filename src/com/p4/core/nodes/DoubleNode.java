@@ -9,6 +9,7 @@ public class DoubleNode extends AstNode{
     public DoubleNode(double value, boolean isNegative) {
         this.value = value;
         this.isNegative = isNegative;
+        setValue(Double.toString(value));
     }
 
     @Override
