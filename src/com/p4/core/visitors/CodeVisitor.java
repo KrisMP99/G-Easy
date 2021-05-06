@@ -388,6 +388,7 @@ public class CodeVisitor implements INodeVisitor {
         System.out.println(result);
 
         node.setValue(Double.toString(result));
+
     }
 
     @Override
