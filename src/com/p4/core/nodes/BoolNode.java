@@ -4,11 +4,11 @@ import com.p4.core.visitors.INodeVisitor;
 
 public class BoolNode extends AstNode {
     private String type;
-    private boolean value;
+    private boolean boolValue;
 
 
     public BoolNode(boolean value, String type) {
-        this.type = type; this.value = value;
+        this.type = type; this.boolValue = value;
     }
 
 
@@ -25,11 +25,11 @@ public class BoolNode extends AstNode {
         this.type = type;
     }
 
-    public boolean getValue() {
-        return value;
+    public boolean getBoolValue() {
+        return boolValue;
     }
 
     public void setValue(boolean value) {
-        this.value = value;
+        this.boolValue = value;
     }
 }

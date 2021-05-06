@@ -193,7 +193,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(AssignNode node) {
-
     }
 
     @Override

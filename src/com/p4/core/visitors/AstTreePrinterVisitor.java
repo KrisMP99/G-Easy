@@ -63,7 +63,7 @@ public class AstTreePrinterVisitor {
                     this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.BoolNode":
-                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getValue());
+                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getBoolValue());
                     break;
                 case "class com.p4.core.nodes.IDNode":
                     this.print(localIndent, "(ID) " + ((IDNode)node).getID());

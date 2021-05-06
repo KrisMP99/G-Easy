@@ -1,2 +1,5 @@
-pos p1 = {x: 2, y: 2};
-cut_line(position: p1, speed: 100);
+int x[] = {1, 2, 3};
+
+int y = x[1];  // = 2
+
+bool x = true;
