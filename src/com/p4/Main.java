@@ -68,7 +68,6 @@ public class Main {
             errorCollector.displayErrors();
         }
 
-        
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();
