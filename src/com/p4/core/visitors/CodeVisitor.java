@@ -379,7 +379,13 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(AddNode node) {
+        double result = 0.0;
+        double rightSide = Double.parseDouble(node.children.get(0).getValue());
+        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
+        result = rightSide + leftSide;
+
+        node.setValue(Double.toString(result));
     }
 
     @Override
