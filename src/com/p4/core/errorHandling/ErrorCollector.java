@@ -11,8 +11,23 @@ public class ErrorCollector {
         errorList.add(error);
     }
 
+    public boolean hasErrors() {
+        if(errorList.size() > 0) {
+            return true;
+        }
 
-    public void printErrors() {
+        return false;
+    }
+
+    public void displayErrors() {
+        if(errorList.size() > 0) {
+            printErrors();
+        }
+
+        System.out.println("No errors detected.");
+    }
+
+    private void printErrors() {
         // Go through all the errors
         for(ErrorElement error : errorList) {
             System.out.println(error.errorType + ": " + error.message + " on line: " + error.lineNumber);
