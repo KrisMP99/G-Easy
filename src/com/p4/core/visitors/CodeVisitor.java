@@ -255,7 +255,21 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(LogicalExprNode node) {
+        this.visitChildren(node);
+        Boolean leftSide = Boolean.parseBoolean(node.children.get(0).getValue());
+        Boolean rightSide = Boolean.parseBoolean(node.children.get(1).getValue());
+        boolean result;
 
+        switch (node.getToken()) {
+            case 30 -> {
+                result = leftSide || rightSide;
+            }
+            case 31 -> {
+                result = leftSide && rightSide;
+            }
+            default -> result = false;
+        }
+        node.setValue(Boolean.toString(result));
     }
 
     @Override
