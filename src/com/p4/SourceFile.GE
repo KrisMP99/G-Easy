@@ -1,1 +1,5 @@
-cut_line(x: 10, y: 10, speed: 10);
+int x = 2;
+
+if  (x == 2) {
+    int y = 3;
+}

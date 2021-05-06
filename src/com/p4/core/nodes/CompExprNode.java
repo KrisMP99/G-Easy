@@ -17,4 +17,9 @@ public class CompExprNode extends AstNode {
     public void setToken(int token) {
         this.token = new CommonToken(token);
     }
+
+    @Override
+    public String toString(){
+        return "==";
+    }
 }

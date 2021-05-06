@@ -5,7 +5,6 @@ import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.Scope;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +17,7 @@ public class CodeVisitor implements INodeVisitor {
     private String filepath = "src/com/p4/output.GE";
     private String dirpath = "src/com/p4";
 
-    //String builder is used to construct the G code file
+    //String builder is used to construct the G code file -- output.GE
     private StringBuilder stringBuilder = new StringBuilder();
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
@@ -29,6 +28,10 @@ public class CodeVisitor implements INodeVisitor {
     public CodeVisitor(SymbolTable symbolTable, ProgNode ast){
         this.symbolTable = symbolTable;
         this.progNode = ast;
+
+        //sets the default values
+        stringBuilder.append("G17 G21 G90 G94 G54\n");
+        output.add(getLine());
     }
 
     //Adds the string builder to the output file
@@ -98,7 +101,6 @@ public class CodeVisitor implements INodeVisitor {
         double speed;
 
         String funcName = node.getID().toLowerCase();
-        //List<AstNode> params = getParamsForBuildInFunction(node);
         List<Double> params = getParamValues(node);
 
         if (funcName.equals("cut_line")){
@@ -114,34 +116,6 @@ public class CodeVisitor implements INodeVisitor {
         else { //If they've written their own functions
 
         }
-    }
-
-    private void rapidMove(double x, double y) {
-        stringBuilder.append("G00 X" + x
-                + " Y" + y
-                + "\n");
-        output.add(getLine());
-        cuttingHead.updateHeadPosition(x, y);
-    }
-
-    private void cutClockwiseCircular(double x, double y, double i, double j, double speed){
-        stringBuilder.append("G2 X" + x
-                + " Y" + y
-                + " I" + i
-                + " J" + j
-                + " F" + speed
-                + "\n");
-        output.add(getLine());
-        cuttingHead.updateHeadPosition(x, y);
-    }
-
-    private void cutLine(double x, double y, double speed){
-        stringBuilder.append("G1 X" + x
-                + " Y" + y
-                + " F" + speed
-                + "\n");
-        output.add(getLine());
-        cuttingHead.updateHeadPosition(x, y);
     }
 
     private List<Double> getParamValues(FuncCallNode node){
@@ -189,6 +163,34 @@ public class CodeVisitor implements INodeVisitor {
         return null;
     }
 
+    private void rapidMove(double x, double y) {
+        stringBuilder.append("G00 X" + x
+                + " Y" + y
+                + "\n");
+        output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
+    }
+
+    private void cutClockwiseCircular(double x, double y, double i, double j, double speed){
+        stringBuilder.append("G2 X" + x
+                + " Y" + y
+                + " I" + i
+                + " J" + j
+                + " F" + speed
+                + "\n");
+        output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
+    }
+
+    private void cutLine(double x, double y, double speed){
+        stringBuilder.append("G1 X" + x
+                + " Y" + y
+                + " F" + speed
+                + "\n");
+        output.add(getLine());
+        cuttingHead.updateHeadPosition(x, y);
+    }
+
     @Override
     public void visit(AssignNode node) {
 
@@ -196,15 +198,10 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayDclNode node) {
-
-        //SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        //attributes.getArrayLength();
-
     }
 
     @Override
     public void visit(PosDclNode node) {
-
     }
 
     @Override
@@ -214,6 +211,24 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
+        String selection = "";
+        for (AstNode child : node.children){
+            if (child instanceof CompExprNode){
+                selection += child.getChildren().get(0) + " ";
+                selection += child.toString() + " ";
+                selection += child.getChildren().get(1);
+            }
+        }
+        int x = 2;
+        boolean sentence = Boolean.parseBoolean(selection);
+        if (sentence){
+            output.add("Hejsa");
+        }
+
+        output.add(selection);
+    }
+
+    public boolean evaluteBoolearnExpression(String expression){
 
     }
 
