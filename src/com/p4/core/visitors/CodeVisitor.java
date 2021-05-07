@@ -2,15 +2,13 @@ package com.p4.core.visitors;
 
 import com.p4.core.CuttingHead;
 import com.p4.core.nodes.*;
-import com.p4.core.symbolTable.Scope;
-import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.IDN;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 //This is the class that generates G code corresponding to the GEasy
 public class CodeVisitor implements INodeVisitor {
@@ -194,6 +192,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(AssignNode node) {
+        this.visitChildren(node);
     }
 
     @Override
@@ -203,6 +202,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(PosDclNode node) {
+        this.visitChildren(node);
     }
 
     @Override
@@ -246,10 +246,12 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IterativeNode node) {
+        this.visitChildren(node);
 
     }
 
@@ -274,30 +276,33 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FormalParamNode node) {
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ActualParamNode node) {
+        this.visitChildren(node);
 
     }
 
     @Override
     public void visit(BlockNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ReturnExprNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(ArithmeticNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(CompNode node) {
+        this.visitChildren(node);
     }
 
     @Override
@@ -312,6 +317,8 @@ public class CodeVisitor implements INodeVisitor {
         double rightSide = Double.parseDouble(node.children.get(1).getValue());
         boolean result;
 
+        // Kommentar til Cecilie: Benyt GEasyparser i stedet for tallene
+        // F.eks. GEasyparser.LESS_THAN -> evaluerer til 24
         switch (node.getToken()) {
             case 24 -> {
                 result = leftSide < rightSide;
@@ -346,34 +353,74 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(BoolNode node) {
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(IntDclNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
+        System.out.println("Value of int " + node.getID() + " is: " + node.getValue());
     }
 
     @Override
     public void visit(IntNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(DoubleDclNode node) {
-
+        this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
     public void visit(DoubleNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
     public void visit(PosNode node) {
+        this.visitChildren(node);
+
+        String valueResult = "";
+
+        // We get the values of the pos node
+        // First we handle the x-coordinate
+        if(node.p1.getX() instanceof IDNode) {
+            AstNode idDclNode = lookupAstNode(node.getxID());
+            valueResult += idDclNode.children.get(0).toString();
+        }
+        else if (isNumberNode(node.p1.getX().getClass().getSimpleName())) {
+            valueResult += node.p1.getX();
+        }
+
+        // The y-coordinate
+        if(node.p1.getY() instanceof IDNode) {
+            AstNode idDclNode = lookupAstNode(node.getyID());
+            valueResult += " " + node.p1.getY();
+        }
+        else if(isNumberNode(node.p1.getY().getClass().getSimpleName())) {
+            valueResult += " " + node.p1.getY();
+        }
+
+        node.setValue(valueResult);
+        System.out.println("The value of the pos node is: " + node.getValue());
+    }
+
+    // Only used in PosNode (for now)
+    // Returns true if the given node CLASS NAME is of type IntNode or DoubleNode
+    private boolean isNumberNode(String nodeType) {
+        if(nodeType.equals("IntNode") || nodeType.equals("DoubleNode")){
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public void visit(LogicalOPNode node) {
+        this.visitChildren(node);
 
     }
 
@@ -434,6 +481,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(LineCommentNode node) {
-
+        this.visitChildren(node);
     }
 }
