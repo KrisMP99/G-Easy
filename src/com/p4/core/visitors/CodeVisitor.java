@@ -1,6 +1,7 @@
 package com.p4.core.visitors;
 
 import com.p4.core.CuttingHead;
+import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
@@ -277,10 +278,10 @@ public class CodeVisitor implements INodeVisitor {
         boolean result;
 
         switch (node.getToken()) {
-            case 30 -> {
+            case GEasyParser.OR -> {
                 result = leftSide || rightSide;
             }
-            case 31 -> {
+            case GEasyParser.AND -> {
                 result = leftSide && rightSide;
             }
             default -> result = false;
@@ -330,25 +331,23 @@ public class CodeVisitor implements INodeVisitor {
         double rightSide = Double.parseDouble(node.children.get(1).getValue());
         boolean result;
 
-        // Kommentar til Cecilie: Benyt GEasyparser i stedet for tallene
-        // F.eks. GEasyparser.LESS_THAN -> evaluerer til 24
         switch (node.getToken()) {
-            case 24 -> {
+            case GEasyParser.LESS_THAN -> {
                 result = leftSide < rightSide;
             }
-            case 25 -> {
+            case GEasyParser.GREATER_THAN -> {
                 result = leftSide > rightSide;
             }
-            case 26 -> {
+            case GEasyParser.LESS_THAN_EQ -> {
                 result = leftSide <= rightSide;
             }
-            case 27 -> {
+            case GEasyParser.GREATER_THAN_EQ -> {
                 result = leftSide >= rightSide;
             }
-            case 28 -> {
+            case GEasyParser.IS_EQ -> {
                 result = leftSide == rightSide;
             }
-            case 29 -> {
+            case GEasyParser.NOT_EQ -> {
                 result = leftSide != rightSide;
             }
             default -> result = false;
