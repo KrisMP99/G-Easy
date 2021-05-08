@@ -43,9 +43,6 @@ public class AstTreePrinterVisitor {
                 case "class com.p4.core.nodes.PosAssignNode":
                     this.print(localIndent, "(PosAssign) ");
                     break;
-                case "class com.p4.core.nodes.PosNode":
-                    this.print(localIndent, "(Pos) " + ((PosNode)node).getxID() + ": " + ((PosNode)node).p1.getX() + " " + ((PosNode)node).getyID() + ": " + ((PosNode)node).p1.getY());
-                    break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
                     this.print(localIndent, "(Selection) " + ((SelectionNode)node).getType() + isElse);
@@ -69,7 +66,7 @@ public class AstTreePrinterVisitor {
                     this.print(localIndent, "(ID) " + ((IDNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.AssignNode":
-                    this.print(localIndent, "(Assign) " + ((AssignNode)node).getID());
+                    this.print(localIndent, "(Assign) " + node.getType() + " " + ((AssignNode)node).getID());
                     break;
                 case "class com.p4.core.nodes.BlockNode":
                     this.print(localIndent, "(Block)");

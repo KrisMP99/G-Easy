@@ -12,6 +12,7 @@ public interface INodeVisitor {
     void visit(FuncCallNode node);
 
     void visit(AssignNode node);
+    void visit(PosAssignNode node);
     void visit(ArrayDclNode node);
     void visit(PosDclNode node);
 
@@ -37,7 +38,6 @@ public interface INodeVisitor {
     void visit(IntNode node);
     void visit(DoubleDclNode node);
     void visit(DoubleNode node);
-    void visit(PosNode node);
     void visit(LogicalOPNode node);
 
     void visit(AddNode node);

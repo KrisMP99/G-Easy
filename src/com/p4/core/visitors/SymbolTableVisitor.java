@@ -4,8 +4,6 @@ import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
-import java.util.jar.Attributes;
-
 public class SymbolTableVisitor implements INodeVisitor {
     SymbolTable symbolTable;
 
@@ -48,6 +46,8 @@ public class SymbolTableVisitor implements INodeVisitor {
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);
         }
+
+        this.visitChildren(node);
     }
 
     private boolean isNodeDeclared(AstNode node) {
@@ -163,6 +163,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
     }
 
+    @Override
+    public void visit(PosAssignNode node) {
+        this.visitChildren(node);
+    }
+
 
     // Missing a check for if the node already exists
     @Override
@@ -212,8 +217,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             attributes.setScope(scopeName);
             symbolTable.insertParam(param.getID(), attributes);
         }
-
-        this.visitChildren(node);
     }
 
     @Override
@@ -225,7 +228,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         for (AstNode child : node.children) {
             SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
-            symbolTable.insertParam(child.getID(), attributes);
+            symbolTable.insertParam(node.getID(), attributes);
         }
     }
 
@@ -278,11 +281,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(DoubleNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(PosNode node) {
         this.visitChildren(node);
     }
 

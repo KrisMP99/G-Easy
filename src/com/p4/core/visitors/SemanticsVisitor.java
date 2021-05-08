@@ -80,9 +80,7 @@ public class SemanticsVisitor implements INodeVisitor {
         else if(funcReturnType.equals("double") && actualReturnType.equals("int")) {
             return true;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     @Override
@@ -94,8 +92,9 @@ public class SemanticsVisitor implements INodeVisitor {
     private boolean isValidReturnType(String returnType){
         switch (returnType){
             case "int" :
-            case "double":
+            case "double" :
             case "bool" :
+            case "pos" :
             case "void":
                 return true;
             default:
@@ -141,7 +140,9 @@ public class SemanticsVisitor implements INodeVisitor {
         // Go through all the parameters and compare each actual parameter with the formal parameters
         int child = 0;
         for(Map.Entry<String, SymbolAttributes> formalParams : funcScope.getParams().entrySet()) {
-            String actualParamType = node.children.get(child).type;
+            String actualParamName = node.children.get(child).getID();
+            SymbolAttributes actualParamAttributes = symbolTable.lookupSymbol(actualParamName);
+            String actualParamType = actualParamAttributes.getDataType();
             String actualParamID = node.children.get(child).getID();
 
             String formalParamType = formalParams.getValue().getDataType();
@@ -151,7 +152,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", actualParamType), node.lineNumber);
             }
             else if(formalParamType != null) {
-                if(!isReturnOK(formalParams.getValue().getDataType(), node.children.get(child).type)) {
+                if(!isReturnOK(formalParams.getValue().getDataType(), node.children.get(child).children.get(0).getType())) {
                     errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("actual parameter type", actualParamID, actualParamType, formalParamType), node.lineNumber);
                 }
                 else {
@@ -185,10 +186,19 @@ public class SemanticsVisitor implements INodeVisitor {
         node.type = attributes.getDataType();
         String rightType = node.children.get(0).getType();
 
-        if(!isReturnOK(node.type, rightType)) {
+        // Handle if pos
+        if(node.getType().equals("pos")) {
+            checkPosAssign(node);
+        }
+        else if(!isReturnOK(node.type, rightType)) {
             errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
         }
+    }
 
+    @Override
+    public void visit(PosAssignNode node) {
+        this.visitChildren(node);
+        checkPosAssign(node);
     }
 
     @Override
@@ -217,12 +227,37 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String leftType = node.type;
-        String rightType = node.children.get(0).getType();
 
-        checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
+        // If a pos dcl only has one child, it's another POS
+        if(node.children.size() == 1) {
+            checkIfTypeDCLisCorrect(leftType, node.children.get(0).getType(), node.lineNumber);
+        } else {
+            checkPosAssign(node);
+        }
 
-        if(node.children.get(0).getID() != null) {
+        // Check if pos operation
+        String typeChild = node.children.get(0).getType();
+        if(!typeChild.equals("pos") && node.children.get(0).getID() != null && !typeChild.equals("int") && !typeChild.equals("double")) {
             checkPosDclOperation(node);
+        }
+    }
+
+    private void checkPosAssign(AstNode node) {
+        String xCordType = node.children.get(0).getType();
+        String yCordType = node.children.get(1).getType();
+
+        // The coordinates cannot be of type pos
+        if(xCordType.equals("pos")) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("pos assign cord", "x", xCordType), node.lineNumber);
+        }
+        else if(yCordType.equals("pos")) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("pos assign cord", "y", yCordType), node.lineNumber);
+        }
+        else if(!(xCordType.equals("int") || xCordType.equals("double"))) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", xCordType), node.lineNumber);
+        }
+        else if(!(yCordType.equals("int") || xCordType.equals("double"))) {
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", xCordType), node.lineNumber);
         }
     }
 
@@ -252,16 +287,6 @@ public class SemanticsVisitor implements INodeVisitor {
             }
         }
 
-    }
-
-    @Override
-    public void visit(PosNode node) {
-        node.type = "pos";
-
-        // We need to make sure that the ID of the x- and y-coordinate are 'x' and 'y'
-        if(!(node.getxID().equalsIgnoreCase("x") && node.getyID().equalsIgnoreCase("y"))) {
-            errorCollector.addErrorEntry(ErrorType.NAME_ERROR, printErrorMessage("pos illegal cord-name"), node.lineNumber);
-        }
     }
 
     @Override
@@ -540,6 +565,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Illegal type conversion: Cannot assign " + info[0] + " to " + info[1];
             case "array assign":
                 return "Illegal type: Cannot insert type " + info[0] + " into an array of type " + info[1];
+            case "pos assign cord":
+                return "Illegal type: Cannot assign coordinate " + info[0] + " of type " + info[1] + " to a position";
             case "pos multiply":
                 return "Illegal operation: One of the operands is not a scalar";
             case "pos add-sub":

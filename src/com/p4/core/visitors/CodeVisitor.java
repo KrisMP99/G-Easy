@@ -2,6 +2,7 @@ package com.p4.core.visitors;
 
 import com.p4.core.CuttingHead;
 import com.p4.core.nodes.*;
+import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
 import java.io.File;
@@ -95,12 +96,14 @@ public class CodeVisitor implements INodeVisitor {
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
+        this.visitChildren(node);
+
         double iCord = cuttingHead.getXCord() * (-1);;
         double jCord = cuttingHead.getYCord() * (-1);
         double speed;
 
         String funcName = node.getID().toLowerCase();
-        List<Double> params = getParamValues(node);
+        List<Double> params = getActualParamValues(node);
 
         if (funcName.equals("cut_line")){
             cutLine(params.get(0), params.get(1), params.get(2));
@@ -117,7 +120,7 @@ public class CodeVisitor implements INodeVisitor {
         }
     }
 
-    private List<Double> getParamValues(FuncCallNode node){
+    private List<Double> getActualParamValues(FuncCallNode node){
         List<AstNode> params = getParamsForBuildInFunction(node);
         List<Double> paramValues = new ArrayList<>();
 
@@ -129,7 +132,7 @@ public class CodeVisitor implements INodeVisitor {
                 paramValues.add(Double.parseDouble(child.toString()));
             }
             else if (child instanceof PosDclNode) {
-                String[] posValues = child.children.get(0).toString().split(" ");
+                String[] posValues = node.getValue().split(" ");
                 paramValues.add(Double.parseDouble(posValues[0]));
                 paramValues.add(Double.parseDouble(posValues[1]));
             }
@@ -196,6 +199,11 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(PosAssignNode node) {
+
+    }
+
+    @Override
     public void visit(ArrayDclNode node) {
         this.visitChildren(node);
     }
@@ -203,6 +211,12 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(PosDclNode node) {
         this.visitChildren(node);
+
+        if(node.children.get(0).getType().equals("pos")) {
+            node.setValue(node.children.get(0).getValue());
+        } else {
+            node.setValue(node.children.get(0).getValue() + " " + node.children.get(1).getValue());
+        }
     }
 
     @Override
@@ -282,7 +296,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(ActualParamNode node) {
         this.visitChildren(node);
-
     }
 
     @Override
@@ -348,7 +361,26 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         AstNode idDclNode = lookupAstNode(node.getID());
-        node.setValue(idDclNode.children.get(0).toString());
+
+        // If it's null we check if it's a formal parameter
+        if(idDclNode == null) {
+
+
+            SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+            String scopeName = attributes.getScope();
+            System.out.println(scopeName);
+
+            // Now we need to see if the function has been called some where, so we can set it's value.
+
+
+        }
+
+        // Handle the case if position
+        if(node.getType().equals("pos")) {
+            node.setValue(idDclNode.getValue());
+        } else {
+            node.setValue(idDclNode.children.get(0).toString());
+        }
     }
 
     @Override
@@ -360,7 +392,6 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-        System.out.println("Value of int " + node.getID() + " is: " + node.getValue());
     }
 
     @Override
@@ -377,35 +408,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(DoubleNode node) {
         this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(PosNode node) {
-        this.visitChildren(node);
-
-        String valueResult = "";
-
-        // We get the values of the pos node
-        // First we handle the x-coordinate
-        if(node.p1.getX() instanceof IDNode) {
-            AstNode idDclNode = lookupAstNode(node.getxID());
-            valueResult += idDclNode.children.get(0).toString();
-        }
-        else if (isNumberNode(node.p1.getX().getClass().getSimpleName())) {
-            valueResult += node.p1.getX();
-        }
-
-        // The y-coordinate
-        if(node.p1.getY() instanceof IDNode) {
-            AstNode idDclNode = lookupAstNode(node.getyID());
-            valueResult += " " + node.p1.getY();
-        }
-        else if(isNumberNode(node.p1.getY().getClass().getSimpleName())) {
-            valueResult += " " + node.p1.getY();
-        }
-
-        node.setValue(valueResult);
-        System.out.println("The value of the pos node is: " + node.getValue());
     }
 
     // Only used in PosNode (for now)
@@ -460,12 +462,34 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(MultNode node) {
         this.visitChildren(node);
-        double result = 0.0;
-        double rightSide = Double.parseDouble(node.children.get(0).getValue());
-        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
-        result = rightSide * leftSide;
-        node.setValue(Double.toString(result));
+        // Handle if pos
+        if(node.children.get(0).getType().equals("pos")) {
+            String[] stringValues = node.children.get(0).getValue().split(" ");
+            double xCordValue = Double.parseDouble(stringValues[0]);
+            double yCordValue = Double.parseDouble(stringValues[1]);
+            double rightSide = Double.parseDouble(node.children.get(1).getValue());
+            String posResult = xCordValue * rightSide + " " + yCordValue * rightSide;
+
+            node.setValue(posResult);
+
+        } else if(node.children.get(1).getType().equals("pos")) {
+            String[] stringValues = node.children.get(1).getValue().split(" ");
+            double xCordValue = Double.parseDouble(stringValues[0]);
+            double yCordValue = Double.parseDouble(stringValues[1]);
+            double leftSide = Double.parseDouble(node.children.get(0).getValue());
+            String posResult = xCordValue * leftSide + " " + yCordValue * leftSide;
+
+            node.setValue(posResult);
+
+        } else {
+            double result = 0.0;
+            double rightSide = Double.parseDouble(node.children.get(0).getValue());
+            double leftSide = Double.parseDouble(node.children.get(1).getValue());
+
+            result = rightSide * leftSide;
+            node.setValue(Double.toString(result));
+        }
     }
 
     @Override
