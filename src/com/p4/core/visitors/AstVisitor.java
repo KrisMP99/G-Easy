@@ -12,6 +12,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitProg(GEasyParser.ProgContext ctx) {
         ProgNode progNode = new ProgNode();
+        progNode.setID("ProgNode");
 
         // We visit all the children prog has (which is the whole program)
         return visitChildren(progNode, ctx.children.toArray(ParseTree[]::new));
@@ -662,31 +663,29 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitFormal_param(GEasyParser.Formal_paramContext ctx) {
         FormalParamNode formalParamNode = new FormalParamNode();
 
-        int childrenCount = ctx.getChildCount();
+        IDNode idNode;
 
-        for(int childIndex = 0; childIndex < childrenCount; childIndex++) {
-            IDNode idNode;
-            String type = ctx.getChild(childIndex).toString();
-
-            switch (type) {
-                case "int":
-                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "int");
-                    break;
-                case "double":
-                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "double");
-                    break;
-                case "pos":
-                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "pos");
-                    break;
-                default:
-                    idNode = null;
-                    break;
-            }
-
-            if(idNode != null) {
-                formalParamNode.children.add(idNode);
-            }
+        switch (ctx.TYPE().toString()) {
+            case "int":
+                idNode = new IDNode(ctx.ID().toString(), "int");
+                break;
+            case "double":
+                idNode = new IDNode(ctx.ID().toString(), "double");
+                break;
+            case "pos":
+                idNode = new IDNode(ctx.ID().toString(), "pos");
+                break;
+            default:
+                idNode = null;
+                break;
         }
+
+        if(idNode != null) {
+            formalParamNode.children.add(idNode);
+        }
+
+        formalParamNode.setID(ctx.ID().toString());
+        formalParamNode.setType(formalParamNode.children.get(0).getType());
 
         formalParamNode.lineNumber = ctx.start.getLine();
         return formalParamNode;

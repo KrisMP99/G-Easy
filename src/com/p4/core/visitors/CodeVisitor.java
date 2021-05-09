@@ -147,7 +147,7 @@ public class CodeVisitor implements INodeVisitor {
         for (AstNode paramChild : node.children){
             for (AstNode childNode : paramChild.children){
                 if (childNode instanceof IDNode){
-                    params.add(lookupAstNode(childNode.getID()));
+                    params.add(lookupAstNode(childNode.getID(), progNode));
                 }
                 else {
                     params.add(childNode);
@@ -157,12 +157,23 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode lookupAstNode(String id){
-        for (AstNode child : progNode.children){
-            if(child.getID().equals(id)){
-                return child;
+    // Note: Skal gøres rekursiv så vi kigger alle noderne i gennem, også på børnene
+    private AstNode lookupAstNode(String id, AstNode node){
+        int childCount = node.children.size();
+
+        if(node.getID().equals(id)) {
+            return node;
+        }
+        else {
+            for(int childIndex = 0; childIndex < childCount; childIndex++) {
+                lookupAstNode(id, node.children.get(0));
+
+                if(node.getID().equals(id)) {
+                    return node;
+                }
             }
         }
+
         return null;
     }
 
@@ -224,7 +235,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
         // Get the dcl node when the array was declared
-        AstNode arrayDclNode = lookupAstNode(node.getID());
+        AstNode arrayDclNode = lookupAstNode(node.getID(), progNode);
 
         // Get the index
         // The index might be represented as an int or as an ID
@@ -331,23 +342,25 @@ public class CodeVisitor implements INodeVisitor {
         double rightSide = Double.parseDouble(node.children.get(1).getValue());
         boolean result;
 
+        // Kommentar til Cecilie: Benyt GEasyparser i stedet for tallene
+        // F.eks. GEasyparser.LESS_THAN -> evaluerer til 24
         switch (node.getToken()) {
-            case GEasyParser.LESS_THAN -> {
+            case 24 -> {
                 result = leftSide < rightSide;
             }
-            case GEasyParser.GREATER_THAN -> {
+            case 25 -> {
                 result = leftSide > rightSide;
             }
-            case GEasyParser.LESS_THAN_EQ -> {
+            case 26 -> {
                 result = leftSide <= rightSide;
             }
-            case GEasyParser.GREATER_THAN_EQ -> {
+            case 27 -> {
                 result = leftSide >= rightSide;
             }
-            case GEasyParser.IS_EQ -> {
+            case 28 -> {
                 result = leftSide == rightSide;
             }
-            case GEasyParser.NOT_EQ -> {
+            case 29 -> {
                 result = leftSide != rightSide;
             }
             default -> result = false;
@@ -359,7 +372,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode idDclNode = lookupAstNode(node.getID());
+        AstNode idDclNode = lookupAstNode(node.getID(), progNode);
 
         // If it's null we check if it's a formal parameter
         if(idDclNode == null) {

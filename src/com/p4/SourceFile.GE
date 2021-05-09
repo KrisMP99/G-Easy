@@ -1,0 +1,7 @@
+pos addNum(pos x) {
+    return x;
+}
+
+pos p1 = {x: 2, y: 2};
+
+pos p2 = addNum(x: p1);

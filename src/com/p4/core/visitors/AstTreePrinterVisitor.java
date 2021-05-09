@@ -8,34 +8,34 @@ public class AstTreePrinterVisitor {
         if(node != null) {
             switch (node.getClass().toString()) {
                 case "class com.p4.core.nodes.IntDclNode":
-                    this.print(localIndent,"(IntDcl) " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    this.print(localIndent,"(IntDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.DoubleDclNode":
-                    this.print(localIndent,"(DoubleDcl) " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    this.print(localIndent,"(DoubleDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.PosDclNode":
-                    this.print(localIndent,"(PosDcl) " + ((VarDclNode)node).getType() + " " + ((VarDclNode)node).getID());
+                    this.print(localIndent,"(PosDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ArithmeticNode":
                     this.print(localIndent, "(Arthm) " + ((ArithmeticNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.DoubleNode":
-                    this.print(localIndent, "(Double) " + ((DoubleNode)node).value);
+                    this.print(localIndent, "(Double) " + node.getValue());
                     break;
                 case "class com.p4.core.nodes.IntNode":
-                    this.print(localIndent, "(Int) " + ((IntNode)node).value);
+                    this.print(localIndent, "(Int) " + node.getValue());
                     break;
                 case "class com.p4.core.nodes.ArrayDclNode":
-                    this.print(localIndent, "(ArrayDcl) " + ((ArrayDclNode)node).getType() + " " + ((ArrayDclNode)node).getID());
+                    this.print(localIndent, "(ArrayDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
-                    this.print(localIndent, "(ArrayAccess) " + ((ArrayAccessNode)node).getID());
+                    this.print(localIndent, "(ArrayAccess) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.FuncCallNode":
-                    this.print(localIndent, "(FuncCall) " + ((FuncCallNode)node).getID());
+                    this.print(localIndent, "(FuncCall) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ActualParamNode":
-                    this.print(localIndent, "(ActualParm) " + ((ActualParamNode)node).getID());
+                    this.print(localIndent, "(ActualParm) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.LineCommentNode":
                     this.print(localIndent, "(LineComment) " + ((LineCommentNode)node).getComment());
@@ -45,7 +45,7 @@ public class AstTreePrinterVisitor {
                     break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
-                    this.print(localIndent, "(Selection) " + ((SelectionNode)node).getType() + isElse);
+                    this.print(localIndent, "(Selection) " + node.getType() + isElse);
                     break;
                 case "class com.p4.core.nodes.LogicalOPNode":
                     this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
@@ -63,19 +63,19 @@ public class AstTreePrinterVisitor {
                     this.print(localIndent, "(Bool) " + ((BoolNode)node).getBoolValue());
                     break;
                 case "class com.p4.core.nodes.IDNode":
-                    this.print(localIndent, "(ID) " + ((IDNode)node).getID());
+                    this.print(localIndent, "(ID) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.AssignNode":
-                    this.print(localIndent, "(Assign) " + node.getType() + " " + ((AssignNode)node).getID());
+                    this.print(localIndent, "(Assign) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.BlockNode":
                     this.print(localIndent, "(Block)");
                     break;
                 case "class com.p4.core.nodes.IterativeNode":
-                    this.print(localIndent, "(Iterative) " + ((IterativeNode)node).getType() + " " + ((IterativeNode)node).getFor_to());
+                    this.print(localIndent, "(Iterative) " + node.getType() + " " + ((IterativeNode)node).getFor_to());
                     break;
                 case "class com.p4.core.nodes.FuncDclNode":
-                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + ((FuncDclNode)node).getID());
+                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ReturnExprNode":
                     this.print(localIndent, "(ReturnExpr)");
@@ -84,13 +84,13 @@ public class AstTreePrinterVisitor {
                     this.print(localIndent, "(prog)");
                     break;
                 case "class com.p4.core.nodes.BoolDclNode":
-                    this.print(localIndent, "(BoolDcl) " + ((BoolDclNode)node).getType() + " " + ((BoolDclNode)node).getID());
+                    this.print(localIndent, "(BoolDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.cores.node.BoolNode":
-                    this.print(localIndent, "(Bool)" + ((BoolNode)node).getType());
+                    this.print(localIndent, "(Bool)" + node.getType());
                     break;
                 case "class com.p4.core.nodes.FormalParamNode":
-                    this.print(localIndent, "(Formal Param)");
+                    this.print(localIndent, "(Formal Param) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.AddNode":
                     this.print(localIndent, "(Add)");

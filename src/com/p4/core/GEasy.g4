@@ -46,9 +46,9 @@ selection : IF LP logical_expr RP block (ELSE block)? ;
 
 iterative : FOR LP (MINUS)? val TO (MINUS)? val RP block ;
 
-func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param)? RP block ;
+func_dcl : (TYPE | VOID | BOOL_T) ID LP (formal_param (COMMA formal_param)*)? RP block ;
 
-formal_param : TYPE ID (COMMA TYPE ID)* ;
+formal_param : TYPE ID ;
 
 block : L_BRACE (dcl | stmt | return_expr)+ R_BRACE ;
 
