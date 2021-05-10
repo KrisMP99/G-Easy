@@ -366,6 +366,9 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IterativeNode node) {
         this.visitChildren(node);
 
+        int startValue = Integer.parseInt(node.children.get(0).getValue());
+        int endValue = Integer.parseInt(node.children.get(1).getValue());
+
     }
 
     @Override
