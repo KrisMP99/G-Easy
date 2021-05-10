@@ -2,12 +2,9 @@ package com.p4.core.visitors;
 
 import com.p4.core.CuttingHead;
 import com.p4.core.GEasyParser;
-import com.p4.core.errorHandling.ErrorCollector;
-import com.p4.core.errorHandling.ErrorType;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -366,10 +363,33 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
-        this.visitChildren(node);
-
         int startValue = Integer.parseInt(node.children.get(0).getValue());
         int endValue = Integer.parseInt(node.children.get(1).getValue());
+
+        // revisit later
+        IntNode startNode = (IntNode)node.children.get(0);
+        IntNode endNode = (IntNode)node.children.get(1);
+
+        if(startNode.isNegative) {
+            startValue = startValue * (-1);
+        }
+        if(endNode.isNegative) {
+            endValue = endValue * (-1);
+        }
+
+        if(startValue < endValue && endValue > 0) {
+            startValue -= 1;
+            while(startValue < endValue) {
+                this.visitChildren(node.children.get(2));
+                startValue++;
+            }
+        }
+        else if(endValue < 0 && startValue > endValue){
+            while(startValue > endValue) {
+                this.visitChildren(node.children.get(2));
+                startValue--;
+            }
+        }
 
     }
 
