@@ -119,47 +119,51 @@ public class CodeVisitor implements INodeVisitor {
         String funcName = node.getID();
         List<String> params = getActualParamValues(node);
 
-        for(AstNode childNode : node.children) {
+        /* for(AstNode childNode : node.children) {
             if(childNode.getType().equals("pos")) {
                 String[] posValues = childNode.getValue().split(" ");
                 params.add(posValues[0]);
                 params.add(posValues[1]);
-            } else{
+            } else {
                 params.add(childNode.getValue());
             }
-        }
+        } */
 
         if (funcName.equals("cut_line")){
             speed = Double.parseDouble(params.get(2));
             cutLine(Double.parseDouble(params.get(0)),
                     Double.parseDouble(params.get(1)),
                     speed);
+            node.setValue("void");
         }
         else if(funcName.equals("cut_clockwise_circular")){
             speed = Double.parseDouble(params.get(2));
             cutClockwiseCircular(
                     Double.parseDouble(params.get(0)),
                     Double.parseDouble(params.get(1)), iCord, jCord, speed);
+            node.setValue("void");
         }
         else if (funcName.equals("rapid_move")){
             rapidMove(Double.parseDouble(params.get(0)),
                     Double.parseDouble(params.get(1)));
+            node.setValue("void");
         }
         else if (funcName.equals("set_units")){
             setUnits(params.get(0));
+            node.setValue("void");
         }
         else if (funcName.equals("set_cut_mode")){
             setCutMode(params.get(0));
+            node.setValue("void");
         }
         else if (funcName.equals("set_feed_rate_mode")){
             setFeedRateMode(params.get(0));
+            node.setValue("void");
         }
-
-        // Get the return value from the funcdcl node
-        AstNode dclNode = lookupAstNode(funcName);
-        node.setValue(dclNode.getValue());
-
-
+        else {
+            AstNode dclNode = lookupAstNode(funcName);
+            node.setValue(dclNode.getValue());
+        }
     }
 
     private String getActualParamString(FuncCallNode node){
@@ -395,8 +399,11 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ActualParamNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        attributes.setValue(node.children.get(0).getValue());
+
+        if(symbolTable.lookupSymbol(node.getID()) != null) {
+            SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+            attributes.setValue(node.children.get(0).getValue());
+        }
     }
 
     @Override
