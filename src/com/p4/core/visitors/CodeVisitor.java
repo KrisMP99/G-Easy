@@ -93,6 +93,17 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         this.visitChildren(node);
+
+        // Set return value
+        for(AstNode child : node.children) {
+            if(child instanceof BlockNode) {
+                for(AstNode blockChild : child.children) {
+                    if(blockChild instanceof ReturnExprNode) {
+                        node.setValue(blockChild.getValue());
+                    }
+                }
+            }
+        }
     }
 
     //Calls builtin functions and their own functions
@@ -105,7 +116,7 @@ public class CodeVisitor implements INodeVisitor {
         double speed;
 
 
-        String funcName = node.getID().toLowerCase();
+        String funcName = node.getID();
         List<Double> params = getActualParamValues(node);
 
         for(AstNode childNode : node.children) {
@@ -126,6 +137,9 @@ public class CodeVisitor implements INodeVisitor {
             rapidMove(params.get(0), params.get(1));
         }
 
+        // Get the return value from the funcdcl node
+        AstNode dclNode = lookupAstNode(funcName);
+        node.setValue(dclNode.getValue());
 
 
     }
@@ -257,18 +271,12 @@ public class CodeVisitor implements INodeVisitor {
         // If is an int or double we can just look up the value on the node itself
         if(indexChild instanceof IntNode || indexChild instanceof DoubleNode) {
             node.setValue(indexChild.getValue());
-            System.out.println("Int/double: " + indexChild.getValue());
         }
         else if (indexChild instanceof IDNode) {
             // Get the ID node:
             //AstNode idNode = lookupAstNode(indexChild.getID());
             node.setValue(indexChild.getValue());
-            System.out.println("IDnode: " + indexChild.getValue());
         }
-
-        // test
-        System.out.println("ArrayAccess value: " + node.getValue());
-
     }
 
     @Override
@@ -323,6 +331,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(ReturnExprNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -387,7 +396,6 @@ public class CodeVisitor implements INodeVisitor {
 
             SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
             String scopeName = attributes.getScope();
-            System.out.println(scopeName);
 
             // Now we need to see if the function has been called some where, so we can set it's value.
         }
@@ -409,8 +417,6 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-
-        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
 
     @Override
