@@ -289,13 +289,15 @@ public class CodeVisitor implements INodeVisitor {
         boolean result;
 
         switch (node.getToken()) {
-            case GEasyParser.OR -> {
+            case GEasyParser.OR:
                 result = leftSide || rightSide;
-            }
-            case GEasyParser.AND -> {
+                break;
+            case GEasyParser.AND:
                 result = leftSide && rightSide;
-            }
-            default -> result = false;
+                break;
+            default:
+                result = false;
+                break;
         }
         node.setValue(Boolean.toString(result));
     }
@@ -345,25 +347,27 @@ public class CodeVisitor implements INodeVisitor {
         // Kommentar til Cecilie: Benyt GEasyparser i stedet for tallene
         // F.eks. GEasyparser.LESS_THAN -> evaluerer til 24
         switch (node.getToken()) {
-            case 24 -> {
+            case GEasyParser.LESS_THAN:
                 result = leftSide < rightSide;
-            }
-            case 25 -> {
+                break;
+            case GEasyParser.GREATER_THAN:
                 result = leftSide > rightSide;
-            }
-            case 26 -> {
+                break;
+            case GEasyParser.LESS_THAN_EQ:
                 result = leftSide <= rightSide;
-            }
-            case 27 -> {
+                break;
+            case GEasyParser.GREATER_THAN_EQ:
                 result = leftSide >= rightSide;
-            }
-            case 28 -> {
+                break;
+            case GEasyParser.IS_EQ:
                 result = leftSide == rightSide;
-            }
-            case 29 -> {
+                break;
+            case GEasyParser.NOT_EQ:
                 result = leftSide != rightSide;
-            }
-            default -> result = false;
+                break;
+            default:
+                result = false;
+                break;
         }
         node.setValue(Boolean.toString(result));
     }
@@ -383,8 +387,6 @@ public class CodeVisitor implements INodeVisitor {
             System.out.println(scopeName);
 
             // Now we need to see if the function has been called some where, so we can set it's value.
-
-
         }
 
         // Handle the case if position
