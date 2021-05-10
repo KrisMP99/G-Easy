@@ -37,7 +37,7 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.append("G17 " +
                 cuttingHead.getUnit() + " " +
                 cuttingHead.getCutMode() + " " +
-                cuttingHead.getFeedRateMode() + " G54\n");
+                cuttingHead.getFeedRateMode() + " G54");
 
         output.add(getLine());
     }
@@ -118,16 +118,6 @@ public class CodeVisitor implements INodeVisitor {
 
         String funcName = node.getID();
         List<String> params = getActualParamValues(node);
-
-        /* for(AstNode childNode : node.children) {
-            if(childNode.getType().equals("pos")) {
-                String[] posValues = childNode.getValue().split(" ");
-                params.add(posValues[0]);
-                params.add(posValues[1]);
-            } else {
-                params.add(childNode.getValue());
-            }
-        } */
 
         if (funcName.equals("cut_line")){
             speed = Double.parseDouble(params.get(2));
@@ -253,23 +243,35 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void setFeedRateMode(String mode) {
-        if (cuttingHead.setFeedRateMode(mode)){
-            stringBuilder.append(cuttingHead.getFeedRateMode() + " ");
-            output.add(getLine());
+        //Only enters, if the mode isn't already actual
+        if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getFeedRateMode()).equals(mode)){
+            //Checks whether a valid mode has been chosen
+            if (cuttingHead.setFeedRateMode(mode)){
+                stringBuilder.append(cuttingHead.getFeedRateMode() + " ");
+                output.add(getLine());
+            }
         }
     }
 
     private void setCutMode(String mode) {
-        if (cuttingHead.setCutMode(mode)){
-            stringBuilder.append(cuttingHead.getCutMode() + " ");
-            output.add(getLine());
+        //Only enters, if the mode isn't already actual
+        if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getCutMode()).equals(mode)){
+            //Checks whether a valid mode has been chosen
+            if (cuttingHead.setCutMode(mode)){
+                stringBuilder.append(cuttingHead.getCutMode() + " ");
+                output.add(getLine());
+            }
         }
     }
 
     private void setUnits(String unit) {
-        if (cuttingHead.setUnit(unit)){
-            stringBuilder.append(cuttingHead.getUnit() + " ");
-            output.add(getLine());
+        //Only enters, if the mode isn't already actual
+        if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getUnit()).equals(unit)){
+            //Checks whether a valid mode has been chosen
+            if (cuttingHead.setUnit(unit)){
+                stringBuilder.append(" " + cuttingHead.getUnit());
+                output.add(getLine());
+            }
         }
     }
 

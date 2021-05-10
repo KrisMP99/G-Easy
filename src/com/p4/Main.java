@@ -1,5 +1,6 @@
 package com.p4;
 
+import com.p4.core.CuttingHead;
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
@@ -64,7 +65,6 @@ public class Main {
             // Print errors
             errorCollector.displayErrors();
         }
-
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();
