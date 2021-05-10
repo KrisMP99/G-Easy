@@ -5,6 +5,7 @@ import com.p4.core.GEasyParser;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,8 +16,8 @@ import java.util.List;
 //This is the class that generates G code corresponding to the GEasy
 public class CodeVisitor implements INodeVisitor {
 
-    private String filepath = "src/com/p4/output.GE";
-    private String dirpath = "src/com/p4";
+    private final String filepath = "src/com/p4/output.GE";
+    private final String dirpath = "src/com/p4";
 
     //String builder is used to construct the G code file -- output.GE
     private StringBuilder stringBuilder = new StringBuilder();
@@ -116,9 +117,9 @@ public class CodeVisitor implements INodeVisitor {
         else if (funcName.equals("rapid_move")){
             rapidMove(params.get(0), params.get(1));
         }
-        else { //If they've written their own functions
 
-        }
+
+
     }
 
     private List<Double> getActualParamValues(FuncCallNode node){
@@ -147,7 +148,7 @@ public class CodeVisitor implements INodeVisitor {
         for (AstNode paramChild : node.children){
             for (AstNode childNode : paramChild.children){
                 if (childNode instanceof IDNode){
-                    params.add(lookupAstNode(childNode.getID(), progNode));
+                    params.add(lookupAstNode(childNode.getID()));
                 }
                 else {
                     params.add(childNode);
@@ -158,24 +159,16 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     // Note: Skal gøres rekursiv så vi kigger alle noderne i gennem, også på børnene
-    private AstNode lookupAstNode(String id, AstNode node){
-        int childCount = node.children.size();
-
-        if(node.getID().equals(id)) {
-            return node;
-        }
-        else {
-            for(int childIndex = 0; childIndex < childCount; childIndex++) {
-                lookupAstNode(id, node.children.get(0));
-
-                if(node.getID().equals(id)) {
-                    return node;
-                }
+    private AstNode lookupAstNode(String id){
+        for(AstNode child : progNode.children) {
+            if(child.getID().equals(id)) {
+                return child;
             }
         }
-
         return null;
     }
+
+
 
     private void rapidMove(double x, double y) {
         stringBuilder.append("G00 X" + x
@@ -235,7 +228,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
         // Get the dcl node when the array was declared
-        AstNode arrayDclNode = lookupAstNode(node.getID(), progNode);
+        AstNode arrayDclNode = lookupAstNode(node.getID());
 
         // Get the index
         // The index might be represented as an int or as an ID
@@ -303,6 +296,9 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FormalParamNode node) {
         this.visitChildren(node);
+
+
+
     }
 
     @Override
@@ -372,7 +368,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode idDclNode = lookupAstNode(node.getID(), progNode);
+        AstNode idDclNode = lookupAstNode(node.getID());
 
         // If it's null we check if it's a formal parameter
         if(idDclNode == null) {

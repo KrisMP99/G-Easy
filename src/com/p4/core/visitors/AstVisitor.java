@@ -12,7 +12,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitProg(GEasyParser.ProgContext ctx) {
         ProgNode progNode = new ProgNode();
-        progNode.setID("ProgNode");
 
         // We visit all the children prog has (which is the whole program)
         return visitChildren(progNode, ctx.children.toArray(ParseTree[]::new));

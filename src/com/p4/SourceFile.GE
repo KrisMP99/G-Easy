@@ -1,7 +1,8 @@
-pos addNum(pos x) {
+int addNum(int x) {
     return x;
 }
 
-pos p1 = {x: 2, y: 2};
 
-pos p2 = addNum(x: p1);
+int x = 1;
+
+int y = addNum(x: x);
