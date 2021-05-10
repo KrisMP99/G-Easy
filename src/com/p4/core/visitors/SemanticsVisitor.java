@@ -156,9 +156,10 @@ public class SemanticsVisitor implements INodeVisitor {
     private void checkPredefinedFunctionParams(FuncCallNode node) {
         String id = node.getID();
         String firstParam = node.children.get(0).getID();
-        String secondParam = node.children.get(1).getID();
+        String secondParam;
 
         if(id.equals("cut_line") || id.equals("cut_clockwise_circular")) {
+            secondParam = node.children.get(1).getID();
             if(!firstParam.equals("x")) {
                 if(!firstParam.equals("position")) {
                     errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
@@ -176,6 +177,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
 
         else if(id.equals("rapid_move")) {
+            secondParam = node.children.get(1).getID();
             if(!firstParam.equals("position")) {
                 if(!firstParam.equals("x")) {
                     errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
@@ -485,14 +487,22 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(IDNode node) {
-        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        if(attributes == null) {
-            // Error handling here
-            // The variable could not be found in the scope (local + global)
-            errorCollector.addErrorEntry(ErrorType.UNDECLARED_VAR, printErrorMessage("no var dcl", node.getID()), node.lineNumber);
-        }
-        else {
-            node.type = attributes.getDataType();
+        switch (node.getID()){
+            case "metric": case "imperial": case "absolute":
+            case "incremental": case "units_per_minute": case "inverse":
+                node.setType("string");
+                break;
+            default:
+                SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+                if(attributes == null) {
+                    // Error handling here
+                    // The variable could not be found in the scope (local + global)
+                    errorCollector.addErrorEntry(ErrorType.UNDECLARED_VAR, printErrorMessage("no var dcl", node.getID()), node.lineNumber);
+                }
+                else {
+                    node.setType(attributes.getDataType());
+                }
+                break;
         }
     }
 

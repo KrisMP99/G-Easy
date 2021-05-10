@@ -120,19 +120,27 @@ public class SymbolTableVisitor implements INodeVisitor {
         String scopeName = symbolTable.getCurrentScope().getScopeName();
 
         for (AstNode child : node.children){
-            SymbolAttributes attributes = new SymbolAttributes("Formal Param", child.getType());
+            SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
             symbolTable.insertParam(child.getID(), attributes);
         }
     }
 
     private void visitPredefinedFunctionParameters(AstNode node) {
-        // actual param = child
-        for(AstNode child : node.children) {
-            for(AstNode idChild : child.children) {
-                if(idChild instanceof IDNode) {
-                    SymbolAttributes attributes = symbolTable.lookupSymbol(idChild.getID());
-                    child.setType(attributes.getDataType());
+        // Child = actual param node
+        for (AstNode child : node.children) {
+            for (AstNode idChild : child.children) {
+                if (idChild instanceof IDNode) {
+                    switch (idChild.getID()){
+                        case "metric": case "imperial": case "absolute":
+                        case "incremental": case "units_per_minute": case "inverse":
+                            child.setType("string");
+                            break;
+                        default:
+                            SymbolAttributes attributes = symbolTable.lookupSymbol(idChild.getID());
+                            child.setType(attributes.getDataType());
+                            break;
+                    }
                 }
             }
         }
@@ -146,6 +154,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         // Add predefined function names here
         switch (functionID) {
             case "cut_line": case "cut_clockwise_circular": case "rapid_move":
+            case "set_units": case "set_cut_mode": case "set_feed_rate_mode":
                 addPredefinedFunction(node);
                 symbolTable.calledFunctions.add(functionID);
                 return;

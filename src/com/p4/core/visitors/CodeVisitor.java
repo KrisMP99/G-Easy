@@ -106,7 +106,10 @@ public class CodeVisitor implements INodeVisitor {
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
-        this.visitChildren(node);
+
+        if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
+            this.visitChildren(node);
+        }
 
         double iCord = cuttingHead.getXCord() * (-1);;
         double jCord = cuttingHead.getYCord() * (-1);
@@ -114,36 +117,42 @@ public class CodeVisitor implements INodeVisitor {
 
 
         String funcName = node.getID();
-        List<Double> params = getActualParamValues(node);
+        List<String> params = getActualParamValues(node);
 
         for(AstNode childNode : node.children) {
             if(childNode.getType().equals("pos")) {
                 String[] posValues = childNode.getValue().split(" ");
-                params.add(Double.parseDouble(posValues[0]));
-                params.add(Double.parseDouble(posValues[1]));
+                params.add(posValues[0]);
+                params.add(posValues[1]);
             } else{
-                params.add(Double.parseDouble(childNode.getValue()));
+                params.add(childNode.getValue());
             }
         }
 
         if (funcName.equals("cut_line")){
-            cutLine(params.get(0), params.get(1), params.get(2));
+            speed = Double.parseDouble(params.get(2));
+            cutLine(Double.parseDouble(params.get(0)),
+                    Double.parseDouble(params.get(1)),
+                    speed);
         }
         else if(funcName.equals("cut_clockwise_circular")){
-            speed = Double.parseDouble(params.get(2).toString());
-            cutClockwiseCircular(params.get(0), params.get(1), iCord, jCord, speed);
+            speed = Double.parseDouble(params.get(2));
+            cutClockwiseCircular(
+                    Double.parseDouble(params.get(0)),
+                    Double.parseDouble(params.get(1)), iCord, jCord, speed);
         }
         else if (funcName.equals("rapid_move")){
-            rapidMove(params.get(0), params.get(1));
+            rapidMove(Double.parseDouble(params.get(0)),
+                    Double.parseDouble(params.get(1)));
         }
         else if (funcName.equals("set_units")){
-            setUnits(params.get(0).toString());
+            setUnits(params.get(0));
         }
         else if (funcName.equals("set_cut_mode")){
-            setCutMode(params.get(0).toString());
+            setCutMode(params.get(0));
         }
         else if (funcName.equals("set_feed_rate_mode")){
-            setFeedRateMode(params.get(0).toString());
+            setFeedRateMode(params.get(0));
         }
 
         // Get the return value from the funcdcl node
@@ -153,21 +162,36 @@ public class CodeVisitor implements INodeVisitor {
 
     }
 
-    private List<Double> getActualParamValues(FuncCallNode node){
+    private String getActualParamString(FuncCallNode node){
+        return node.children.get(0).children.get(0).getID();
+    }
+
+    private List<String> getActualParamValues(FuncCallNode node){
+        List<String> paramValues = new ArrayList<>();
+
+        switch (node.getID()) {
+            case "set_units":
+            case "set_cut_mode":
+            case "set_feed_rate_mode":
+                paramValues.add(getActualParamString(node));
+                return paramValues;
+            default:
+                break;
+        }
+
         List<AstNode> params = getParamsForBuildInFunction(node);
-        List<Double> paramValues = new ArrayList<>();
 
         for (AstNode child : params) {
             if (child instanceof IntDclNode || child instanceof DoubleDclNode){
-                paramValues.add(Double.parseDouble(child.children.get(0).toString()));
+                paramValues.add(child.children.get(0).toString());
             }
             else if (child instanceof IntNode || child instanceof DoubleNode) {
-                paramValues.add(Double.parseDouble(child.toString()));
+                paramValues.add(child.toString());
             }
             else if (child instanceof PosDclNode) {
                 String[] posValues = child.getValue().split(" ");
-                paramValues.add(Double.parseDouble(posValues[0]));
-                paramValues.add(Double.parseDouble(posValues[1]));
+                paramValues.add(posValues[0]);
+                paramValues.add(posValues[1]);
             }
         }
         return paramValues;
@@ -226,21 +250,21 @@ public class CodeVisitor implements INodeVisitor {
 
     private void setFeedRateMode(String mode) {
         if (cuttingHead.setFeedRateMode(mode)){
-            stringBuilder.append(cuttingHead.getFeedRateMode());
+            stringBuilder.append(cuttingHead.getFeedRateMode() + " ");
             output.add(getLine());
         }
     }
 
     private void setCutMode(String mode) {
         if (cuttingHead.setCutMode(mode)){
-            stringBuilder.append(cuttingHead.getCutMode());
+            stringBuilder.append(cuttingHead.getCutMode() + " ");
             output.add(getLine());
         }
     }
 
     private void setUnits(String unit) {
         if (cuttingHead.setUnit(unit)){
-            stringBuilder.append(cuttingHead.getUnit());
+            stringBuilder.append(cuttingHead.getUnit() + " ");
             output.add(getLine());
         }
     }
