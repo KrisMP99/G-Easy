@@ -146,6 +146,7 @@ public class SemanticsVisitor implements INodeVisitor {
     private Boolean isPredefinedFunction(String id) {
         switch (id) {
             case "cut_line": case "cut_clockwise_circular": case "rapid_move":
+            case "set_units": case "set_cut_mode": case "set_feed_rate_mode":
                 return true;
             default:
                 return false;
@@ -182,6 +183,18 @@ public class SemanticsVisitor implements INodeVisitor {
                 else if(!secondParam.equals("y")) {
                     errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
                 }
+            }
+        }
+
+        else if (id.equals("set_units")){
+            if (!firstParam.equals("unit")){
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
+            }
+        }
+
+        else if (id.equals("set_cut_mode") || id.equals("set_feed_rate_mode")){
+            if (!firstParam.equals("mode")){
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
             }
         }
     }

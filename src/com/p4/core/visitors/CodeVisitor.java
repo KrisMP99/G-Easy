@@ -2,6 +2,8 @@ package com.p4.core.visitors;
 
 import com.p4.core.CuttingHead;
 import com.p4.core.GEasyParser;
+import com.p4.core.errorHandling.ErrorCollector;
+import com.p4.core.errorHandling.ErrorType;
 import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
@@ -23,7 +25,7 @@ public class CodeVisitor implements INodeVisitor {
     private StringBuilder stringBuilder = new StringBuilder();
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
-    private CuttingHead cuttingHead = new CuttingHead(-10,0);
+    private CuttingHead cuttingHead = new CuttingHead(-10,0, "G21", "G90", "G94");
     private ProgNode progNode;
 
 
@@ -32,7 +34,11 @@ public class CodeVisitor implements INodeVisitor {
         this.progNode = ast;
 
         //sets the default values
-        stringBuilder.append("G17 G21 G90 G94 G54\n");
+        stringBuilder.append("G17 " +
+                cuttingHead.getUnit() + " " +
+                cuttingHead.getCutMode() + " " +
+                cuttingHead.getFeedRateMode() + " G54\n");
+
         output.add(getLine());
     }
 
@@ -120,7 +126,11 @@ public class CodeVisitor implements INodeVisitor {
         List<Double> params = getActualParamValues(node);
 
         for(AstNode childNode : node.children) {
-            if(childNode instanceof ActualParamNode) {
+            if(childNode.getType().equals("pos")) {
+                String[] posValues = childNode.getValue().split(" ");
+                params.add(Double.parseDouble(posValues[0]));
+                params.add(Double.parseDouble(posValues[1]));
+            } else{
                 params.add(Double.parseDouble(childNode.getValue()));
             }
         }
@@ -134,6 +144,15 @@ public class CodeVisitor implements INodeVisitor {
         }
         else if (funcName.equals("rapid_move")){
             rapidMove(params.get(0), params.get(1));
+        }
+        else if (funcName.equals("set_units")){
+            setUnits(params.get(0).toString());
+        }
+        else if (funcName.equals("set_cut_mode")){
+            setCutMode(params.get(0).toString());
+        }
+        else if (funcName.equals("set_feed_rate_mode")){
+            setFeedRateMode(params.get(0).toString());
         }
 
         // Get the return value from the funcdcl node
@@ -155,7 +174,7 @@ public class CodeVisitor implements INodeVisitor {
                 paramValues.add(Double.parseDouble(child.toString()));
             }
             else if (child instanceof PosDclNode) {
-                String[] posValues = node.getValue().split(" ");
+                String[] posValues = child.getValue().split(" ");
                 paramValues.add(Double.parseDouble(posValues[0]));
                 paramValues.add(Double.parseDouble(posValues[1]));
             }
@@ -190,31 +209,49 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void rapidMove(double x, double y) {
-        stringBuilder.append("G00 X" + x
-                + " Y" + y
-                + "\n");
+        stringBuilder.append("\nG00 X" + x
+                + " Y" + y);
         output.add(getLine());
         cuttingHead.updateHeadPosition(x, y);
     }
 
     private void cutClockwiseCircular(double x, double y, double i, double j, double speed){
-        stringBuilder.append("G2 X" + x
+        stringBuilder.append("\nG2 X" + x
                 + " Y" + y
                 + " I" + i
                 + " J" + j
-                + " F" + speed
-                + "\n");
+                + " F" + speed);
         output.add(getLine());
         cuttingHead.updateHeadPosition(x, y);
     }
 
     private void cutLine(double x, double y, double speed){
-        stringBuilder.append("G1 X" + x
+        stringBuilder.append("\nG1 X" + x
                 + " Y" + y
-                + " F" + speed
-                + "\n");
+                + " F" + speed);
         output.add(getLine());
         cuttingHead.updateHeadPosition(x, y);
+    }
+
+    private void setFeedRateMode(String mode) {
+        if (cuttingHead.setFeedRateMode(mode)){
+            stringBuilder.append(cuttingHead.getFeedRateMode());
+            output.add(getLine());
+        }
+    }
+
+    private void setCutMode(String mode) {
+        if (cuttingHead.setCutMode(mode)){
+            stringBuilder.append(cuttingHead.getCutMode());
+            output.add(getLine());
+        }
+    }
+
+    private void setUnits(String unit) {
+        if (cuttingHead.setUnit(unit)){
+            stringBuilder.append(cuttingHead.getUnit());
+            output.add(getLine());
+        }
     }
 
     @Override
