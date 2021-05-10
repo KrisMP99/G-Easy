@@ -268,10 +268,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(BoolNode node) {
         this.visitChildren(node);
-
-        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        node.setType(attributes.getDataType());
-
     }
 
     @Override

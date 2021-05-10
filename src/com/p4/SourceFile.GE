@@ -1,7 +1,7 @@
-int addNum(int x) {
-    return x;
+int x = 2;
+if (x == 2 && x < 10) {
+    cut_line(x: 10, y: 6, speed: 2);
 }
-
-int x = 1;
-
-int y = addNum(x: x);
+else {
+    cut_line(x: 10, y: 0, speed: 5);
+}

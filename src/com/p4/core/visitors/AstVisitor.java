@@ -736,14 +736,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
                 DoubleNode doubleNode = new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
-                doubleNode.type = "double";
+                doubleNode.setType("double");
                 doubleNode.lineNumber = ctx.start.getLine();
                 return doubleNode;
             }
             else {
                 // If not a double, it is an int
                 IntNode intNode = new IntNode(Integer.parseInt(ctx.getText()), isNeg);
-                intNode.type = "int";
+                intNode.setType("int");
                 intNode.lineNumber = ctx.start.getLine();
                 return intNode;
             }
@@ -755,6 +755,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
         else if (ctx.BOOL() != null) {
             BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.getText()), "bool");
+            boolNode.setType("bool");
             boolNode.lineNumber = ctx.start.getLine();
             return boolNode;
         }

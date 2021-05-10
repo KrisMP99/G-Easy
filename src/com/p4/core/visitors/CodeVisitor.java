@@ -125,7 +125,6 @@ public class CodeVisitor implements INodeVisitor {
             }
         }
 
-
         if (funcName.equals("cut_line")){
             cutLine(params.get(0), params.get(1), params.get(2));
         }
@@ -190,8 +189,6 @@ public class CodeVisitor implements INodeVisitor {
         return null;
     }
 
-
-
     private void rapidMove(double x, double y) {
         stringBuilder.append("G00 X" + x
                 + " Y" + y
@@ -223,6 +220,9 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
+        AstNode childNode = lookupAstNode(node.getID());
+        childNode.setValue(node.children.get(0).getValue());
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -281,7 +281,26 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
-        this.visitChildren(node);
+
+        this.visitChild(node.children.get(0));
+        boolean logicalExpression = Boolean.parseBoolean(node.children.get(0).getValue());
+
+        //If there's both an if and else statement
+        if (node.children.size() > 2) {
+            if (logicalExpression) {
+                //Visits if
+                visitChildren(node.children.get(1));
+                //Visits else
+            } else {
+                visitChildren(node.children.get(2));
+            }
+        }
+        //If there's only an if
+        else {
+            if (logicalExpression){
+                visitChildren(node.children.get(1));
+            }
+        }
     }
 
     @Override
@@ -331,7 +350,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(ReturnExprNode node) {
         this.visitChildren(node);
-        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -347,6 +365,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(BoolDclNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
   
     @Override
@@ -396,6 +415,7 @@ public class CodeVisitor implements INodeVisitor {
 
             SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
             String scopeName = attributes.getScope();
+            System.out.println(scopeName);
 
             // Now we need to see if the function has been called some where, so we can set it's value.
         }
@@ -417,6 +437,8 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+
+        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
 
     @Override
@@ -441,7 +463,6 @@ public class CodeVisitor implements INodeVisitor {
         if(nodeType.equals("IntNode") || nodeType.equals("DoubleNode")){
             return true;
         }
-
         return false;
     }
 
