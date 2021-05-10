@@ -126,12 +126,59 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if (funcScope != null) {
             // Check if the number of actual params corresponds with the number of formal params
-            if(node.children.size() != funcScope.getParams().size()) {
+            // First we check if it's a predefined function (if it is, we cannot find the func dcl)
+            if(isPredefinedFunction(node.getID())) {
+                checkPredefinedFunctionParams(node);
+            }
+            else if(node.children.size() != funcScope.getParams().size()) {
                 // Error
                 errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("number of params", node.getID()), node.lineNumber);
             }
             else {
                 checkIfParamsAreValid(node, funcScope);
+            }
+        }
+    }
+
+    private Boolean isPredefinedFunction(String id) {
+        switch (id) {
+            case "cut_line": case "cut_clockwise_circular": case "rapid_move":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void checkPredefinedFunctionParams(FuncCallNode node) {
+        String id = node.getID();
+        String firstParam = node.children.get(0).getID();
+        String secondParam = node.children.get(1).getID();
+
+        if(id.equals("cut_line") || id.equals("cut_clockwise_circular")) {
+            if(!firstParam.equals("x")) {
+                if(!firstParam.equals("position")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
+                }
+                else if(!secondParam.equals("speed")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
+                }
+            }
+            else if(!secondParam.equals("y")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
+            }
+            else if(!node.children.get(2).getID().equals("speed")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
+            }
+        }
+
+        else if(id.equals("rapid_move")) {
+            if(!firstParam.equals("position")) {
+                if(!firstParam.equals("x")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
+                }
+                else if(!secondParam.equals("y")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
+                }
             }
         }
     }
@@ -561,6 +608,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Illegal type: The type '" + info[0] + "' is not valid";
             case "actual parameter name":
                 return "Illegal parameter name: The actual parameter name '" + info[0] + "' does not match the name of the formal parameter '" + info[1] + "'";
+            case "actual param predefined":
+                return "Illegal parameter name: The actual parameter name '" + info[0] + "' is not allowed in the predefined function '" + info[1] + "'";
             case "assign":
                 return "Illegal type conversion: Cannot assign " + info[0] + " to " + info[1];
             case "array assign":

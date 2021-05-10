@@ -104,8 +104,16 @@ public class CodeVisitor implements INodeVisitor {
         double jCord = cuttingHead.getYCord() * (-1);
         double speed;
 
+
         String funcName = node.getID().toLowerCase();
         List<Double> params = getActualParamValues(node);
+
+        for(AstNode childNode : node.children) {
+            if(childNode instanceof ActualParamNode) {
+                params.add(Double.parseDouble(childNode.getValue()));
+            }
+        }
+
 
         if (funcName.equals("cut_line")){
             cutLine(params.get(0), params.get(1), params.get(2));
@@ -298,14 +306,13 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FormalParamNode node) {
         this.visitChildren(node);
-
-
-
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
     public void visit(ActualParamNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -402,6 +409,8 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+
+        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
 
     @Override

@@ -2,7 +2,6 @@ int addNum(int x) {
     return x;
 }
 
-
 int x = 1;
 
 int y = addNum(x: x);
