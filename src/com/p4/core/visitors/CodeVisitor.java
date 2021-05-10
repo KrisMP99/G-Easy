@@ -99,17 +99,8 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDclNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(1).getValue());
 
-        // Set return value
-        for(AstNode child : node.children) {
-            if(child instanceof BlockNode) {
-                for(AstNode blockChild : child.children) {
-                    if(blockChild instanceof ReturnExprNode) {
-                        node.setValue(blockChild.getValue());
-                    }
-                }
-            }
-        }
     }
 
     //Calls builtin functions and their own functions
@@ -318,18 +309,21 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
-
         this.visitChild(node.children.get(0));
         boolean logicalExpression = Boolean.parseBoolean(node.children.get(0).getValue());
+        node.setValue(Boolean.toString(logicalExpression));
 
         //If there's both an if and else statement
         if (node.children.size() > 2) {
             if (logicalExpression) {
                 //Visits if
                 visitChildren(node.children.get(1));
-                //Visits else
-            } else {
+                node.children.remove(2);
+            }
+            //Visits else
+            else {
                 visitChildren(node.children.get(2));
+                node.children.remove(1);
             }
         }
         //If there's only an if
@@ -377,16 +371,49 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ActualParamNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        attributes.setValue(node.children.get(0).getValue());
     }
 
     @Override
     public void visit(BlockNode node) {
         this.visitChildren(node);
+
+        boolean hasFoundReturn = false;
+
+        // Go through all the children and look for an return statement
+        for(AstNode childNode : node.children) {
+
+            // There might be a return statement inside of an if-statement
+            if(childNode instanceof SelectionNode && !hasFoundReturn) {
+                // We look inside the block node (it's always the second child)
+                for(AstNode ifChild : childNode.children.get(1).children) {
+                    // look for the return expression
+                    if(ifChild instanceof ReturnExprNode) {
+                        node.setValue(ifChild.getValue());
+                        hasFoundReturn = true;
+                        break;
+                    }
+                }
+            }
+
+            // Find the return statement
+            else if(childNode instanceof ReturnExprNode && !hasFoundReturn) {
+                // Visit the return expression
+                this.visitChild(childNode);
+
+                // Set the value of the child to the block value
+                node.setValue(childNode.getValue());
+                break;
+            }
+        }
+
     }
 
     @Override
     public void visit(ReturnExprNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -403,6 +430,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BoolDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
   
     @Override
@@ -444,24 +472,19 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode idDclNode = lookupAstNode(node.getID());
+        AstNode valNode = lookupAstNode(node.getID());
 
-        // If it's null we check if it's a formal parameter
-        if(idDclNode == null) {
-
-
+        // If it's null we check if it's a parameter
+        if(valNode == null) {
             SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-            String scopeName = attributes.getScope();
-            System.out.println(scopeName);
-
-            // Now we need to see if the function has been called some where, so we can set it's value.
+            node.setValue(attributes.getValue());
         }
 
         // Handle the case if position
-        if(node.getType().equals("pos")) {
-            node.setValue(idDclNode.getValue());
+        else if(node.getType().equals("pos")) {
+            node.setValue(valNode.getValue());
         } else {
-            node.setValue(idDclNode.children.get(0).toString());
+            node.setValue(valNode.children.get(0).toString());
         }
     }
 
@@ -474,8 +497,6 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IntDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-
-        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
 
     @Override
@@ -487,6 +508,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(DoubleDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+        System.out.println(node.getValue());
     }
 
     @Override

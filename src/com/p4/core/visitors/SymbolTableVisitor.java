@@ -41,13 +41,13 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     // Method to declare a var node (var_dcl node)
     private void declareVarNode(VarDclNode<?> node) {
+        this.visitChildren(node);
+
         if(!isNodeDeclared(node)) {
             SymbolAttributes attributes = new SymbolAttributes("dcl", node.type);
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);
         }
-
-        this.visitChildren(node);
     }
 
     private boolean isNodeDeclared(AstNode node) {
@@ -228,6 +228,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         for (AstNode child : node.children) {
             SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
+            attributes.setValue(child.getValue());
             symbolTable.insertParam(node.getID(), attributes);
         }
     }

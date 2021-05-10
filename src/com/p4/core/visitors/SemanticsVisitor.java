@@ -86,7 +86,7 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(ReturnExprNode node) {
         this.visitChildren(node);
-        node.type = node.children.get(0).type;
+        node.setType(node.children.get(0).getType());
     }
 
     private boolean isValidReturnType(String returnType){
@@ -473,7 +473,10 @@ public class SemanticsVisitor implements INodeVisitor {
            compOperator == GEasyParser.LESS_THAN_EQ || compOperator == GEasyParser.GREATER_THAN_EQ ||
            compOperator == GEasyParser.NOT_EQ || compOperator == GEasyParser.IS_EQ) {
             // True if both sides are of the same type, but not bool or pos
-            if(type1.equals(type2) &&  !((type1.equals("bool") || type1.equals("pos")) && type2.equals("bool") || type2.equals("pos"))    ) {
+            if(type1.equals(type2) &&  !(type1.equals("bool") || type1.equals("pos"))) {
+                return true;
+            }
+            else if((type1.equals("int") && type2.equals("double")) || (type1.equals("double") && type2.equals("int"))) {
                 return true;
             }
         }
