@@ -104,7 +104,6 @@ public class CodeVisitor implements INodeVisitor {
         double jCord = cuttingHead.getYCord() * (-1);
         double speed;
 
-
         String funcName = node.getID().toLowerCase();
         List<Double> params = getActualParamValues(node);
 
@@ -113,7 +112,6 @@ public class CodeVisitor implements INodeVisitor {
                 params.add(Double.parseDouble(childNode.getValue()));
             }
         }
-
 
         if (funcName.equals("cut_line")){
             cutLine(params.get(0), params.get(1), params.get(2));
@@ -125,9 +123,6 @@ public class CodeVisitor implements INodeVisitor {
         else if (funcName.equals("rapid_move")){
             rapidMove(params.get(0), params.get(1));
         }
-
-
-
     }
 
     private List<Double> getActualParamValues(FuncCallNode node){
@@ -176,8 +171,6 @@ public class CodeVisitor implements INodeVisitor {
         return null;
     }
 
-
-
     private void rapidMove(double x, double y) {
         stringBuilder.append("G00 X" + x
                 + " Y" + y
@@ -209,6 +202,9 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
+        AstNode childNode = lookupAstNode(node.getID());
+        childNode.setValue(node.children.get(0).getValue());
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -273,7 +269,26 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
-        this.visitChildren(node);
+
+        this.visitChild(node.children.get(0));
+        boolean logicalExpression = Boolean.parseBoolean(node.children.get(0).getValue());
+
+        //If there's both an if and else statement
+        if (node.children.size() > 2) {
+            if (logicalExpression) {
+                //Visits if
+                visitChildren(node.children.get(1));
+                //Visits else
+            } else {
+                visitChildren(node.children.get(2));
+            }
+        }
+        //If there's only an if
+        else {
+            if (logicalExpression){
+                visitChildren(node.children.get(1));
+            }
+        }
     }
 
     @Override
@@ -338,6 +353,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(BoolDclNode node) {
         this.visitChildren(node);
+        node.setValue(node.children.get(0).getValue());
     }
   
     @Override
@@ -435,7 +451,6 @@ public class CodeVisitor implements INodeVisitor {
         if(nodeType.equals("IntNode") || nodeType.equals("DoubleNode")){
             return true;
         }
-
         return false;
     }
 

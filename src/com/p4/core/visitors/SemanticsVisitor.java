@@ -108,6 +108,9 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // First we check if the function has been declared
         if(symbolTable.declaredFunctions.contains(node.getID())) {
+            String scopeName = symbolTable.getCurrentScope().getScopeName();
+            symbolTable.enterScope(scopeName);
+
             SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
             node.setType(attributes.getDataType());
 
@@ -375,12 +378,19 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(SelectionNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
+        this.symbolTable.leaveScope();
+
+        // Maybe check for the condition here?
+
     }
 
     @Override
     public void visit(IterativeNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
+        this.symbolTable.leaveScope();
     }
 
     @Override
