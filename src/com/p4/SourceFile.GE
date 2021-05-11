@@ -1,1 +1,7 @@
-cut_line(x: 10, y: 10, speed: 10);
+int x = 2;
+if (x == 2 && x < 10) {
+    cut_line(x: 10, y: 6, speed: 2);
+}
+else {
+    cut_line(x: 10, y: 0, speed: 5);
+}

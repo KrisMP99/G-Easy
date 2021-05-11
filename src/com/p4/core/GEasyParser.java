@@ -1,4 +1,4 @@
-// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Krist/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -1684,8 +1684,15 @@ public class GEasyParser extends Parser {
 		public TerminalNode TYPE() { return getToken(GEasyParser.TYPE, 0); }
 		public TerminalNode VOID() { return getToken(GEasyParser.VOID, 0); }
 		public TerminalNode BOOL_T() { return getToken(GEasyParser.BOOL_T, 0); }
-		public Formal_paramContext formal_param() {
-			return getRuleContext(Formal_paramContext.class,0);
+		public List<Formal_paramContext> formal_param() {
+			return getRuleContexts(Formal_paramContext.class);
+		}
+		public Formal_paramContext formal_param(int i) {
+			return getRuleContext(Formal_paramContext.class,i);
+		}
+		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(GEasyParser.COMMA, i);
 		}
 		public Func_dclContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1727,19 +1734,35 @@ public class GEasyParser extends Parser {
 			match(ID);
 			setState(232);
 			match(LP);
-			setState(234);
+			setState(241);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==TYPE) {
 				{
 				setState(233);
 				formal_param();
+				setState(238);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				while (_la==COMMA) {
+					{
+					{
+					setState(234);
+					match(COMMA);
+					setState(235);
+					formal_param();
+					}
+					}
+					setState(240);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
 				}
 			}
 
-			setState(236);
+			setState(243);
 			match(RP);
-			setState(237);
+			setState(244);
 			block();
 			}
 		}
@@ -1755,18 +1778,8 @@ public class GEasyParser extends Parser {
 	}
 
 	public static class Formal_paramContext extends ParserRuleContext {
-		public List<TerminalNode> TYPE() { return getTokens(GEasyParser.TYPE); }
-		public TerminalNode TYPE(int i) {
-			return getToken(GEasyParser.TYPE, i);
-		}
-		public List<TerminalNode> ID() { return getTokens(GEasyParser.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(GEasyParser.ID, i);
-		}
-		public List<TerminalNode> COMMA() { return getTokens(GEasyParser.COMMA); }
-		public TerminalNode COMMA(int i) {
-			return getToken(GEasyParser.COMMA, i);
-		}
+		public TerminalNode TYPE() { return getToken(GEasyParser.TYPE, 0); }
+		public TerminalNode ID() { return getToken(GEasyParser.ID, 0); }
 		public Formal_paramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -1789,32 +1802,13 @@ public class GEasyParser extends Parser {
 	public final Formal_paramContext formal_param() throws RecognitionException {
 		Formal_paramContext _localctx = new Formal_paramContext(_ctx, getState());
 		enterRule(_localctx, 42, RULE_formal_param);
-		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(239);
-			match(TYPE);
-			setState(240);
-			match(ID);
 			setState(246);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==COMMA) {
-				{
-				{
-				setState(241);
-				match(COMMA);
-				setState(242);
-				match(TYPE);
-				setState(243);
-				match(ID);
-				}
-				}
-				setState(248);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
+			match(TYPE);
+			setState(247);
+			match(ID);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2102,9 +2096,9 @@ public class GEasyParser extends Parser {
 		"\21\u00bc\n\21\3\21\3\21\3\22\3\22\3\22\3\22\3\23\3\23\3\23\3\23\3\23"+
 		"\3\23\3\23\3\23\3\23\3\23\3\23\3\23\5\23\u00d0\n\23\3\24\3\24\3\24\3\24"+
 		"\3\24\3\24\3\24\5\24\u00d9\n\24\3\25\3\25\3\25\5\25\u00de\n\25\3\25\3"+
-		"\25\3\25\5\25\u00e3\n\25\3\25\3\25\3\25\3\25\3\26\3\26\3\26\3\26\5\26"+
-		"\u00ed\n\26\3\26\3\26\3\26\3\27\3\27\3\27\3\27\3\27\7\27\u00f7\n\27\f"+
-		"\27\16\27\u00fa\13\27\3\30\3\30\3\30\3\30\6\30\u0100\n\30\r\30\16\30\u0101"+
+		"\25\3\25\5\25\u00e3\n\25\3\25\3\25\3\25\3\25\3\26\3\26\3\26\3\26\3\26"+
+		"\3\26\7\26\u00ef\n\26\f\26\16\26\u00f2\13\26\5\26\u00f4\n\26\3\26\3\26"+
+		"\3\26\3\27\3\27\3\27\3\30\3\30\3\30\3\30\6\30\u0100\n\30\r\30\16\30\u0101"+
 		"\3\30\3\30\3\31\3\31\3\31\5\31\u0109\n\31\3\31\3\31\3\32\3\32\3\33\3\33"+
 		"\3\33\2\2\34\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64"+
 		"\2\b\3\2 !\4\2$$&&\4\2%%\'(\4\2\24\24**\4\2\20\20\24\25\4\2\26\26)*\2"+
@@ -2112,7 +2106,7 @@ public class GEasyParser extends Parser {
 		"\2\16j\3\2\2\2\20s\3\2\2\2\22}\3\2\2\2\24\u0082\3\2\2\2\26\u008a\3\2\2"+
 		"\2\30\u008f\3\2\2\2\32\u0097\3\2\2\2\34\u00a7\3\2\2\2\36\u00aa\3\2\2\2"+
 		" \u00b1\3\2\2\2\"\u00bf\3\2\2\2$\u00cf\3\2\2\2&\u00d1\3\2\2\2(\u00da\3"+
-		"\2\2\2*\u00e8\3\2\2\2,\u00f1\3\2\2\2.\u00fb\3\2\2\2\60\u0105\3\2\2\2\62"+
+		"\2\2\2*\u00e8\3\2\2\2,\u00f8\3\2\2\2.\u00fb\3\2\2\2\60\u0105\3\2\2\2\62"+
 		"\u010c\3\2\2\2\64\u010e\3\2\2\2\66:\5\4\3\2\67:\5$\23\28:\5 \21\29\66"+
 		"\3\2\2\29\67\3\2\2\298\3\2\2\2:=\3\2\2\2;9\3\2\2\2;<\3\2\2\2<>\3\2\2\2"+
 		"=;\3\2\2\2>?\7\2\2\3?\3\3\2\2\2@D\5\16\b\2AD\5\6\4\2BD\5*\26\2C@\3\2\2"+
@@ -2161,21 +2155,21 @@ public class GEasyParser extends Parser {
 		"\u00df\3\2\2\2\u00df\u00e0\5\62\32\2\u00e0\u00e2\7\17\2\2\u00e1\u00e3"+
 		"\7$\2\2\u00e2\u00e1\3\2\2\2\u00e2\u00e3\3\2\2\2\u00e3\u00e4\3\2\2\2\u00e4"+
 		"\u00e5\5\62\32\2\u00e5\u00e6\7\13\2\2\u00e6\u00e7\5.\30\2\u00e7)\3\2\2"+
-		"\2\u00e8\u00e9\t\6\2\2\u00e9\u00ea\7*\2\2\u00ea\u00ec\7\n\2\2\u00eb\u00ed"+
-		"\5,\27\2\u00ec\u00eb\3\2\2\2\u00ec\u00ed\3\2\2\2\u00ed\u00ee\3\2\2\2\u00ee"+
-		"\u00ef\7\13\2\2\u00ef\u00f0\5.\30\2\u00f0+\3\2\2\2\u00f1\u00f2\7\24\2"+
-		"\2\u00f2\u00f8\7*\2\2\u00f3\u00f4\7\4\2\2\u00f4\u00f5\7\24\2\2\u00f5\u00f7"+
-		"\7*\2\2\u00f6\u00f3\3\2\2\2\u00f7\u00fa\3\2\2\2\u00f8\u00f6\3\2\2\2\u00f8"+
-		"\u00f9\3\2\2\2\u00f9-\3\2\2\2\u00fa\u00f8\3\2\2\2\u00fb\u00ff\7\b\2\2"+
-		"\u00fc\u0100\5\4\3\2\u00fd\u0100\5$\23\2\u00fe\u0100\5\60\31\2\u00ff\u00fc"+
-		"\3\2\2\2\u00ff\u00fd\3\2\2\2\u00ff\u00fe\3\2\2\2\u0100\u0101\3\2\2\2\u0101"+
-		"\u00ff\3\2\2\2\u0101\u0102\3\2\2\2\u0102\u0103\3\2\2\2\u0103\u0104\7\t"+
-		"\2\2\u0104/\3\2\2\2\u0105\u0108\7\21\2\2\u0106\u0109\5\30\r\2\u0107\u0109"+
-		"\7\26\2\2\u0108\u0106\3\2\2\2\u0108\u0107\3\2\2\2\u0109\u010a\3\2\2\2"+
-		"\u010a\u010b\7\5\2\2\u010b\61\3\2\2\2\u010c\u010d\t\7\2\2\u010d\63\3\2"+
-		"\2\2\u010e\u010f\7\22\2\2\u010f\65\3\2\2\2\359;CHQcjo\u0087\u008d\u0094"+
-		"\u009c\u00a1\u00a7\u00aa\u00af\u00b8\u00bb\u00cf\u00d8\u00dd\u00e2\u00ec"+
-		"\u00f8\u00ff\u0101\u0108";
+		"\2\u00e8\u00e9\t\6\2\2\u00e9\u00ea\7*\2\2\u00ea\u00f3\7\n\2\2\u00eb\u00f0"+
+		"\5,\27\2\u00ec\u00ed\7\4\2\2\u00ed\u00ef\5,\27\2\u00ee\u00ec\3\2\2\2\u00ef"+
+		"\u00f2\3\2\2\2\u00f0\u00ee\3\2\2\2\u00f0\u00f1\3\2\2\2\u00f1\u00f4\3\2"+
+		"\2\2\u00f2\u00f0\3\2\2\2\u00f3\u00eb\3\2\2\2\u00f3\u00f4\3\2\2\2\u00f4"+
+		"\u00f5\3\2\2\2\u00f5\u00f6\7\13\2\2\u00f6\u00f7\5.\30\2\u00f7+\3\2\2\2"+
+		"\u00f8\u00f9\7\24\2\2\u00f9\u00fa\7*\2\2\u00fa-\3\2\2\2\u00fb\u00ff\7"+
+		"\b\2\2\u00fc\u0100\5\4\3\2\u00fd\u0100\5$\23\2\u00fe\u0100\5\60\31\2\u00ff"+
+		"\u00fc\3\2\2\2\u00ff\u00fd\3\2\2\2\u00ff\u00fe\3\2\2\2\u0100\u0101\3\2"+
+		"\2\2\u0101\u00ff\3\2\2\2\u0101\u0102\3\2\2\2\u0102\u0103\3\2\2\2\u0103"+
+		"\u0104\7\t\2\2\u0104/\3\2\2\2\u0105\u0108\7\21\2\2\u0106\u0109\5\30\r"+
+		"\2\u0107\u0109\7\26\2\2\u0108\u0106\3\2\2\2\u0108\u0107\3\2\2\2\u0109"+
+		"\u010a\3\2\2\2\u010a\u010b\7\5\2\2\u010b\61\3\2\2\2\u010c\u010d\t\7\2"+
+		"\2\u010d\63\3\2\2\2\u010e\u010f\7\22\2\2\u010f\65\3\2\2\2\359;CHQcjo\u0087"+
+		"\u008d\u0094\u009c\u00a1\u00a7\u00aa\u00af\u00b8\u00bb\u00cf\u00d8\u00dd"+
+		"\u00e2\u00f0\u00f3\u00ff\u0101\u0108";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

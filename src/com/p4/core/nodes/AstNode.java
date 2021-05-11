@@ -10,6 +10,7 @@ public abstract class AstNode {
     public int lineNumber = 0;
     public String type;
     private String ID;
+    private String value;
 
     public List<AstNode> getChildren() {
         return children;
@@ -37,5 +38,13 @@ public abstract class AstNode {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

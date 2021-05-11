@@ -1,5 +1,6 @@
 package com.p4;
 
+import com.p4.core.CuttingHead;
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
@@ -18,13 +19,11 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
+        //CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
+        CharStream charStream = CharStreams.fromFileName("src/com/p4/program1.GE");
         Lexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();
@@ -52,21 +51,21 @@ public class Main {
 
         // We can only generate code, if there are no error from the semantic analysis
         if(!errorCollector.hasErrors()) {
-            CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
+            CodeVisitor codeVisitor = new CodeVisitor(symbolTable, ast);
             codeVisitor.visit(ast);
-          
-          try {
+
+            try {
             codeVisitor.print();
-          }
-          catch (IOException e) {
-            e.printStackTrace();
-          }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Code has been generated!");
         } else {
             // Print errors
             errorCollector.displayErrors();
         }
-
-        
         //ParseTree in GUI
         //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
         //viewer.open();

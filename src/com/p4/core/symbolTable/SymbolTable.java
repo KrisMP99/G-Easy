@@ -100,10 +100,10 @@ public class SymbolTable {
     }
 
     public void insertSymbol(String symbol, SymbolAttributes attribute) {
-        currentScope.getSymbols().put(symbol, attribute);
+        currentScope.setSymbol(symbol, attribute);
     }
 
     public void insertParam(String paramId, SymbolAttributes attribute) {
-        currentScope.getParams().put(paramId, attribute);
+        currentScope.addParams(paramId, attribute);
     }
 }

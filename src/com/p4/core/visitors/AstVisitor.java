@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import java.net.IDN;
+
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
     @Override
@@ -113,7 +115,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return dclNode;
         }
         else if(pos_assign != null) {
-            dclNode.children.add(visit(ctx.pos_assign()));
+            // Add the two coordinates as children
+            dclNode.children.add(visit(ctx.pos_assign().term(0)));
+            dclNode.children.add(visit(ctx.pos_assign().term(1)));
             return dclNode;
         }
 
@@ -175,6 +179,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         if(array_access != null) {
             AstNode arrayAccessNode = visitArray_access(array_access);
             AssignNode assignNode = new AssignNode(arrayAccessNode.getID());
+            assignNode.setType("array");
             if(expr != null) {
                 assignNode.children.add(visitExpr(expr));
             }
@@ -189,6 +194,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if(expr != null){
             String id = ctx.ID().toString();
             AssignNode assignNode = new AssignNode(id);
+            assignNode.setType("expr");
 
             assignNode.children.add(visitExpr(expr));
             assignNode.lineNumber = ctx.start.getLine();
@@ -198,9 +204,13 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         else if (pos_assign != null) {
             String id = ctx.ID().toString();
             AssignNode assignNode = new AssignNode(id);
+            assignNode.setType("pos");
 
-            AstNode posAssignNode = visitPos_assign(pos_assign);
-            assignNode.children.add(posAssignNode);
+            AstNode xCordNode = visit(pos_assign.term(0));
+            AstNode yCordNode = visit(pos_assign.term(1));
+
+            assignNode.children.add(xCordNode);
+            assignNode.children.add(yCordNode);
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
@@ -213,19 +223,18 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
-        //PosAssignNode posAssignNode = new PosAssignNode(ctx.toString());
-
         AstNode xCordVal = visit(ctx.term(0));
         AstNode yCordVal = visit(ctx.term(1));
 
-        PosNode posNode = new PosNode<>(xCordVal, yCordVal);
-        posNode.setxID(ctx.ID(0).toString());
-        posNode.setyID(ctx.ID(1).toString());
+        PosAssignNode posAssignNode= new PosAssignNode();
+        posAssignNode.setType("pos");
 
-        //posAssignNode.children.add(posNode);
-        posNode.lineNumber = ctx.start.getLine();
+        posAssignNode.children.add(xCordVal);
+        posAssignNode.children.add(yCordVal);
 
-        return posNode;
+        posAssignNode.lineNumber = ctx.start.getLine();
+
+        return posAssignNode;
     }
 
     @Override
@@ -522,12 +531,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         if (ctx.ID() != null) {
             actualParamNode = new ActualParamNode(ctx.ID().toString());
         }
-        else {
+        else if (ctx.TYPE() != null){
+            actualParamNode = new ActualParamNode(ctx.TYPE().toString());
+        } else {
             return null;
         }
 
         actualParamNode.children.add(visit(ctx.expr()));
-        actualParamNode.type = actualParamNode.children.get(0).type;
+        actualParamNode.setType(actualParamNode.children.get(0).getType());
 
         actualParamNode.lineNumber = ctx.start.getLine();
 
@@ -597,6 +608,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitIterative(GEasyParser.IterativeContext ctx) {
         String type = ctx.FOR().toString();
         String for_to = ctx.TO().toString();
+
         IterativeNode iterativeNode = new IterativeNode(type, for_to);
         iterativeNode.lineNumber = ctx.start.getLine();
 
@@ -611,6 +623,41 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 iterativeNode.children.add(childNode);
             }
         }
+
+        AstNode childVal1 = iterativeNode.children.get(0);
+        AstNode childVal2 = iterativeNode.children.get(1);
+
+        if(ctx.MINUS(0) != null) {
+            if(childVal1 instanceof IntNode) {
+                IntNode val1 = (IntNode)childVal1;
+                val1.isNegative = true;
+            }
+            else if(childVal1 instanceof DoubleNode) {
+                DoubleNode val1 = (DoubleNode)childVal1;
+                val1.isNegative = true;
+            }
+            else if (childVal1 instanceof IDNode) {
+                IDNode val1 = (IDNode)childVal1;
+                val1.isNegative = true;
+            }
+        }
+
+        if(ctx.MINUS(1) != null) {
+            if(childVal2 instanceof IntNode) {
+                IntNode val2 = (IntNode)childVal2;
+                val2.isNegative = true;
+            }
+            else if(childVal2 instanceof DoubleNode) {
+                DoubleNode val2 = (DoubleNode)childVal2;
+                val2.isNegative = true;
+            }
+            else if (childVal2 instanceof IDNode) {
+                IDNode val2 = (IDNode)childVal2;
+                val2.isNegative = true;
+            }
+        }
+
+
         return iterativeNode;
     }
 
@@ -653,28 +700,29 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitFormal_param(GEasyParser.Formal_paramContext ctx) {
         FormalParamNode formalParamNode = new FormalParamNode();
 
-        int childrenCount = ctx.getChildCount();
+        IDNode idNode;
 
-        for(int childIndex = 0; childIndex < childrenCount; childIndex++) {
-            IDNode idNode;
-            String type = ctx.getChild(childIndex).toString();
-
-            switch (type) {
-                case "int":
-                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "int");
-                    break;
-                case "double":
-                    idNode = new IDNode(ctx.getChild(++childIndex).toStringTree(), "double");
-                    break;
-                default:
-                    idNode = null;
-                    break;
-            }
-
-            if(idNode != null) {
-                formalParamNode.children.add(idNode);
-            }
+        switch (ctx.TYPE().toString()) {
+            case "int":
+                idNode = new IDNode(ctx.ID().toString(), "int");
+                break;
+            case "double":
+                idNode = new IDNode(ctx.ID().toString(), "double");
+                break;
+            case "pos":
+                idNode = new IDNode(ctx.ID().toString(), "pos");
+                break;
+            default:
+                idNode = null;
+                break;
         }
+
+        if(idNode != null) {
+            formalParamNode.children.add(idNode);
+        }
+
+        formalParamNode.setID(ctx.ID().toString());
+        formalParamNode.setType(formalParamNode.children.get(0).getType());
 
         formalParamNode.lineNumber = ctx.start.getLine();
         return formalParamNode;
@@ -726,14 +774,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             // Check if double
             if(ctx.NUMBER().getText().contains(".")) {
                 DoubleNode doubleNode = new DoubleNode(Double.parseDouble(ctx.getText()), isNeg);
-                doubleNode.type = "double";
+                doubleNode.setType("double");
                 doubleNode.lineNumber = ctx.start.getLine();
                 return doubleNode;
             }
             else {
                 // If not a double, it is an int
                 IntNode intNode = new IntNode(Integer.parseInt(ctx.getText()), isNeg);
-                intNode.type = "int";
+                intNode.setType("int");
                 intNode.lineNumber = ctx.start.getLine();
                 return intNode;
             }
@@ -745,6 +793,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         }
         else if (ctx.BOOL() != null) {
             BoolNode boolNode = new BoolNode(Boolean.parseBoolean(ctx.getText()), "bool");
+            boolNode.setType("bool");
             boolNode.lineNumber = ctx.start.getLine();
             return boolNode;
         }

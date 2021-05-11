@@ -10,6 +10,7 @@ public class SymbolAttributes {
     private String type;        // func, dcl, param, array
     private String dataType;    // int, double, bool, pos
     private String scopeName;
+    private String value;
 
 
     // Used for dcls
@@ -61,5 +62,13 @@ public class SymbolAttributes {
     @Override
     public String toString() {
         return "type: " + type + " datatype: " + dataType + " scope: " + scopeName + " arrayLength: " + arrayLength;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

@@ -4,29 +4,11 @@ import com.p4.core.nodes.*;
 import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 
-import java.util.jar.Attributes;
-
 public class SymbolTableVisitor implements INodeVisitor {
     SymbolTable symbolTable;
 
     public SymbolTableVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
-
-        // Add our predefined functions
-        // They all have the void return type
-        SymbolAttributes attributes = new SymbolAttributes("function", "void");
-        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
-
-        // Insert
-        symbolTable.insertSymbol("cut_line", attributes);
-        symbolTable.insertSymbol("rapid_move", attributes);
-        symbolTable.insertSymbol("cut_clockwise_circular", attributes);
-
-        // Insert it into the declared functions
-        symbolTable.declaredFunctions.add("cut_line");
-        symbolTable.declaredFunctions.add("rapid_move");
-        symbolTable.declaredFunctions.add("cut_clockwise_circular");
-
     }
 
     @Override
@@ -59,6 +41,8 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     // Method to declare a var node (var_dcl node)
     private void declareVarNode(VarDclNode<?> node) {
+        this.visitChildren(node);
+
         if(!isNodeDeclared(node)) {
             SymbolAttributes attributes = new SymbolAttributes("dcl", node.type);
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
@@ -108,11 +92,76 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    private void addPredefinedFunction(FuncCallNode node) {
+        symbolTable.calledFunctions.add(node.getID());
+
+        // If the function has already been called once, we remove it and add it again, as the number of parameters might be different
+        if(symbolTable.declaredFunctions.contains(node.getID())) {
+            symbolTable.declaredFunctions.remove(node.getID());
+        }
+
+        symbolTable.declaredFunctions.add(node.getID());
+
+        // They all have the void return type
+        SymbolAttributes attributes = new SymbolAttributes("function", "void");
+        attributes.setScope(symbolTable.getCurrentScope().getScopeName());
+
+        // Insert symbol
+        symbolTable.insertSymbol(node.getID(), attributes);
+
+        // Insert the scopes
+        symbolTable.addScope("Func: " + node.getID());
+        addPredefinedFunctionParams(node);
+        symbolTable.leaveScope();
+    }
+
+    private void addPredefinedFunctionParams(FuncCallNode node) {
+        visitPredefinedFunctionParameters(node);
+        String scopeName = symbolTable.getCurrentScope().getScopeName();
+
+        for (AstNode child : node.children){
+            SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
+            attributes.setScope(scopeName);
+            symbolTable.insertParam(child.getID(), attributes);
+        }
+    }
+
+    private void visitPredefinedFunctionParameters(AstNode node) {
+        // Child = actual param node
+        for (AstNode child : node.children) {
+            for (AstNode idChild : child.children) {
+                if (idChild instanceof IDNode) {
+                    switch (idChild.getID()){
+                        case "metric": case "imperial": case "absolute":
+                        case "incremental": case "units_per_minute": case "inverse":
+                            child.setType("string");
+                            break;
+                        default:
+                            SymbolAttributes attributes = symbolTable.lookupSymbol(idChild.getID());
+                            child.setType(attributes.getDataType());
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+
     @Override
     public void visit(FuncCallNode node) {
-        // We need to handle our predefined functions here, to avoid getting undeclared function errors
-        // rapid_move();     cut_line();    cut_clockwise_circular();
         String functionID = node.getID();
+
+        // Add predefined function names here
+        switch (functionID) {
+            case "cut_line": case "cut_clockwise_circular": case "rapid_move":
+            case "set_units": case "set_cut_mode": case "set_feed_rate_mode":
+                addPredefinedFunction(node);
+                symbolTable.calledFunctions.add(functionID);
+                return;
+            default:
+                break;
+        }
+
         symbolTable.calledFunctions.add(functionID);
 
         this.visitChildren(node);
@@ -120,6 +169,11 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(AssignNode node) {
+        this.visitChildren(node);
+    }
+
+    @Override
+    public void visit(PosAssignNode node) {
         this.visitChildren(node);
     }
 
@@ -166,25 +220,26 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FormalParamNode node) {
         String scopeName = symbolTable.getCurrentScope().getScopeName();
 
-        for (AstNode child : node.getChildren()){
+        for (AstNode child : node.children){
             IDNode param = (IDNode)child;
             SymbolAttributes attributes = new SymbolAttributes("Formal Param", param.type);
             attributes.setScope(scopeName);
             symbolTable.insertParam(param.getID(), attributes);
         }
-        this.visitChildren(node);
     }
 
     @Override
     public void visit(ActualParamNode node) {
+        this.visitChildren(node);
+
         String scopeName = symbolTable.getCurrentScope().getScopeName();
 
-        for (AstNode child : node.getChildren()){
+        for (AstNode child : node.children) {
             SymbolAttributes attributes = new SymbolAttributes("Actual Param", child.getType());
             attributes.setScope(scopeName);
-            symbolTable.insertParam(child.getID(), attributes);
+            attributes.setValue(child.getValue());
+            symbolTable.insertParam(node.getID(), attributes);
         }
-        this.visitChildren(node);
     }
 
     @Override
@@ -215,6 +270,9 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(IDNode node) {
         this.visitChildren(node);
+
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        node.setType(attributes.getDataType());
     }
 
     @Override
@@ -229,11 +287,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(DoubleNode node) {
-        this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(PosNode node) {
         this.visitChildren(node);
     }
 
