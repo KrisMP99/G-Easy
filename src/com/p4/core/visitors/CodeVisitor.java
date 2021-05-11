@@ -115,6 +115,7 @@ public class CodeVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
+        // This if-statement is unnecessary?
         if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
             this.visitChildren(node);
         }
@@ -122,7 +123,6 @@ public class CodeVisitor implements INodeVisitor {
         double iCord = cuttingHead.getXCord() * (-1);;
         double jCord = cuttingHead.getYCord() * (-1);
         double speed;
-
 
         String funcName = node.getID();
         List<String> params = getActualParamValues(node);
@@ -142,8 +142,7 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else if (funcName.equals("rapid_move")){
-            rapidMove(Double.parseDouble(params.get(0)),
-                    Double.parseDouble(params.get(1)));
+            rapidMove(Double.parseDouble(params.get(0)), Double.parseDouble(params.get(1)));
             node.setValue("void");
         }
         else if (funcName.equals("set_units")){
@@ -159,7 +158,12 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
-            AstNode dclNode = lookupAstNode(node);
+
+            // Needs work to support function calls before the function has been declared
+            //this.symbolTable.leaveScope();
+
+            AstNode dclNode = lookupAstNode(node, true);
+            //this.visitChildren(dclNode);
             node.setValue(dclNode.getValue());
         }
 
@@ -237,12 +241,15 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind){
+    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind, boolean isFuncDcl){
         // Make the list for the nodes
         Queue<AstNode> nodeQueue = new LinkedList<>();
 
         // Add our root node
         nodeQueue.add(nodeToSearch);
+
+        // Check if it's a formal param
+        boolean isFormalParam = isFormalParam(nodeToFind);
 
         // Go trough all the nodes
         while(!nodeQueue.isEmpty()) {
@@ -255,7 +262,21 @@ public class CodeVisitor implements INodeVisitor {
 
                 // Check if it's the node we're looking for
                 if(node.getID().equals(nodeToFind.getID())) {
-                    return node;
+                    if(isFuncDcl) {
+                        if(node instanceof FuncDclNode) {
+                            return node;
+                        }
+                    }
+
+                    else if(isFormalParam) {
+                        if(node instanceof ActualParamNode) {
+                            return node;
+                        }
+
+                    } else {
+                        return node;
+                    }
+
                 }
 
                 // Dequeue the node
@@ -277,12 +298,25 @@ public class CodeVisitor implements INodeVisitor {
 
     }
 
-    private boolean isScopeReachable(AstNode node){
+    private boolean isFormalParam(AstNode node){
+        // If it's a formal param node, we need to find the actual param to get it's value
+        // A formal param should be in the symbol table, so we can look up it's attributes
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
 
+        if(attributes != null && attributes.getType().equalsIgnoreCase("Formal param")) {
+            return true;
+        }
+
+        return false;
     }
 
     private AstNode lookupAstNode(AstNode node){
-        AstNode foundNode = searchAst(progNode, node);
+        AstNode foundNode = searchAst(progNode, node, false);
+        return foundNode;
+    }
+
+    private AstNode lookupAstNode(AstNode node, Boolean isFuncDcl){
+        AstNode foundNode = searchAst(progNode, node, isFuncDcl);
         return foundNode;
     }
 
@@ -522,6 +556,9 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FormalParamNode node) {
+        // To get the value of this node, we have to find the actual parameter and find it's value.
+
+
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
     }

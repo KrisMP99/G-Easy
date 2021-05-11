@@ -50,13 +50,12 @@ public class Main {
             codeVisitor.visit(ast);
 
             try {
-            codeVisitor.print();
+                codeVisitor.print();
+                System.out.println("Code has been generated!");
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
-
-            System.out.println("Code has been generated!");
         } else {
             // Print errors
             errorCollector.displayErrors();
