@@ -1,16 +1,11 @@
 package com.p4;
 
-import com.p4.core.CuttingHead;
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
 import com.p4.core.GEasyParser;
 import com.p4.core.errorHandling.ErrorCollector;
 import com.p4.core.nodes.ProgNode;
 import com.p4.core.symbolTable.SymbolTable;
-import com.p4.core.visitors.AstTreePrinterVisitor;
-import com.p4.core.visitors.AstVisitor;
-import com.p4.core.visitors.SemanticsVisitor;
-import com.p4.core.visitors.SymbolTableVisitor;
 import com.p4.core.visitors.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -23,6 +18,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws Exception {
         CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
+        //CharStream charStream = CharStreams.fromFileName("src/com/p4/program1.GE");
         Lexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();

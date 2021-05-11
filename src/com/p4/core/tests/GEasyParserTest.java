@@ -39,20 +39,20 @@ class GEasyParserTest {
         assertTrue(f.getText().contains("1+1;"));
     }
 
-    @Test
-    public void testAssignmentOfNumber() {
-        var noParam = createParserNoError(Arrays.asList(
-                new TestToken("int", GEasyLexer.TYPE),
-                new TestToken(" ", GEasyLexer.WHITESPACE),
-                new TestToken("x", GEasyLexer.ID),
-                new TestToken("=", GEasyLexer.ASSIGN_OP),
-                new TestToken("1", GEasyLexer.NUMBER),
-                new TestToken(";", GEasyLexer.SEMICOLON)
-        ));
-
-        var f = noParam.prog();
-        assertTrue(f.getText().contains("int x=1;"));
-    }
+    //@Test
+    //public void testAssignmentOfNumber() {
+    //    var noParam = createParserNoError(Arrays.asList(
+    //            new TestToken("int", GEasyLexer.TYPE),
+    //            new TestToken(" ", GEasyLexer.WHITESPACE),
+    //            new TestToken("x", GEasyLexer.ID),
+    //           new TestToken("=", GEasyLexer.ASSIGN_OP),
+    //            new TestToken("1", GEasyLexer.NUMBER),
+    //            new TestToken(";", GEasyLexer.SEMICOLON)
+    //    ));
+    //
+    //    var f = noParam.prog();
+    //    assertTrue(f.getText().contains("int x=1;"));
+    //}
 
     @Test
     public void testAssignmentOfVariable() {
