@@ -7,6 +7,8 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import java.net.IDN;
+
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
     @Override
@@ -606,6 +608,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitIterative(GEasyParser.IterativeContext ctx) {
         String type = ctx.FOR().toString();
         String for_to = ctx.TO().toString();
+
         IterativeNode iterativeNode = new IterativeNode(type, for_to);
         iterativeNode.lineNumber = ctx.start.getLine();
 
@@ -620,6 +623,41 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 iterativeNode.children.add(childNode);
             }
         }
+
+        AstNode childVal1 = iterativeNode.children.get(0);
+        AstNode childVal2 = iterativeNode.children.get(1);
+
+        if(ctx.MINUS(0) != null) {
+            if(childVal1 instanceof IntNode) {
+                IntNode val1 = (IntNode)childVal1;
+                val1.isNegative = true;
+            }
+            else if(childVal1 instanceof DoubleNode) {
+                DoubleNode val1 = (DoubleNode)childVal1;
+                val1.isNegative = true;
+            }
+            else if (childVal1 instanceof IDNode) {
+                IDNode val1 = (IDNode)childVal1;
+                val1.isNegative = true;
+            }
+        }
+
+        if(ctx.MINUS(1) != null) {
+            if(childVal2 instanceof IntNode) {
+                IntNode val2 = (IntNode)childVal2;
+                val2.isNegative = true;
+            }
+            else if(childVal2 instanceof DoubleNode) {
+                DoubleNode val2 = (DoubleNode)childVal2;
+                val2.isNegative = true;
+            }
+            else if (childVal2 instanceof IDNode) {
+                IDNode val2 = (IDNode)childVal2;
+                val2.isNegative = true;
+            }
+        }
+
+
         return iterativeNode;
     }
 
