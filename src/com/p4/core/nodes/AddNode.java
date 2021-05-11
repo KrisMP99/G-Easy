@@ -4,7 +4,6 @@ import com.p4.core.visitors.INodeVisitor;
 
 public class AddNode extends AstNode {
     private boolean parentheses = false;
-    public int lineNumber = 0;
 
     public boolean isParentheses() {
         return parentheses;

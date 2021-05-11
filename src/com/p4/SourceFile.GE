@@ -1,16 +1,11 @@
-set_units(unit: metric);                                // G21
-set_cut_mode(mode: absolute);                           // G90
-set_feed_rate_mode(mode: inverse);                      // G94
+int addNumLoop(int numToAdd, int loopNum) {
+    int result = 0;
 
-pos p0 = {x: -10, y: 0};
-pos p1 = {x: 0, y: 10};
-pos p2 = {x: 10, y: 0};
-pos p3 = {x: 0, y: -10};
-pos p4 = {x: -10, y: 0};
+    for(0 to loopNum) {
+        result = result + numToAdd;
+    }
 
-cut_line(position: p0, speed: 130);                     // G1
-cut_clockwise_circular(position: p1, speed: 65);        // G2
-cut_clockwise_circular(position: p2, speed: 65);
-cut_clockwise_circular(position: p3, speed: 65);
-cut_clockwise_circular(position: p3, speed: 65);
-set_units(unit: imperial);                                // G21
+    return result;
+}
+
+int b = addNumLoop(numToAdd: 2, loopNum: 10);

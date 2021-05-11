@@ -95,14 +95,17 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDclNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
         node.setValue(node.children.get(1).getValue());
-
+        this.symbolTable.leaveScope();
     }
 
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
+        //this.symbolTable.enterScope(node.getNodesHash());
+        this.visitChildren(node);
 
         if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
             this.visitChildren(node);
@@ -148,9 +151,11 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
-            AstNode dclNode = lookupAstNode(funcName);
+            AstNode dclNode = lookupAstNode(node);
             node.setValue(dclNode.getValue());
         }
+
+        //this.symbolTable.leaveScope();
     }
 
     private String getActualParamString(FuncCallNode node){
@@ -184,6 +189,9 @@ public class CodeVisitor implements INodeVisitor {
                 paramValues.add(posValues[0]);
                 paramValues.add(posValues[1]);
             }
+            else if(child instanceof ArrayDclNode) {
+                paramValues.add(child.children.get(0).getValue());
+            }
         }
         return paramValues;
     }
@@ -191,10 +199,19 @@ public class CodeVisitor implements INodeVisitor {
     private List<AstNode> getParamsForBuildInFunction(FuncCallNode node) {
         List<AstNode> params = new ArrayList<>();
 
+        // ParamChild = actual params
         for (AstNode paramChild : node.children){
             for (AstNode childNode : paramChild.children){
                 if (childNode instanceof IDNode){
-                    params.add(lookupAstNode(childNode.getID()));
+                    params.add(lookupAstNode(childNode));
+                }
+                else if(childNode instanceof ArrayAccessNode) {
+                    AstNode arrayDclNode = lookupAstNode(childNode);
+                    int valueToAccess = Integer.parseInt(childNode.getValue());
+
+                    AstNode arrayValueNode = arrayDclNode.children.get(valueToAccess);
+
+                    params.add(arrayValueNode);
                 }
                 else {
                     params.add(childNode);
@@ -204,10 +221,14 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    // Note: Skal gøres rekursiv så vi kigger alle noderne i gennem, også på børnene
-    private AstNode lookupAstNode(String id){
+    private AstNode lookupAstNode(AstNode node){
+        // Look up the scope
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        String scopeName = attributes.getScope();
+
+
         for(AstNode child : progNode.children) {
-            if(child.getID().equals(id)) {
+            if(child.getID().equals(node.getID())) {
                 return child;
             }
         }
@@ -275,7 +296,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
-        AstNode childNode = lookupAstNode(node.getID());
+        AstNode childNode = lookupAstNode(node);
         childNode.setValue(node.children.get(0).getValue());
         node.setValue(node.children.get(0).getValue());
     }
@@ -305,7 +326,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
         // Get the dcl node when the array was declared
-        AstNode arrayDclNode = lookupAstNode(node.getID());
+        AstNode arrayDclNode = lookupAstNode(node);
 
         // Get the index
         // The index might be represented as an int or as an ID
@@ -316,7 +337,7 @@ public class CodeVisitor implements INodeVisitor {
             index = Integer.parseInt(indexNode.getValue());
         }
         else {
-            index = Integer.parseInt(indexNode.toString());
+            index = (int)Math.round(Double.parseDouble(indexNode.getValue()));
         }
 
         // Get the child node in the array by the index
@@ -363,31 +384,67 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
-        int startValue = Integer.parseInt(node.children.get(0).getValue());
-        int endValue = Integer.parseInt(node.children.get(1).getValue());
+        AstNode startValueNode = node.children.get(0);
+        AstNode endValueNode = node.children.get(1);
 
-        // revisit later
-        IntNode startNode = (IntNode)node.children.get(0);
-        IntNode endNode = (IntNode)node.children.get(1);
+        this.visitChild(startValueNode);
+        this.visitChild(endValueNode);
 
-        if(startNode.isNegative) {
-            startValue = startValue * (-1);
-        }
-        if(endNode.isNegative) {
-            endValue = endValue * (-1);
-        }
+        // Check if the values are negative and update them
+        checkAndSetNegative(startValueNode);
+        checkAndSetNegative(endValueNode);
+
+        int startValue = Integer.parseInt(startValueNode.getValue());
+        int endValue = Integer.parseInt(endValueNode.getValue());
 
         if(startValue < endValue && endValue > 0) {
-            startValue -= 1;
+            endValue += 1;
             while(startValue < endValue) {
+                System.out.println("i: " + startValue);
                 this.visitChildren(node.children.get(2));
                 startValue++;
+
+                if(startValueNode instanceof IDNode) {
+                    updateValue(startValueNode, startValue);
+                }
             }
         }
-        else if(endValue < 0 && startValue > endValue){
+        else if(endValue < 0 && startValue > endValue) {
+            endValue -= 1;
             while(startValue > endValue) {
                 this.visitChildren(node.children.get(2));
                 startValue--;
+
+                if(startValueNode instanceof IDNode) {
+                    updateValue(startValueNode, startValue);
+                }
+            }
+        }
+    }
+
+    private void updateValue(AstNode node, int value) {
+        AstNode nodeToUpdate = lookupAstNode(node);;
+        nodeToUpdate.children.get(0).setValue(Integer.toString(value));
+        nodeToUpdate.setValue(Integer.toString(value));
+    }
+
+    private void checkAndSetNegative(AstNode node){
+        if(node instanceof IntNode) {
+            IntNode nodeToUpdate = (IntNode)node;
+            if(nodeToUpdate.isNegative) {
+                node.setValue("-" + node.getValue());
+            }
+        }
+        else if(node instanceof DoubleNode) {
+            DoubleNode nodeToUpdate = (DoubleNode)node;
+            if(nodeToUpdate.isNegative) {
+                nodeToUpdate.setValue("-" + node.getValue());
+            }
+        }
+        else if(node instanceof IDNode){
+            IDNode nodeToUpdate = (IDNode)node;
+            if(nodeToUpdate.isNegative) {
+                nodeToUpdate.setValue("-" + node.getValue());
             }
         }
     }
@@ -527,7 +584,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode valNode = lookupAstNode(node.getID());
+        AstNode valNode = lookupAstNode(node);
 
         // If it's null we check if it's a parameter
         if(valNode == null) {
@@ -557,27 +614,23 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(IntNode node) {
         this.visitChildren(node);
+        if(node.isNegative && !node.getValue().contains("-")) {
+            node.setValue("-" + node.getValue());
+        }
     }
 
     @Override
     public void visit(DoubleDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-        System.out.println(node.getValue());
     }
 
     @Override
     public void visit(DoubleNode node) {
         this.visitChildren(node);
-    }
-
-    // Only used in PosNode (for now)
-    // Returns true if the given node CLASS NAME is of type IntNode or DoubleNode
-    private boolean isNumberNode(String nodeType) {
-        if(nodeType.equals("IntNode") || nodeType.equals("DoubleNode")){
-            return true;
+        if(node.isNegative && !node.getValue().contains("-")) {
+            node.setValue("-" + node.getValue());
         }
-        return false;
     }
 
     @Override
@@ -648,8 +701,13 @@ public class CodeVisitor implements INodeVisitor {
             double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
             result = rightSide * leftSide;
+
+
             node.setValue(Double.toString(result));
         }
+
+
+
     }
 
     @Override
