@@ -18,7 +18,7 @@ import java.util.Queue;
 public class CodeVisitor implements INodeVisitor {
 
     private final String filepath = "src/com/p4/output.GE";
-    private final String dirpath = "src/com/p4";
+    private final String dirpath = "src/com/p4/";
 
     //String builder is used to construct the G code file -- output.GE
     private StringBuilder stringBuilder = new StringBuilder();
@@ -277,9 +277,9 @@ public class CodeVisitor implements INodeVisitor {
 
     }
 
-    private boolean isScopeReachable(AstNode node){
+    //private boolean isScopeReachable(AstNode node){
 
-    }
+    //}
 
     private AstNode lookupAstNode(AstNode node){
         AstNode foundNode = searchAst(progNode, node);
