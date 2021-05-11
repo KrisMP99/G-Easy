@@ -18,7 +18,7 @@ import java.util.Queue;
 public class CodeVisitor implements INodeVisitor {
 
     private final String filepath = "src/com/p4/output.GE";
-    private final String dirpath = "src/com/p4";
+    private final String dirpath = "src/com/p4/";
 
     //String builder is used to construct the G code file -- output.GE
     private StringBuilder stringBuilder = new StringBuilder();
@@ -123,6 +123,7 @@ public class CodeVisitor implements INodeVisitor {
         double iCord = cuttingHead.getXCord() * (-1);;
         double jCord = cuttingHead.getYCord() * (-1);
         double speed;
+
 
         String funcName = node.getID();
         List<String> params = getActualParamValues(node);
@@ -556,9 +557,6 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FormalParamNode node) {
-        // To get the value of this node, we have to find the actual parameter and find it's value.
-
-
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
     }
