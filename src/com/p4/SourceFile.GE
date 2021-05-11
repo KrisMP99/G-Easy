@@ -1,7 +1,11 @@
-int x = 2;
-if (x == 2 && x < 10) {
-    cut_line(x: 10, y: 6, speed: 2);
+int addNumLoop(int numToAdd, int loopNum) {
+    int result = 0;
+
+    for(0 to loopNum) {
+        result = result + numToAdd;
+    }
+
+    return result;
 }
-else {
-    cut_line(x: 10, y: 0, speed: 5);
-}
+
+int b = addNumLoop(numToAdd: 2, loopNum: 10);

@@ -22,10 +22,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // Helper function to visit all the children of a particular ParseTree
     private AstNode visitChildren(AstNode node, ParseTree[] children) {
         // Iterates through all the node's children
-        for(ParseTree child : children) {
+        for (ParseTree child : children) {
 
             // Skip leaves/terminals
-            if(child.getPayload() instanceof CommonToken) {
+            if (child.getPayload() instanceof CommonToken) {
                 continue;
             }
 
@@ -46,13 +46,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         GEasyParser.Func_dclContext func_dcl = ctx.func_dcl();
 
         // Figure out which dcl we're dealing with
-        if(assign != null) {
+        if (assign != null) {
             return visit(assign);
-        }
-        else if(var_dcl != null) {
+        } else if (var_dcl != null) {
             return visit(var_dcl);
 
-        } else if(func_dcl != null) {
+        } else if (func_dcl != null) {
             return visit(func_dcl);
         }
 
@@ -66,13 +65,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
         GEasyParser.Bool_dclContext bool_dcl = ctx.bool_dcl();
 
-        if(num_dcl != null) {
+        if (num_dcl != null) {
             return visit(num_dcl);
-        }
-        else if(array_dcl != null) {
+        } else if (array_dcl != null) {
             return visit(array_dcl);
-        }
-        else if(bool_dcl != null) {
+        } else if (bool_dcl != null) {
             return visit(bool_dcl);
         }
 
@@ -110,11 +107,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         dclNode.lineNumber = ctx.start.getLine();
 
         // Find out if we assign it to an expression or pos
-        if(expr != null) {
+        if (expr != null) {
             dclNode.children.add(visit(ctx.expr()));
             return dclNode;
-        }
-        else if(pos_assign != null) {
+        } else if (pos_assign != null) {
             // Add the two coordinates as children
             dclNode.children.add(visit(ctx.pos_assign().term(0)));
             dclNode.children.add(visit(ctx.pos_assign().term(1)));
@@ -135,10 +131,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int childCount = ctx.getChildCount();
 
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if(child instanceof GEasyParser.TermContext) {
+            if (child instanceof GEasyParser.TermContext) {
                 AstNode childNode = visit(child);
                 arrayDclNode.children.add(childNode);
             }
@@ -157,7 +153,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         GEasyParser.Logical_exprContext logicalExpr = ctx.logical_expr();
 
-        if(logicalExpr != null) {
+        if (logicalExpr != null) {
             boolDclNode.children.add(visit(logicalExpr));
             return boolDclNode;
         }
@@ -176,22 +172,20 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
 
         // Find out which one
-        if(array_access != null) {
+        if (array_access != null) {
             AstNode arrayAccessNode = visitArray_access(array_access);
             AssignNode assignNode = new AssignNode(arrayAccessNode.getID());
             assignNode.setType("array");
-            if(expr != null) {
+            if (expr != null) {
                 assignNode.children.add(visitExpr(expr));
-            }
-            else {
+            } else {
                 assignNode.children.add(visitPos_assign(pos_assign));
             }
 
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
-        }
-        else if(expr != null){
+        } else if (expr != null) {
             String id = ctx.ID().toString();
             AssignNode assignNode = new AssignNode(id);
             assignNode.setType("expr");
@@ -200,8 +194,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
-        }
-        else if (pos_assign != null) {
+        } else if (pos_assign != null) {
             String id = ctx.ID().toString();
             AssignNode assignNode = new AssignNode(id);
             assignNode.setType("pos");
@@ -214,8 +207,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             assignNode.lineNumber = ctx.start.getLine();
 
             return assignNode;
-        }
-        else {
+        } else {
             // error...
             return null;
         }
@@ -226,7 +218,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         AstNode xCordVal = visit(ctx.term(0));
         AstNode yCordVal = visit(ctx.term(1));
 
-        PosAssignNode posAssignNode= new PosAssignNode();
+        PosAssignNode posAssignNode = new PosAssignNode();
         posAssignNode.setType("pos");
 
         posAssignNode.children.add(xCordVal);
@@ -241,7 +233,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitArray_access(GEasyParser.Array_accessContext ctx) {
         boolean isNegative = false;
 
-        if(ctx.getParent().getChild(0).getText().equals("-")) {
+        if (ctx.getParent().getChild(0).getText().equals("-")) {
             isNegative = true;
         }
 
@@ -256,10 +248,9 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitLogical_expr(GEasyParser.Logical_exprContext ctx) {
         // only one child
-        if(ctx.getChildCount() == 1) {
+        if (ctx.getChildCount() == 1) {
             return visit(ctx.getChild(0));
-        }
-        else {
+        } else {
             return visitLogicalExprChildren(ctx, ctx.getChild(1), 1);
         }
     }
@@ -270,7 +261,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         int nextOperator = operatorIndex + 2;
 
-        switch(child.getText()) {
+        switch (child.getText()) {
             case "&&":
                 node.setToken(GEasyParser.AND);
                 break;
@@ -299,12 +290,11 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 return null;
         }
 
-        if(parent.getChild(nextOperator) != null) {
+        if (parent.getChild(nextOperator) != null) {
             node.children.add(visit(parent.getChild(operatorIndex - 1)));
             node.children.add(visitLogicalExprChildren(parent, parent.getChild(nextOperator), nextOperator));
 
-        }
-        else {
+        } else {
             node.children.add(visit(parent.getChild(operatorIndex - 1)));
             node.children.add(visit(parent.getChild(operatorIndex + 1)));
         }
@@ -316,7 +306,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitComp_expr(GEasyParser.Comp_exprContext ctx) {
 
         // If there is only one child
-        if(ctx.getChildCount() == 1) {
+        if (ctx.getChildCount() == 1) {
             return visit(ctx.getChild(0));
         }
 
@@ -356,23 +346,22 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitExpr(GEasyParser.ExprContext ctx) {
         // only one term_expr
-        if(ctx.getChildCount() == 1) {
+        if (ctx.getChildCount() == 1) {
             return visit(ctx.term_expr(0));
-        }
-        else {
+        } else {
             // Multiple term_exprs
-            return visitExprChildren(ctx, ctx.getChild(1),1);
+            return visitExprChildren(ctx, ctx.getChild(1), 1);
 
         }
     }
 
-    private AstNode visitExprChildren(GEasyParser.ExprContext parent, ParseTree child, int operatorIndex){
+    private AstNode visitExprChildren(GEasyParser.ExprContext parent, ParseTree child, int operatorIndex) {
         AstNode node;
 
         int termIndex = (operatorIndex - 1) / 2;
         int nextOperator = operatorIndex + 2;
 
-        switch(child.getText()) {
+        switch (child.getText()) {
             case "+":
                 node = new AddNode();
                 break;
@@ -385,7 +374,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         // If there are more than one operator
         // Uses recursion
-        if(parent.getChild(nextOperator) != null) {
+        if (parent.getChild(nextOperator) != null) {
             node.children.add(visitTerm_expr(parent.term_expr(termIndex)));
             node.children.add(visitExprChildren(parent, parent.getChild(nextOperator), nextOperator));
 
@@ -404,7 +393,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     @Override
     public AstNode visitTerm_expr(GEasyParser.Term_exprContext ctx) {
         // If there is only one child
-        if(ctx.getChildCount() == 1) {
+        if (ctx.getChildCount() == 1) {
             return visit(ctx.getChild(0));
         }
         // Multiple terms
@@ -435,7 +424,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         node.lineNumber = parent.start.getLine();
 
         // If there are more than one operator in the expression
-        if(parent.getChild(nextOperator) != null) {
+        if (parent.getChild(nextOperator) != null) {
             node.children.add(visit(parent.term(termIndex)));
             node.children.add(visitTermExprChildren(parent, parent.getChild(nextOperator), nextOperator));
         }
@@ -449,15 +438,14 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     }
 
     @Override
-    public AstNode visitTerm(GEasyParser.TermContext ctx){
+    public AstNode visitTerm(GEasyParser.TermContext ctx) {
         // We need to know if the term has parenthesis
         ParseTree child = ctx.getChild(0);
 
-        if(child instanceof GEasyParser.Val_exprContext){
+        if (child instanceof GEasyParser.Val_exprContext) {
             return visit(ctx.val_expr());
-        }
-        else if(child instanceof TerminalNodeImpl) {
-            if(child.getText().equals("(")) {
+        } else if (child instanceof TerminalNodeImpl) {
+            if (child.getText().equals("(")) {
                 AstNode node = visit(ctx.logical_expr());
                 node.lineNumber = ctx.start.getLine();
                 return addParen(node);
@@ -469,28 +457,44 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     private AstNode addParen(AstNode node) {
         String nodeClass = node.getClass().getSimpleName();
-        System.out.print(nodeClass);
 
-        switch(nodeClass) {
+        switch (nodeClass) {
             case "AddNode":
                 AddNode addNode = (AddNode) node;
                 addNode.setParentheses(true);
                 return addNode;
-
+            case "MultNode":
+                MultNode multNode = (MultNode) node;
+                multNode.setParentheses(true);
+                return multNode;
+            case "DivNode":
+                DivNode divNode = (DivNode) node;
+                divNode.setParentheses(true);
+                return divNode;
+            case "SubNode":
+                SubNode subNode = (SubNode) node;
+                subNode.setParentheses(true);
+                return subNode;
+            case "IntNode":
+                IntNode intNode = (IntNode) node;
+                intNode.setParentheses(true);
+                return intNode;
+            case "DoublNode":
+                DoubleNode doubleNode = (DoubleNode) node;
+                doubleNode.setParentheses(true);
+                return doubleNode;
+            default:
+                return node;
         }
-
-        return null;
     }
 
     @Override
     public AstNode visitVal_expr(GEasyParser.Val_exprContext ctx) {
-        if(ctx.val() != null) {
+        if (ctx.val() != null) {
             return visit(ctx.val());
-        }
-        else if(ctx.array_access() != null) {
+        } else if (ctx.array_access() != null) {
             return visit(ctx.array_access());
-        }
-        else if(ctx.func_call() != null) {
+        } else if (ctx.func_call() != null) {
             return visit(ctx.func_call());
         }
 
@@ -501,7 +505,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitFunc_call(GEasyParser.Func_callContext ctx) {
         boolean isNegative = false;
 
-        if(ctx.getParent().getChild(0).getText().equals("-")) {
+        if (ctx.getParent().getChild(0).getText().equals("-")) {
             isNegative = true;
         }
 
@@ -512,10 +516,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         // We go through all the children and add those we need for our Ast
         // In our case it's the non-terminal expr, and ...
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if(child instanceof GEasyParser.Actual_paramContext) {
+            if (child instanceof GEasyParser.Actual_paramContext) {
                 AstNode childNode = visit(child);
                 funcCallNode.children.add(childNode);
             }
@@ -530,8 +534,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
         if (ctx.ID() != null) {
             actualParamNode = new ActualParamNode(ctx.ID().toString());
-        }
-        else if (ctx.TYPE() != null){
+        } else if (ctx.TYPE() != null) {
             actualParamNode = new ActualParamNode(ctx.TYPE().toString());
         } else {
             return null;
@@ -556,22 +559,19 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         GEasyParser.CommentContext comment = ctx.comment();
 
         // Find out which one
-        if(assign != null){
+        if (assign != null) {
             return visit(assign);
-        }
-        else if(expr != null) {
+        } else if (expr != null) {
             return visit(expr);
-        }
-        else if (func_call != null) {
+        } else if (func_call != null) {
             return visit(func_call);
-        }
-        else if (selection != null) {
+        } else if (selection != null) {
             return visit(selection);
 
-        } else if(iterative != null){
+        } else if (iterative != null) {
             return visit(iterative);
 
-        } else if(comment != null) {
+        } else if (comment != null) {
             return visit(comment);
         }
 
@@ -583,7 +583,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     public AstNode visitSelection(GEasyParser.SelectionContext ctx) {
         SelectionNode selectionNode;
 
-        if(ctx.ELSE() != null) {
+        if (ctx.ELSE() != null) {
             selectionNode = new SelectionNode(ctx.IF().toString(), true);
         } else {
             selectionNode = new SelectionNode(ctx.IF().toString(), false);
@@ -595,7 +595,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         selectionNode.children.add(visit(ctx.logical_expr()));
 
         // Visit the block, if there is an else present, it visits both blocks
-        for(GEasyParser.BlockContext block : ctx.block()) {
+        for (GEasyParser.BlockContext block : ctx.block()) {
             selectionNode.children.add(visitBlock(block));
         }
 
@@ -615,10 +615,10 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         // Visit children
         int childCount = ctx.getChildCount();
 
-        for(int childIndex = 0; childIndex < childCount; childIndex++) {
+        for (int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if((child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.BlockContext)) {
+            if ((child instanceof GEasyParser.ValContext) || (child instanceof GEasyParser.BlockContext)) {
                 AstNode childNode = visit(child);
                 iterativeNode.children.add(childNode);
             }
@@ -627,37 +627,62 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         AstNode childVal1 = iterativeNode.children.get(0);
         AstNode childVal2 = iterativeNode.children.get(1);
 
-        if(ctx.MINUS(0) != null) {
+        if (ctx.MINUS().size() == 2) {
             if(childVal1 instanceof IntNode) {
-                IntNode val1 = (IntNode)childVal1;
+                IntNode val1 = (IntNode) childVal1;
                 val1.isNegative = true;
             }
-            else if(childVal1 instanceof DoubleNode) {
-                DoubleNode val1 = (DoubleNode)childVal1;
+            else if (childVal1 instanceof DoubleNode) {
+                DoubleNode val1 = (DoubleNode) childVal1;
                 val1.isNegative = true;
             }
             else if (childVal1 instanceof IDNode) {
-                IDNode val1 = (IDNode)childVal1;
+                IDNode val1 = (IDNode) childVal1;
                 val1.isNegative = true;
             }
-        }
 
-        if(ctx.MINUS(1) != null) {
-            if(childVal2 instanceof IntNode) {
-                IntNode val2 = (IntNode)childVal2;
+            if (childVal2 instanceof IntNode) {
+                IntNode val2 = (IntNode) childVal2;
                 val2.isNegative = true;
             }
-            else if(childVal2 instanceof DoubleNode) {
-                DoubleNode val2 = (DoubleNode)childVal2;
+            else if (childVal2 instanceof DoubleNode) {
+                DoubleNode val2 = (DoubleNode) childVal2;
                 val2.isNegative = true;
             }
             else if (childVal2 instanceof IDNode) {
-                IDNode val2 = (IDNode)childVal2;
+                IDNode val2 = (IDNode) childVal2;
                 val2.isNegative = true;
             }
         }
-
-
+        else if(ctx.MINUS().size() == 1) {
+            if(ctx.children.get(2) instanceof TerminalNodeImpl) {
+                if(childVal1 instanceof IntNode) {
+                    IntNode val1 = (IntNode)childVal1;
+                    val1.isNegative = true;
+                }
+                else if(childVal1 instanceof DoubleNode) {
+                    DoubleNode val1 = (DoubleNode)childVal1;
+                    val1.isNegative = true;
+                }
+                else if (childVal1 instanceof IDNode) {
+                    IDNode val1 = (IDNode)childVal1;
+                    val1.isNegative = true;
+                }
+            } else {
+                if (childVal2 instanceof IntNode) {
+                    IntNode val2 = (IntNode) childVal2;
+                    val2.isNegative = true;
+                }
+                else if (childVal2 instanceof DoubleNode) {
+                    DoubleNode val2 = (DoubleNode) childVal2;
+                    val2.isNegative = true;
+                }
+                else if (childVal2 instanceof IDNode) {
+                    IDNode val2 = (IDNode) childVal2;
+                    val2.isNegative = true;
+                }
+            }
+        }
         return iterativeNode;
     }
 
