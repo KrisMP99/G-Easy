@@ -197,8 +197,7 @@ public class CodeVisitor implements INodeVisitor {
                 paramValues.add(posValues[1]);
             }
 
-            /* OLD CODE BELOW - DO NOT DELETE
-            if (child instanceof IntDclNode || child instanceof DoubleDclNode){
+            else if (child instanceof IntDclNode || child instanceof DoubleDclNode){
                 paramValues.add(child.children.get(0).getValue());
             }
             else if (child instanceof IntNode || child instanceof DoubleNode) {
@@ -210,7 +209,6 @@ public class CodeVisitor implements INodeVisitor {
             else {
                 paramValues.add(child.getValue());
             }
-            */
         }
 
 
