@@ -20,11 +20,11 @@ public class ErrorCollector {
     }
 
     public void displayErrors() {
-        if(errorList.size() > 0) {
+        if(hasErrors()) {
             printErrors();
+        } else {
+            System.out.println("No errors detected.");
         }
-
-        System.out.println("No errors detected.");
     }
 
     private void printErrors() {

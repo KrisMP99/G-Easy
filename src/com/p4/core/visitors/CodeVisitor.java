@@ -10,13 +10,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 //This is the class that generates G code corresponding to the GEasy
 public class CodeVisitor implements INodeVisitor {
 
     private final String filepath = "src/com/p4/output.GE";
-    private final String dirpath = "src/com/p4";
+    private final String dirpath = "src/com/p4/";
 
     //String builder is used to construct the G code file -- output.GE
     private StringBuilder stringBuilder = new StringBuilder();
@@ -37,6 +39,18 @@ public class CodeVisitor implements INodeVisitor {
                 cuttingHead.getFeedRateMode() + " G54");
 
         output.add(getLine());
+    }
+
+    @Override
+    public void visitChildren(AstNode node) {
+        for (AstNode child : node.children){
+            child.accept(this);
+        }
+    }
+
+    //calls the accept node on the given node
+    public void visitChild(AstNode node){
+        node.accept(this);
     }
 
     //Adds the string builder to the output file
@@ -69,19 +83,6 @@ public class CodeVisitor implements INodeVisitor {
         stringBuilder.delete(0, stringBuilder.length());
         return line;
     }
-    
-
-    @Override
-    public void visitChildren(AstNode node) {
-        for (AstNode child : node.children){
-            child.accept(this);
-        }
-    }
-
-    //calls the accept node on the given node
-    public void visitChild(AstNode node){
-        node.accept(this);
-    }
 
     @Override
     public void visit(ProgNode node) {
@@ -95,16 +96,26 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDclNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
-        node.setValue(node.children.get(1).getValue());
+        this.symbolTable.leaveScope();
+
+        // The block node has the return value of function
+        for(AstNode child : node.children) {
+            if(child instanceof BlockNode) {
+                node.setValue(child.getValue());
+            }
+        }
 
     }
 
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
+        // This if-statement is unnecessary?
         if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
             this.visitChildren(node);
         }
@@ -132,8 +143,7 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else if (funcName.equals("rapid_move")){
-            rapidMove(Double.parseDouble(params.get(0)),
-                    Double.parseDouble(params.get(1)));
+            rapidMove(Double.parseDouble(params.get(0)), Double.parseDouble(params.get(1)));
             node.setValue("void");
         }
         else if (funcName.equals("set_units")){
@@ -149,9 +159,16 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
-            AstNode dclNode = lookupAstNode(funcName);
+
+            // Needs work to support function calls before the function has been declared
+            //this.symbolTable.leaveScope();
+
+            AstNode dclNode = lookupAstNode(node, true);
+            //this.visitChildren(dclNode);
             node.setValue(dclNode.getValue());
         }
+
+        this.symbolTable.leaveScope();
     }
 
     private String getActualParamString(FuncCallNode node){
@@ -174,21 +191,27 @@ public class CodeVisitor implements INodeVisitor {
         List<AstNode> params = getParamsForBuildInFunction(node);
 
         for (AstNode child : params) {
-            if (child instanceof IntDclNode || child instanceof DoubleDclNode){
-                paramValues.add(child.children.get(0).toString());
-            }
-            else if (child instanceof IntNode || child instanceof DoubleNode) {
-                paramValues.add(child.toString());
-            }
-            else if (child instanceof PosDclNode) {
+            if (child instanceof PosDclNode) {
                 String[] posValues = child.getValue().split(" ");
                 paramValues.add(posValues[0]);
                 paramValues.add(posValues[1]);
             }
+
+            else if (child instanceof IntDclNode || child instanceof DoubleDclNode){
+                paramValues.add(child.children.get(0).getValue());
+            }
+            else if (child instanceof IntNode || child instanceof DoubleNode) {
+                paramValues.add(child.getValue());
+            }
             else if(child instanceof ArrayDclNode) {
                 paramValues.add(child.children.get(0).getValue());
             }
+            else {
+                paramValues.add(child.getValue());
+            }
         }
+
+
         return paramValues;
     }
 
@@ -199,10 +222,10 @@ public class CodeVisitor implements INodeVisitor {
         for (AstNode paramChild : node.children){
             for (AstNode childNode : paramChild.children){
                 if (childNode instanceof IDNode){
-                    params.add(lookupAstNode(childNode.getID()));
+                    params.add(lookupAstNode(childNode));
                 }
                 else if(childNode instanceof ArrayAccessNode) {
-                    AstNode arrayDclNode = lookupAstNode(childNode.getID());
+                    AstNode arrayDclNode = lookupAstNode(childNode);
                     int valueToAccess = Integer.parseInt(childNode.getValue());
 
                     AstNode arrayValueNode = arrayDclNode.children.get(valueToAccess);
@@ -217,13 +240,83 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode lookupAstNode(String id){
-        for(AstNode child : progNode.children) {
-            if(child.getID().equals(id)) {
-                return child;
+    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind, boolean isFuncDcl){
+        // Make the list for the nodes
+        Queue<AstNode> nodeQueue = new LinkedList<>();
+
+        // Add our root node
+        nodeQueue.add(nodeToSearch);
+
+        // Check if it's a formal param
+        boolean isFormalParam = isFormalParam(nodeToFind);
+
+        // Go trough all the nodes
+        while(!nodeQueue.isEmpty()) {
+            int childSize = nodeQueue.size();
+
+            // If the node has children
+            while(childSize > 0) {
+                // Look at the next node
+                AstNode node = nodeQueue.peek();
+
+                // Check if it's the node we're looking for
+                if(node.getID().equals(nodeToFind.getID())) {
+                    if(isFuncDcl) {
+                        if(node instanceof FuncDclNode) {
+                            return node;
+                        }
+                    }
+
+                    else if(isFormalParam) {
+                        if(node instanceof ActualParamNode) {
+                            return node;
+                        }
+
+                    } else {
+                        return node;
+                    }
+
+                }
+
+                // Dequeue the node
+                nodeQueue.remove();
+
+                // Enqueue all the children of the node
+                for(int i = 0; i < node.children.size(); i++){
+                    if(!(node.children.get(i)instanceof FormalParamNode)) {
+                        nodeQueue.add(node.children.get(i));
+                    }
+                }
+
+                childSize--;
             }
         }
+
+        // Node not found
         return null;
+
+    }
+
+    private boolean isFormalParam(AstNode node){
+        // If it's a formal param node, we need to find the actual param to get it's value
+        // A formal param should be in the symbol table, so we can look up it's attributes
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+
+        if(attributes != null && attributes.getType().equalsIgnoreCase("Formal param")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private AstNode lookupAstNode(AstNode node){
+        AstNode foundNode = searchAst(progNode, node, false);
+        return foundNode;
+    }
+
+    private AstNode lookupAstNode(AstNode node, Boolean isFuncDcl){
+        AstNode foundNode = searchAst(progNode, node, isFuncDcl);
+        return foundNode;
     }
 
     private void rapidMove(double x, double y) {
@@ -287,7 +380,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
-        AstNode childNode = lookupAstNode(node.getID());
+        AstNode childNode = lookupAstNode(node);
         childNode.setValue(node.children.get(0).getValue());
         node.setValue(node.children.get(0).getValue());
     }
@@ -317,7 +410,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
         // Get the dcl node when the array was declared
-        AstNode arrayDclNode = lookupAstNode(node.getID());
+        AstNode arrayDclNode = lookupAstNode(node);
 
         // Get the index
         // The index might be represented as an int or as an ID
@@ -328,10 +421,8 @@ public class CodeVisitor implements INodeVisitor {
             index = Integer.parseInt(indexNode.getValue());
         }
         else {
-            index = Integer.parseInt(indexNode.toString());
+            index = (int)Math.round(Double.parseDouble(indexNode.getValue()));
         }
-
-        System.out.print("Index in array: " + index);
 
         // Get the child node in the array by the index
         AstNode indexChild = arrayDclNode.children.get(index);
@@ -346,7 +437,6 @@ public class CodeVisitor implements INodeVisitor {
             //AstNode idNode = lookupAstNode(indexChild.getID());
             node.setValue(indexChild.getValue());
         }
-        System.out.print(" value: " + node.getValue());
     }
 
     @Override
@@ -378,49 +468,68 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
-        this.visitChildren(node);
-
         AstNode startValueNode = node.children.get(0);
         AstNode endValueNode = node.children.get(1);
+
+        this.visitChild(startValueNode);
+        this.visitChild(endValueNode);
+
+        // Check if the values are negative and update them
+        checkAndSetNegative(startValueNode);
+        checkAndSetNegative(endValueNode);
 
         int startValue = Integer.parseInt(startValueNode.getValue());
         int endValue = Integer.parseInt(endValueNode.getValue());
 
-
-        // revisit later
-        //IntNode startNode = (IntNode)node.children.get(0);
-        //IntNode endNode = (IntNode)node.children.get(1);
-
-        //if(startNode.isNegative) {
-        //    startValue = startValue * (-1);
-        //}
-        //if(endNode.isNegative) {
-        //    endValue = endValue * (-1);
-        //}
-
         if(startValue < endValue && endValue > 0) {
             endValue += 1;
             while(startValue < endValue) {
-                System.out.println("i: " + startValue);
                 this.visitChildren(node.children.get(2));
                 startValue++;
-                updateValue(startValueNode.getID(), startValue);
+
+                if(startValueNode instanceof IDNode) {
+                    updateValue(startValueNode, startValue);
+                }
             }
         }
-        else if(endValue < 0 && startValue > endValue){
+        else if(endValue < 0 && startValue > endValue) {
             endValue -= 1;
             while(startValue > endValue) {
                 this.visitChildren(node.children.get(2));
                 startValue--;
-                startValueNode.setValue(Integer.toString(startValue - 1));
+
+                if(startValueNode instanceof IDNode) {
+                    updateValue(startValueNode, startValue);
+                }
             }
         }
     }
 
-    private void updateValue(String ID, int value) {
-        AstNode nodeToUpdate = lookupAstNode(ID);;
+    private void updateValue(AstNode node, int value) {
+        AstNode nodeToUpdate = lookupAstNode(node);;
         nodeToUpdate.children.get(0).setValue(Integer.toString(value));
         nodeToUpdate.setValue(Integer.toString(value));
+    }
+
+    private void checkAndSetNegative(AstNode node){
+        if(node instanceof IntNode) {
+            IntNode nodeToUpdate = (IntNode)node;
+            if(nodeToUpdate.isNegative) {
+                node.setValue("-" + node.getValue());
+            }
+        }
+        else if(node instanceof DoubleNode) {
+            DoubleNode nodeToUpdate = (DoubleNode)node;
+            if(nodeToUpdate.isNegative) {
+                nodeToUpdate.setValue("-" + node.getValue());
+            }
+        }
+        else if(node instanceof IDNode){
+            IDNode nodeToUpdate = (IDNode)node;
+            if(nodeToUpdate.isNegative) {
+                nodeToUpdate.setValue("-" + node.getValue());
+            }
+        }
     }
 
     @Override
@@ -516,7 +625,6 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(BoolDclNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
-        System.out.println("ID: " + node.getID() + " value: " + node.getValue());
     }
   
     @Override
@@ -558,19 +666,21 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode valNode = lookupAstNode(node.getID());
+        AstNode valNode = lookupAstNode(node);
 
         // If it's null we check if it's a parameter
-        if(valNode == null) {
+        if(valNode == null || valNode instanceof FormalParamNode) {
             SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
             node.setValue(attributes.getValue());
         }
-
-        // Handle the case if position
+        else if(valNode instanceof ActualParamNode) {
+            valNode.setValue(valNode.children.get(0).getValue());
+            node.setValue(valNode.getValue());
+        }
         else if(node.getType().equals("pos")) {
             node.setValue(valNode.getValue());
         } else {
-            node.setValue(valNode.children.get(0).toString());
+            node.setValue(valNode.getValue());
         }
     }
 
@@ -588,7 +698,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(IntNode node) {
         this.visitChildren(node);
-        if(node.isNegative) {
+        if(node.isNegative && !node.getValue().contains("-")) {
             node.setValue("-" + node.getValue());
         }
     }
@@ -602,7 +712,7 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(DoubleNode node) {
         this.visitChildren(node);
-        if(node.isNegative) {
+        if(node.isNegative && !node.getValue().contains("-")) {
             node.setValue("-" + node.getValue());
         }
     }
@@ -656,8 +766,8 @@ public class CodeVisitor implements INodeVisitor {
             double xCordValue = Double.parseDouble(stringValues[0]);
             double yCordValue = Double.parseDouble(stringValues[1]);
             double rightSide = Double.parseDouble(node.children.get(1).getValue());
-            String posResult = xCordValue * rightSide + " " + yCordValue * rightSide;
 
+            String posResult = xCordValue * rightSide + " " + yCordValue * rightSide;
             node.setValue(posResult);
 
         } else if(node.children.get(1).getType().equals("pos")) {
@@ -665,8 +775,8 @@ public class CodeVisitor implements INodeVisitor {
             double xCordValue = Double.parseDouble(stringValues[0]);
             double yCordValue = Double.parseDouble(stringValues[1]);
             double leftSide = Double.parseDouble(node.children.get(0).getValue());
-            String posResult = xCordValue * leftSide + " " + yCordValue * leftSide;
 
+            String posResult = xCordValue * leftSide + " " + yCordValue * leftSide;
             node.setValue(posResult);
 
         } else {

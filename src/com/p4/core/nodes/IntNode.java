@@ -4,6 +4,7 @@ import com.p4.core.visitors.INodeVisitor;
 
 public class IntNode extends AstNode {
     public boolean isNegative;
+    private boolean parentheses = false;
 
     public IntNode(int value, boolean isNegative) {
         this.isNegative = isNegative;
@@ -17,5 +18,13 @@ public class IntNode extends AstNode {
 
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
+    }
+
+    public boolean isParentheses() {
+        return parentheses;
+    }
+
+    public void setParentheses(boolean parentheses) {
+        this.parentheses = parentheses;
     }
 }

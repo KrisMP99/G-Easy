@@ -247,16 +247,24 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(AssignNode node) {
         this.visitChildren(node);
 
+        // Look up the symbol in the symbol table
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        node.type = attributes.getDataType();
-        String rightType = node.children.get(0).getType();
 
-        // Handle if pos
-        if(node.getType().equals("pos")) {
-            checkPosAssign(node);
+        // Check if the node is reachable
+        if(attributes != null) {
+            node.type = attributes.getDataType();
+            String rightType = node.children.get(0).getType();
+
+            // Handle if pos
+            if(node.getType().equals("pos")) {
+                checkPosAssign(node);
+            }
+            else if(!isReturnOK(node.type, rightType)) {
+                errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
+            }
         }
-        else if(!isReturnOK(node.type, rightType)) {
-            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
+        else {
+            errorCollector.addErrorEntry(ErrorType.UNDECLARED_VAR, printErrorMessage("no var dcl", node.getID()), node.lineNumber);
         }
     }
 
@@ -605,25 +613,32 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(DivNode node) {
         this.visitChildren(node);
+
+        AstNode denominator = node.children.get(1);
+        // Check if the denominator is zero, as dividing by zero is illegal
+        if(Double.parseDouble(denominator.getValue()) == 0) {
+            errorCollector.addErrorEntry(ErrorType.DIVIDE_BY_ZERO, printErrorMessage("div by zero"), node.lineNumber);
+        }
+
         node.setID("div");
-        node.type = typeArithmeticOperationResult(node);
+        node.setType(typeArithmeticOperationResult(node));
     }
 
     @Override
     public void visit(MultNode node) {
         this.visitChildren(node);
         node.setID("mult");
-        node.type = typeArithmeticOperationResult(node);
+        node.setType(typeArithmeticOperationResult(node));
     }
 
     @Override
     public void visit(ModNode node) {
         this.visitChildren(node);
         node.setID("mod");
-        node.type = typeArithmeticOperationResult(node);
+        node.setType(typeArithmeticOperationResult(node));
     }
 
-    //Not sure what to do here
+    // Comments are ignored
     @Override
     public void visit(LineCommentNode node) {
         this.visitChildren(node);
@@ -666,6 +681,8 @@ public class SemanticsVisitor implements INodeVisitor {
                 return "Illegal index: The index is out of bounds";
             case "illegal comparison":
                 return "Illegal operation: The comparison is not valid";
+            case "div by zero":
+                return "Illegal operation: You cannot divide by zero";
             case "no var dcl":
                 return "Variable not declared: The variable '" + info[0] + "' has not been declared in an accessible scope";
             default:
