@@ -233,8 +233,8 @@ public class SemanticsVisitor implements INodeVisitor {
         }
 
         else if(id.equals("rapid_move")) {
-            secondParam = node.children.get(1).getID();
             if(!firstParam.equals("position")) {
+                secondParam = node.children.get(1).getID();
                 if(!firstParam.equals("x")) {
                     errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
                 }
