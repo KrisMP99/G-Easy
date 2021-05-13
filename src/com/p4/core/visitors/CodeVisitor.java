@@ -97,6 +97,9 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDclNode node) {
+    }
+
+    private void generateFunction(AstNode node) {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
         this.symbolTable.leaveScope();
@@ -107,7 +110,6 @@ public class CodeVisitor implements INodeVisitor {
                 node.setValue(child.getValue());
             }
         }
-
     }
 
     //Calls builtin functions and their own functions
@@ -116,8 +118,15 @@ public class CodeVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
-        if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
-            this.visitChildren(node);
+        String funcID = node.getID();
+
+        switch (funcID) {
+            case "set_units": case "set_cut_mode": case "set_feed_rate_mode": case "rapid_move": case "cut_line": case "cut_clockwise_circular":
+                break;
+            default:
+                AstNode funcDclNode = lookupAstNode(node, true);
+                this.generateFunction(funcDclNode);
+                break;
         }
 
         double speed;
@@ -236,7 +245,7 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind){
+    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind, boolean isFuncDcl){
         // Make the list for the nodes
         Queue<AstNode> nodeQueue = new LinkedList<>();
 
@@ -257,12 +266,18 @@ public class CodeVisitor implements INodeVisitor {
 
                 // Check if it's the node we're looking for
                 if(node.getID().equals(nodeToFind.getID())) {
-                    if(isFormalParam) {
+                    if(isFormalParam && !isFuncDcl) {
                         if(node instanceof ActualParamNode) {
                             return node;
                         }
 
-                    } else {
+                    }
+                    else if (isFuncDcl){
+                        if(node instanceof FuncDclNode) {
+                            return node;
+                        }
+                    }
+                    else {
                         return node;
                     }
                 }
@@ -297,9 +312,15 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private AstNode lookupAstNode(AstNode node){
-        AstNode foundNode = searchAst(progNode, node);
+        AstNode foundNode = searchAst(progNode, node, false);
         return foundNode;
     }
+
+    private AstNode lookupAstNode(AstNode node, boolean isFuncDcl){
+        AstNode foundNode = searchAst(progNode, node, isFuncDcl);
+        return foundNode;
+    }
+
 
     private void rapidMove(double x, double y) {
         stringBuilder.append("\nG00 X" + x
