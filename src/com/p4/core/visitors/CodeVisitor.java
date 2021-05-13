@@ -699,6 +699,7 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChildren(node);
         if(node.isNegative && !node.getValue().contains("-")) {
             node.setValue("-" + node.getValue());
+            node.value = Double.parseDouble(node.getValue());
         }
     }
 
