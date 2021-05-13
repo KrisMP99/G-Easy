@@ -24,7 +24,7 @@ public class CodeVisitor implements INodeVisitor {
     private StringBuilder stringBuilder = new StringBuilder();
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
-    private CuttingHead cuttingHead = new CuttingHead(-10,0, "G21", "G90", "G94");
+    private CuttingHead cuttingHead = new CuttingHead(0, 0, "G21", "G90", "G94");
     private ProgNode progNode;
 
 
