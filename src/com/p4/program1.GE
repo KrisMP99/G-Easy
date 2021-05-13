@@ -7,22 +7,51 @@ pos corner2 = {x: 0, y: 5};
 pos corner3 = {x: 5, y: 5};
 pos corner4 = {x: 5, y: 0};
 
-int x_corners[] = {0, 0, 5, 5};
-int y_corners[] = {0, 5, 5, 0};
+cut_line(position: corner2, speed: 60);
+cut_line(position: corner3, speed: 60);
+cut_line(position: corner4, speed: 60);
+cut_line(position: corner1, speed: 60);
 
-int i = 0;
-for (i to 2) {
-    cut_line(x: x_corners[i+1], y: y_corners[i+1], speed: 60);
+rapid_move(x: 0, y: 5);
+
+cut_clockwise_circular(x:2.5, y: 7.5, x_offset: 3.5, y_offset: -5, speed: 60);
+
+rapid_move(x: 2.7, y: 6.05);
+
+cut_clockwise_circular(position: corner3, x_offset: -1.1, y_offset: -5.5, speed: 60);
+
+void windows(int x_window_start, int y_window_start){
+    pos w_corner1 = {x: x_window_start, y: y_window_start};
+    pos w_corner2 = {x: x_window_start, y: y_window_start + 1};
+    pos w_corner3 = {x: x_window_start + 1, y: y_window_start + 1};
+    pos w_corner4 = {x: x_window_start + 1, y: y_window_start};
+
+    rapid_move(position: w_corner1);
+
+    cut_line(position: w_corner2, speed: 60);
+    cut_line(position: w_corner3, speed: 60);
+    cut_line(position: w_corner4, speed: 60);
+    cut_line(position: w_corner1, speed: 60);
 }
 
-//rapid_move(pos: corner2);
+windows(x_window_start: 1, y_window_start: 1);
+windows(x_window_start: 1, y_window_start: 3);
 
-//pos center_pos = {x: 2.5, y: 5};
+rapid_move(x: 4, y: 3.5);
+cut_clockwise_circular(x:4, y: 3.5, x_offset: -0.5, y_offset: 0, speed: 60);
 
-//cut_clockwise_circular(position: corner3, speed: 60);
+void door(int x_door_start, int y_door_start){
+    pos d_corner1 = {x: x_door_start, y: y_door_start};
+    pos d_corner2 = {x: x_door_start, y: y_window_start + 1};
+    pos d_corner3 = {x: x_door_start + 1, y: y_door_start + 2};
+    pos d_corner4 = {x: x_door_start + 1, y: y_door_start};
 
-//void windows(pos window_start, int no_windows)
+    rapid_move(position: d_corner1);
 
+    cut_line(position: d_corner2, speed: 60);
+    cut_line(position: d_corner3, speed: 60);
+    cut_line(position: d_corner4, speed: 60);
+    cut_line(position: d_corner1, speed: 60);
+}
 
-
-
+door(x_door_start: 3, y_door_start: 0);
