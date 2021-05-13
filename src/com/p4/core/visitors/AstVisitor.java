@@ -112,8 +112,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return dclNode;
         } else if (pos_assign != null) {
             // Add the two coordinates as children
-            dclNode.children.add(visit(ctx.pos_assign().term(0)));
-            dclNode.children.add(visit(ctx.pos_assign().term(1)));
+            dclNode.children.add(visit(ctx.pos_assign().expr(0)));
+            dclNode.children.add(visit(ctx.pos_assign().expr(1)));
             return dclNode;
         }
 
@@ -199,8 +199,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             AssignNode assignNode = new AssignNode(id);
             assignNode.setType("pos");
 
-            AstNode xCordNode = visit(pos_assign.term(0));
-            AstNode yCordNode = visit(pos_assign.term(1));
+            AstNode xCordNode = visit(pos_assign.expr(0));
+            AstNode yCordNode = visit(pos_assign.expr(1));
 
             assignNode.children.add(xCordNode);
             assignNode.children.add(yCordNode);
@@ -215,8 +215,8 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
 
     @Override
     public AstNode visitPos_assign(GEasyParser.Pos_assignContext ctx) {
-        AstNode xCordVal = visit(ctx.term(0));
-        AstNode yCordVal = visit(ctx.term(1));
+        AstNode xCordVal = visit(ctx.expr(0));
+        AstNode yCordVal = visit(ctx.expr(1));
 
         PosAssignNode posAssignNode = new PosAssignNode();
         posAssignNode.setType("pos");

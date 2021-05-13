@@ -1,4 +1,4 @@
-// Generated from C:/Users/Krist/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
+// Generated from C:/Users/Kristian/IdeaProjects/G-Easy/src/com/p4/core\GEasy.g4 by ANTLR 4.9.1
 package com.p4.core;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -672,11 +672,11 @@ public class GEasyParser extends Parser {
 		public TerminalNode COLON(int i) {
 			return getToken(GEasyParser.COLON, i);
 		}
-		public List<TermContext> term() {
-			return getRuleContexts(TermContext.class);
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
 		}
-		public TermContext term(int i) {
-			return getRuleContext(TermContext.class,i);
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public TerminalNode COMMA() { return getToken(GEasyParser.COMMA, 0); }
 		public TerminalNode R_BRACE() { return getToken(GEasyParser.R_BRACE, 0); }
@@ -712,7 +712,7 @@ public class GEasyParser extends Parser {
 			setState(115);
 			match(COLON);
 			setState(116);
-			term();
+			expr();
 			setState(117);
 			match(COMMA);
 			setState(118);
@@ -720,7 +720,7 @@ public class GEasyParser extends Parser {
 			setState(119);
 			match(COLON);
 			setState(120);
-			term();
+			expr();
 			setState(121);
 			match(R_BRACE);
 			}
@@ -2118,16 +2118,16 @@ public class GEasyParser extends Parser {
 		"\34\17\2a_\3\2\2\2be\3\2\2\2ca\3\2\2\2cd\3\2\2\2df\3\2\2\2ec\3\2\2\2f"+
 		"g\7\t\2\2g\r\3\2\2\2hk\7*\2\2ik\5\22\n\2jh\3\2\2\2ji\3\2\2\2kl\3\2\2\2"+
 		"lo\7#\2\2mp\5\30\r\2np\5\20\t\2om\3\2\2\2on\3\2\2\2pq\3\2\2\2qr\7\5\2"+
-		"\2r\17\3\2\2\2st\7\b\2\2tu\7*\2\2uv\7\3\2\2vw\5\34\17\2wx\7\4\2\2xy\7"+
-		"*\2\2yz\7\3\2\2z{\5\34\17\2{|\7\t\2\2|\21\3\2\2\2}~\7*\2\2~\177\7\6\2"+
-		"\2\177\u0080\5\30\r\2\u0080\u0081\7\7\2\2\u0081\23\3\2\2\2\u0082\u0087"+
-		"\5\26\f\2\u0083\u0084\t\2\2\2\u0084\u0086\5\26\f\2\u0085\u0083\3\2\2\2"+
-		"\u0086\u0089\3\2\2\2\u0087\u0085\3\2\2\2\u0087\u0088\3\2\2\2\u0088\25"+
-		"\3\2\2\2\u0089\u0087\3\2\2\2\u008a\u008d\5\30\r\2\u008b\u008c\7\31\2\2"+
-		"\u008c\u008e\5\30\r\2\u008d\u008b\3\2\2\2\u008d\u008e\3\2\2\2\u008e\27"+
-		"\3\2\2\2\u008f\u0094\5\32\16\2\u0090\u0091\t\3\2\2\u0091\u0093\5\32\16"+
-		"\2\u0092\u0090\3\2\2\2\u0093\u0096\3\2\2\2\u0094\u0092\3\2\2\2\u0094\u0095"+
-		"\3\2\2\2\u0095\31\3\2\2\2\u0096\u0094\3\2\2\2\u0097\u009c\5\34\17\2\u0098"+
+		"\2r\17\3\2\2\2st\7\b\2\2tu\7*\2\2uv\7\3\2\2vw\5\30\r\2wx\7\4\2\2xy\7*"+
+		"\2\2yz\7\3\2\2z{\5\30\r\2{|\7\t\2\2|\21\3\2\2\2}~\7*\2\2~\177\7\6\2\2"+
+		"\177\u0080\5\30\r\2\u0080\u0081\7\7\2\2\u0081\23\3\2\2\2\u0082\u0087\5"+
+		"\26\f\2\u0083\u0084\t\2\2\2\u0084\u0086\5\26\f\2\u0085\u0083\3\2\2\2\u0086"+
+		"\u0089\3\2\2\2\u0087\u0085\3\2\2\2\u0087\u0088\3\2\2\2\u0088\25\3\2\2"+
+		"\2\u0089\u0087\3\2\2\2\u008a\u008d\5\30\r\2\u008b\u008c\7\31\2\2\u008c"+
+		"\u008e\5\30\r\2\u008d\u008b\3\2\2\2\u008d\u008e\3\2\2\2\u008e\27\3\2\2"+
+		"\2\u008f\u0094\5\32\16\2\u0090\u0091\t\3\2\2\u0091\u0093\5\32\16\2\u0092"+
+		"\u0090\3\2\2\2\u0093\u0096\3\2\2\2\u0094\u0092\3\2\2\2\u0094\u0095\3\2"+
+		"\2\2\u0095\31\3\2\2\2\u0096\u0094\3\2\2\2\u0097\u009c\5\34\17\2\u0098"+
 		"\u0099\t\4\2\2\u0099\u009b\5\34\17\2\u009a\u0098\3\2\2\2\u009b\u009e\3"+
 		"\2\2\2\u009c\u009a\3\2\2\2\u009c\u009d\3\2\2\2\u009d\33\3\2\2\2\u009e"+
 		"\u009c\3\2\2\2\u009f\u00a8\5\36\20\2\u00a0\u00a2\7$\2\2\u00a1\u00a0\3"+

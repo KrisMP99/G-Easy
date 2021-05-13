@@ -14,7 +14,7 @@ array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R
 
 assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 
-pos_assign : L_BRACE ID COLON term COMMA ID COLON term R_BRACE ;
+pos_assign : L_BRACE ID COLON expr COMMA ID COLON expr R_BRACE ;
 
 array_access : ID L_BRACKET expr R_BRACKET ;
 
