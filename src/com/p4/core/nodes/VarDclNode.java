@@ -18,12 +18,4 @@ public abstract class VarDclNode<T> extends AstNode {
         this.ID = id;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type)
-    {
-        this.type = type;
-    }
 }

@@ -120,8 +120,6 @@ public class CodeVisitor implements INodeVisitor {
             this.visitChildren(node);
         }
 
-        double iCord = cuttingHead.getXCord() * (-1);;
-        double jCord = cuttingHead.getYCord() * (-1);
         double speed;
 
 
@@ -136,7 +134,10 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else if(funcName.equals("cut_clockwise_circular")){
-            speed = Double.parseDouble(params.get(2));
+            speed = Double.parseDouble(params.get(4));
+            double iCord = Double.parseDouble(params.get(2));
+            double jCord = Double.parseDouble(params.get(3));
+
             cutClockwiseCircular(
                     Double.parseDouble(params.get(0)),
                     Double.parseDouble(params.get(1)), iCord, jCord, speed);

@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class AstNode {
     public List<AstNode> children = new ArrayList<>();
     public int lineNumber = 0;
-    public String type;
+    private String type;
     private String ID = "";
     private String value;
 

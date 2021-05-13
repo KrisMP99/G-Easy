@@ -17,8 +17,8 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        //CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
-        CharStream charStream = CharStreams.fromFileName("src/com/p4/program1.GE");
+        CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
+        //CharStream charStream = CharStreams.fromFileName("src/com/p4/program1.GE");
         Lexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();

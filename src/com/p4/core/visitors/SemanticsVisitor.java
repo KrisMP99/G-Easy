@@ -61,7 +61,7 @@ public class SemanticsVisitor implements INodeVisitor {
                         errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
                     // Check if the function return type is valid with the actual return type
-                    else if(!isReturnOK(funcReturnType, blockChild.type)) {
+                    else if(!isReturnOK(funcReturnType, blockChild.getType())) {
                         // error!!!
                         errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
@@ -158,7 +158,7 @@ public class SemanticsVisitor implements INodeVisitor {
         String firstParam = node.children.get(0).getID();
         String secondParam;
 
-        if(id.equals("cut_line") || id.equals("cut_clockwise_circular")) {
+        if(id.equals("cut_line")) {
             secondParam = node.children.get(1).getID();
             if(!firstParam.equals("x")) {
                 if(!firstParam.equals("position")) {
@@ -174,6 +174,62 @@ public class SemanticsVisitor implements INodeVisitor {
             else if(!node.children.get(2).getID().equals("speed")) {
                 errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
             }
+        }
+        else if(id.equals("cut_clockwise_circular")) {
+            secondParam = node.children.get(1).getID();
+            String thirdParam = node.children.get(2).getID();
+            String fourthParam = node.children.get(3).getID();
+
+            // Handle if pos:
+            if(firstParam.equals("position")) {
+                if(!secondParam.equals("x_offset")) {
+                    // error
+                }
+                else if(!thirdParam.equals("y_offset")) {
+                    // error
+                }
+                else if(!fourthParam.equals("speed")) {
+                    // error
+                }
+            }
+            // Handle if x and y
+            else {
+                String fifthParam = node.children.get(4).getID();
+
+                if(!firstParam.equals("x")) {
+                    // error
+                }
+                else if(!secondParam.equals("y")) {
+                    // error
+                }
+                else if(!thirdParam.equals("x_offset")) {
+                    // error
+                }
+                else if(!fourthParam.equals("y_offset")) {
+                    // error
+                }
+                else if(!fifthParam.equals("speed")) {
+                    // error
+                }
+            }
+
+
+            /*
+            if(!firstParam.equals("x")) {
+                if(!firstParam.equals("position")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
+                }
+                else if(!secondParam.equals("speed")) {
+                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
+                }
+            }
+            else if(!secondParam.equals("y")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
+            }
+            else if(!node.children.get(2).getID().equals("speed")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
+            } */
+
         }
 
         else if(id.equals("rapid_move")) {
@@ -252,14 +308,14 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // Check if the node is reachable
         if(attributes != null) {
-            node.type = attributes.getDataType();
+            node.setType(attributes.getDataType());
             String rightType = node.children.get(0).getType();
 
             // Handle if pos
             if(node.getType().equals("pos")) {
                 checkPosAssign(node);
             }
-            else if(!isReturnOK(node.type, rightType)) {
+            else if(!isReturnOK(node.getType(), rightType)) {
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
             }
         }
@@ -299,7 +355,7 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(PosDclNode node) {
         this.visitChildren(node);
 
-        String leftType = node.type;
+        String leftType = node.getType();
 
         // If a pos dcl only has one child, it's another POS
         if(node.children.size() == 1) {
@@ -368,7 +424,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         // Get the type of the array it's trying to access
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-        node.type = attributes.getDataType();
+        node.setType(attributes.getDataType());
 
 
         // Make sure the user is not trying to access an element that is out of bonds
@@ -444,7 +500,7 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(LogicalExprNode node) {
         this.visitChildren(node);
-        node.type = "bool";
+        node.setType("bool");
 
         // All the children of a logical expr node must be a CompExpr
         // We check this by going through all the children and verifying their node type
@@ -459,7 +515,7 @@ public class SemanticsVisitor implements INodeVisitor {
     @Override
     public void visit(CompExprNode node) {
         this.visitChildren(node);
-        node.type = "bool";
+        node.setType("bool");
 
         // Get both children
         AstNode leftNode = node.children.get(0);
@@ -524,7 +580,7 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         String leftType = node.getType();
-        String rightType = node.children.get(0).type;
+        String rightType = node.children.get(0).getType();
 
         checkIfTypeDCLisCorrect(leftType, rightType, node.lineNumber);
     }
@@ -540,7 +596,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(IntNode node) {
-        node.type = "int";
+        node.setType("int");
     }
 
     @Override
@@ -555,7 +611,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(DoubleNode node) {
-        node.type = "double";
+        node.setType("double");;
     }
 
     @Override
@@ -578,14 +634,14 @@ public class SemanticsVisitor implements INodeVisitor {
     public void visit(AddNode node) {
         this.visitChildren(node);
         node.setID("add");
-        node.type = typeArithmeticOperationResult(node);
+        node.setType(typeArithmeticOperationResult(node));
     }
 
     @Override
     public void visit(SubNode node) {
         this.visitChildren(node);
         node.setID("sub");
-        node.type = typeArithmeticOperationResult(node);
+        node.setType(typeArithmeticOperationResult(node));
     }
 
     // Gets the type result type of add, mins, div, mod and mult operations

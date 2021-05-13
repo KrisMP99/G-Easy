@@ -97,7 +97,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 break;
             case "pos":
                 dclNode = new PosDclNode(ID);
-                dclNode.type = "pos";
+                dclNode.setType("pos");
                 break;
             default:
                 return null;

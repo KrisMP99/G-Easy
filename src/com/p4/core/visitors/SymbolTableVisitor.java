@@ -44,7 +44,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         this.visitChildren(node);
 
         if(!isNodeDeclared(node)) {
-            SymbolAttributes attributes = new SymbolAttributes("dcl", node.type);
+            SymbolAttributes attributes = new SymbolAttributes("dcl", node.getType());
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);
         }
@@ -222,7 +222,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         for (AstNode child : node.children){
             IDNode param = (IDNode)child;
-            SymbolAttributes attributes = new SymbolAttributes("Formal Param", param.type);
+            SymbolAttributes attributes = new SymbolAttributes("Formal Param", param.getType());
             attributes.setScope(scopeName);
             symbolTable.insertParam(param.getID(), attributes);
         }
