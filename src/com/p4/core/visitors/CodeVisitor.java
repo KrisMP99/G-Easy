@@ -9,7 +9,6 @@ import com.p4.core.symbolTable.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,32 +99,14 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(FuncDclNode node) {
     }
 
-    private void generateFunction(AstNode node, List<String> params) {
-        this.symbolTable.enterScope(node.getNodesHash());
-
-        // The block node has the return value of function
-        for(int i = 0; i < node.children.size(); i++) {
-            if(node.children.get(i) instanceof FormalParamNode) {
-                node.children.get(i).setValue(params.get(i));
-            }
-            else if(node.children.get(i) instanceof BlockNode) {
-                this.visitChildren(node.children.get(i));
-                node.setValue(node.children.get(i).getValue());
-            }
-        }
-
-        this.symbolTable.leaveScope();
-    }
-
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
-        this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
-
+        String funcName = node.getID();
         double speed;
 
-        String funcName = node.getID();
+        // First get the actual params in order they appear
         List<String> params = getActualParamValues(node);
 
         if (funcName.equals("cut_line")){
@@ -162,30 +143,63 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
-            String funcID = node.getID();
+            callFunction(node);
+        }
+    }
 
-            switch (funcID) {
-                case "set_units": case "set_cut_mode": case "set_feed_rate_mode":
-                case "rapid_move": case "cut_line": case "cut_clockwise_circular":
-                    break;
-                default:
-                    callFunction(node, params);
-                    //this.generateFunction(funcDclNode);
-                    break;
+    private void callFunction(AstNode funcCallNode) {
+        // First we look for the func dcl node
+        AstNode funcDcl = lookupAstNode(funcCallNode,true);
+
+        List<AstNode> actualParamsList = new ArrayList<>();
+
+        // Add the actual params to a list
+        for(AstNode child : funcCallNode.children) {
+            if(child instanceof ActualParamNode) {
+                this.visitChild(child);
+                actualParamsList.add(child);
             }
+        }
 
-            AstNode dclNode = lookupAstNode(node);
-            node.setValue(dclNode.getValue());
 
+        // We now replace the node's formal parameters with the values from the actual parameter
+        for(int i = 0; i < funcDcl.children.size(); i++) {
+            if(funcDcl.children.get(i) instanceof FormalParamNode) {
+                this.symbolTable.enterScope(funcDcl.getNodesHash());
+                // Look the parameter up in the symbol table
+                SymbolAttributes attributes = symbolTable.lookupSymbol(funcDcl.children.get(i).getID());
+                attributes.setValue(actualParamsList.get(i).getValue());
+                this.symbolTable.leaveScope();
+            }
+        }
+
+        // We can now call generate the function
+        generateFunction(funcDcl);
+
+        // Update the value of the func call node
+        funcCallNode.setValue(funcDcl.getValue());
+
+        // Update the value of the called function?
+        SymbolAttributes attributes = symbolTable.lookupSymbol(funcCallNode.getID());
+        attributes.setValue(funcDcl.getValue());
+
+    }
+
+    private void generateFunction(AstNode node) {
+        // Enter the scope of the function
+        this.symbolTable.enterScope(node.getNodesHash());
+
+        // The block node has the return value of function
+        for(int i = 0; i < node.children.size(); i++) {
+            if(node.children.get(i) instanceof BlockNode) {
+                this.visitChild(node.children.get(i));
+                node.setValue(node.children.get(i).getValue());
+            }
         }
 
         this.symbolTable.leaveScope();
-
     }
 
-    private void callFunction(AstNode functionNode, List<String> params) {
-        generateFunction(lookupAstNode(functionNode, true), params);
-    }
 
     private String getActualParamString(FuncCallNode node){
         return node.children.get(0).children.get(0).getID();
@@ -404,7 +418,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(PosAssignNode node) {
-
+        this.visitChildren(node);
     }
 
     @Override
@@ -416,9 +430,15 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(PosDclNode node) {
         this.visitChildren(node);
 
+        // Get the pos from the symbol table
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+
+
         if(node.children.get(0).getType().equals("pos")) {
+            attributes.setValue(node.children.get(0).getValue());
             node.setValue(node.children.get(0).getValue());
         } else {
+            attributes.setValue(node.children.get(0).getValue() + " " + node.children.get(1).getValue());
             node.setValue(node.children.get(0).getValue() + " " + node.children.get(1).getValue());
         }
     }
@@ -467,11 +487,15 @@ public class CodeVisitor implements INodeVisitor {
             if (logicalExpression) {
                 //Visits if
                 visitChildren(node.children.get(1));
+
+                // we remove the else child, as it will not be run
                 node.children.remove(2);
             }
             //Visits else
             else {
                 visitChildren(node.children.get(2));
+
+                // We remove the if child, as it will not be run
                 node.children.remove(1);
             }
         }
@@ -626,6 +650,12 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(ReturnExprNode node) {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
+
+        if(node.children.get(0) instanceof IDNode) {
+            SymbolAttributes attributes = symbolTable.lookupSymbol(node.children.get(0).getID());
+            attributes.setValue(node.getValue());
+        }
+
     }
 
     @Override
@@ -636,12 +666,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(CompNode node) {
         this.visitChildren(node);
-    }
-
-    @Override
-    public void visit(BoolDclNode node) {
-        this.visitChildren(node);
-        node.setValue(node.children.get(0).getValue());
     }
   
     @Override
@@ -683,21 +707,27 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(IDNode node) {
         this.visitChildren(node);
 
-        AstNode valNode = lookupAstNode(node);
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
 
-        // If it's null we check if it's a parameter
-        if(valNode == null || valNode instanceof FormalParamNode) {
+        // If it's null we use the lookUpAstnode (for now)
+        if(attributes == null) {
+            AstNode valNode = lookupAstNode(node);
             node.setValue(valNode.getValue());
         }
-        else if(valNode instanceof ActualParamNode) {
-            valNode.setValue(valNode.children.get(0).getValue());
-            node.setValue(valNode.getValue());
+        else {
+            node.setValue(attributes.getValue());
         }
-        else if(node.getType().equals("pos")) {
-            node.setValue(valNode.getValue());
-        } else {
-            node.setValue(valNode.getValue());
-        }
+    }
+
+    @Override
+    public void visit(BoolDclNode node) {
+        this.visitChildren(node);
+        // look up the node in the symbol table
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+
+        // If we could find it, we update it's value
+        attributes.setValue(node.children.get(0).getValue());
+        node.setValue(node.children.get(0).getValue());
     }
 
     @Override
@@ -708,12 +738,17 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(IntDclNode node) {
         this.visitChildren(node);
+        // look up the node in the symbol table
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+
+        // If we could find it, we update it's value
+        attributes.setValue(node.children.get(0).getValue());
         node.setValue(node.children.get(0).getValue());
     }
 
     @Override
     public void visit(IntNode node) {
-        this.visitChildren(node);
+        // Check if the node is negative
         if(node.isNegative && !node.getValue().contains("-")) {
             node.setValue("-" + node.getValue());
         }
@@ -722,15 +757,19 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(DoubleDclNode node) {
         this.visitChildren(node);
+        // look up the node in the symbol table
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+
+        // If we could find it, we update it's value
+        attributes.setValue(node.children.get(0).getValue());
         node.setValue(node.children.get(0).getValue());
     }
 
     @Override
     public void visit(DoubleNode node) {
-        this.visitChildren(node);
+        // Check if the node is negative
         if(node.isNegative && !node.getValue().contains("-")) {
             node.setValue("-" + node.getValue());
-            node.value = Double.parseDouble(node.getValue());
         }
     }
 
