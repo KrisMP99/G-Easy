@@ -9,6 +9,7 @@ import com.p4.core.symbolTable.SymbolTable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,17 +100,21 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(FuncDclNode node) {
     }
 
-    private void generateFunction(AstNode node) {
+    private void generateFunction(AstNode node, List<String> params) {
         this.symbolTable.enterScope(node.getNodesHash());
-        this.visitChildren(node);
-        this.symbolTable.leaveScope();
 
         // The block node has the return value of function
-        for(AstNode child : node.children) {
-            if(child instanceof BlockNode) {
-                node.setValue(child.getValue());
+        for(int i = 0; i < node.children.size(); i++) {
+            if(node.children.get(i) instanceof FormalParamNode) {
+                node.children.get(i).setValue(params.get(i));
+            }
+            else if(node.children.get(i) instanceof BlockNode) {
+                this.visitChildren(node.children.get(i));
+                node.setValue(node.children.get(i).getValue());
             }
         }
+
+        this.symbolTable.leaveScope();
     }
 
     //Calls builtin functions and their own functions
@@ -118,19 +123,7 @@ public class CodeVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
-        String funcID = node.getID();
-
-        switch (funcID) {
-            case "set_units": case "set_cut_mode": case "set_feed_rate_mode": case "rapid_move": case "cut_line": case "cut_clockwise_circular":
-                break;
-            default:
-                AstNode funcDclNode = lookupAstNode(node, true);
-                this.generateFunction(funcDclNode);
-                break;
-        }
-
         double speed;
-
 
         String funcName = node.getID();
         List<String> params = getActualParamValues(node);
@@ -169,11 +162,29 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
+            String funcID = node.getID();
+
+            switch (funcID) {
+                case "set_units": case "set_cut_mode": case "set_feed_rate_mode":
+                case "rapid_move": case "cut_line": case "cut_clockwise_circular":
+                    break;
+                default:
+                    callFunction(node, params);
+                    //this.generateFunction(funcDclNode);
+                    break;
+            }
+
             AstNode dclNode = lookupAstNode(node);
             node.setValue(dclNode.getValue());
+
         }
 
         this.symbolTable.leaveScope();
+
+    }
+
+    private void callFunction(AstNode functionNode, List<String> params) {
+        generateFunction(lookupAstNode(functionNode, true), params);
     }
 
     private String getActualParamString(FuncCallNode node){
@@ -676,8 +687,7 @@ public class CodeVisitor implements INodeVisitor {
 
         // If it's null we check if it's a parameter
         if(valNode == null || valNode instanceof FormalParamNode) {
-            SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-            node.setValue(attributes.getValue());
+            node.setValue(valNode.getValue());
         }
         else if(valNode instanceof ActualParamNode) {
             valNode.setValue(valNode.children.get(0).getValue());

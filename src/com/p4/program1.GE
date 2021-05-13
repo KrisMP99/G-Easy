@@ -1,6 +1,6 @@
 set_units(unit: metric);
 set_cut_mode(mode: absolute);
-set_feed_rate_mode(mode: units_per_min);  
+set_feed_rate_mode(mode: units_per_minute);
 
 pos corner1 = {x: 0, y: 0};
 pos corner2 = {x: 0, y: 5};
@@ -11,15 +11,15 @@ int x_corners[] = {0, 0, 5, 5};
 int y_corners[] = {0, 5, 5, 0};
 
 int i = 0;
-for (i to 5) {
-    cut_line(x: x_corners[4 % i], y: y_corners[4 % i], speed: 60);
+for (i to 2) {
+    cut_line(x: x_corners[i+1], y: y_corners[i+1], speed: 60);
 }
 
-rapid_move(pos: corner2);
+//rapid_move(pos: corner2);
 
-pos center_pos = {x: 2.5, y: 5};
+//pos center_pos = {x: 2.5, y: 5};
 
-cut_clockwise_circular(position: corner3, speed: 60);
+//cut_clockwise_circular(position: corner3, speed: 60);
 
 //void windows(pos window_start, int no_windows)
 
