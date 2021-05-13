@@ -84,6 +84,7 @@ public class CodeVisitor implements INodeVisitor {
         return line;
     }
 
+
     @Override
     public void visit(ProgNode node) {
         this.visitChildren(node);
@@ -115,7 +116,6 @@ public class CodeVisitor implements INodeVisitor {
         this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
 
-        // This if-statement is unnecessary?
         if(!node.getID().equals("set_units") && !node.getID().equals("set_cut_mode") && !node.getID().equals("set_feed_rate_mode")){
             this.visitChildren(node);
         }
@@ -159,12 +159,7 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue("void");
         }
         else {
-
-            // Needs work to support function calls before the function has been declared
-            //this.symbolTable.leaveScope();
-
-            AstNode dclNode = lookupAstNode(node, true);
-            //this.visitChildren(dclNode);
+            AstNode dclNode = lookupAstNode(node);
             node.setValue(dclNode.getValue());
         }
 
@@ -191,17 +186,16 @@ public class CodeVisitor implements INodeVisitor {
         List<AstNode> params = getParamsForBuildInFunction(node);
 
         for (AstNode child : params) {
-            if (child instanceof PosDclNode) {
+            if (child instanceof IntDclNode || child instanceof DoubleDclNode){
+                paramValues.add(child.children.get(0).toString());
+            }
+            else if (child instanceof IntNode || child instanceof DoubleNode) {
+                paramValues.add(child.toString());
+            }
+            else if (child instanceof PosDclNode) {
                 String[] posValues = child.getValue().split(" ");
                 paramValues.add(posValues[0]);
                 paramValues.add(posValues[1]);
-            }
-
-            else if (child instanceof IntDclNode || child instanceof DoubleDclNode){
-                paramValues.add(child.children.get(0).getValue());
-            }
-            else if (child instanceof IntNode || child instanceof DoubleNode) {
-                paramValues.add(child.getValue());
             }
             else if(child instanceof ArrayDclNode) {
                 paramValues.add(child.children.get(0).getValue());
@@ -210,8 +204,6 @@ public class CodeVisitor implements INodeVisitor {
                 paramValues.add(child.getValue());
             }
         }
-
-
         return paramValues;
     }
 
@@ -240,7 +232,7 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind, boolean isFuncDcl){
+    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind){
         // Make the list for the nodes
         Queue<AstNode> nodeQueue = new LinkedList<>();
 
@@ -261,13 +253,7 @@ public class CodeVisitor implements INodeVisitor {
 
                 // Check if it's the node we're looking for
                 if(node.getID().equals(nodeToFind.getID())) {
-                    if(isFuncDcl) {
-                        if(node instanceof FuncDclNode) {
-                            return node;
-                        }
-                    }
-
-                    else if(isFormalParam) {
+                    if(isFormalParam) {
                         if(node instanceof ActualParamNode) {
                             return node;
                         }
@@ -275,7 +261,6 @@ public class CodeVisitor implements INodeVisitor {
                     } else {
                         return node;
                     }
-
                 }
 
                 // Dequeue the node
@@ -291,8 +276,6 @@ public class CodeVisitor implements INodeVisitor {
                 childSize--;
             }
         }
-
-        // Node not found
         return null;
 
     }
@@ -310,12 +293,7 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private AstNode lookupAstNode(AstNode node){
-        AstNode foundNode = searchAst(progNode, node, false);
-        return foundNode;
-    }
-
-    private AstNode lookupAstNode(AstNode node, Boolean isFuncDcl){
-        AstNode foundNode = searchAst(progNode, node, isFuncDcl);
+        AstNode foundNode = searchAst(progNode, node);
         return foundNode;
     }
 
