@@ -110,7 +110,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.insertSymbol(node.getID(), attributes);
 
         // Insert the scopes
-        symbolTable.addScope("Func: " + node.getID());
+        symbolTable.addScope(node.getNodesHash());
         addPredefinedFunctionParams(node);
         symbolTable.leaveScope();
     }
@@ -159,12 +159,9 @@ public class SymbolTableVisitor implements INodeVisitor {
                 symbolTable.calledFunctions.add(functionID);
                 return;
             default:
-                break;
+                symbolTable.calledFunctions.add(functionID);
+                this.visitChildren(node);
         }
-
-        symbolTable.calledFunctions.add(functionID);
-
-        this.visitChildren(node);
     }
 
     @Override
