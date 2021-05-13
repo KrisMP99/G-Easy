@@ -1,11 +1,3 @@
-int addNumLoop(int numToAdd, int loopNum) {
-    int result = 0;
+pos p0 = {x: -10, y: 0};
 
-    for(0 to loopNum) {
-        result = result + numToAdd;
-    }
-
-    return result;
-}
-
-int b = addNumLoop(numToAdd: 2, loopNum: 10);
+cut_line(position: p0, speed: 130);
