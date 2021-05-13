@@ -331,8 +331,9 @@ public class CodeVisitor implements INodeVisitor {
         if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getFeedRateMode()).equals(mode)){
             //Checks whether a valid mode has been chosen
             if (cuttingHead.setFeedRateMode(mode)){
-                stringBuilder.append(cuttingHead.getFeedRateMode() + " ");
-                output.add(getLine());
+                output.set(0, "G17 " + cuttingHead.getUnit() + " " +
+                cuttingHead.getCutMode() + " " +
+                cuttingHead.getFeedRateMode() + " G54");
             }
         }
     }
@@ -342,8 +343,9 @@ public class CodeVisitor implements INodeVisitor {
         if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getCutMode()).equals(mode)){
             //Checks whether a valid mode has been chosen
             if (cuttingHead.setCutMode(mode)){
-                stringBuilder.append(cuttingHead.getCutMode() + " ");
-                output.add(getLine());
+                output.set(0, "G17 " + cuttingHead.getUnit() + " " +
+                cuttingHead.getCutMode() + " " +
+                cuttingHead.getFeedRateMode() + " G54");
             }
         }
     }
@@ -353,8 +355,9 @@ public class CodeVisitor implements INodeVisitor {
         if (!cuttingHead.returnGEasyEquivalent(cuttingHead.getUnit()).equals(unit)){
             //Checks whether a valid mode has been chosen
             if (cuttingHead.setUnit(unit)){
-                stringBuilder.append(" " + cuttingHead.getUnit());
-                output.add(getLine());
+                output.set(0, "G17 " + cuttingHead.getUnit() + " " +
+                cuttingHead.getCutMode() + " " +
+                cuttingHead.getFeedRateMode() + " G54");
             }
         }
     }
