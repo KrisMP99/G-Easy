@@ -218,7 +218,15 @@ public class CodeVisitor implements INodeVisitor {
                 }
                 else if(childNode instanceof ArrayAccessNode) {
                     AstNode arrayDclNode = lookupAstNode(childNode);
-                    int valueToAccess = Integer.parseInt(childNode.getValue());
+
+                    int valueToAccess;
+
+                    if(childNode.children.get(0) instanceof IDNode) {
+                        valueToAccess = Integer.parseInt(childNode.children.get(0).getValue());
+                    }
+                    else {
+                        valueToAccess = Integer.parseInt(childNode.getValue());
+                    }
 
                     AstNode arrayValueNode = arrayDclNode.children.get(valueToAccess);
 
