@@ -222,10 +222,10 @@ public class CodeVisitor implements INodeVisitor {
 
         for (AstNode child : params) {
             if (child instanceof IntDclNode || child instanceof DoubleDclNode){
-                paramValues.add(child.children.get(0).toString());
+                paramValues.add(child.children.get(0).getValue());
             }
             else if (child instanceof IntNode || child instanceof DoubleNode) {
-                paramValues.add(child.toString());
+                paramValues.add(child.getValue());
             }
             else if (child instanceof PosDclNode) {
                 String[] posValues = child.getValue().split(" ");
