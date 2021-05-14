@@ -11,6 +11,7 @@ cut_line(position: corner2, speed: 60);
 cut_line(position: corner3, speed: 60);
 cut_line(position: corner4, speed: 60);
 cut_line(position: corner1, speed: 60);
+cut_line(position: corner2, speed: 60);
 
 rapid_move(x: 0, y: 5);
 
@@ -42,7 +43,7 @@ cut_clockwise_circular(x:4, y: 3.5, x_offset: -0.5, y_offset: 0, speed: 60);
 
 void door(int x_door_start, int y_door_start){
     pos d_corner1 = {x: x_door_start, y: y_door_start};
-    pos d_corner2 = {x: x_door_start, y: y_window_start + 1};
+    pos d_corner2 = {x: x_door_start, y: y_door_start + 2};
     pos d_corner3 = {x: x_door_start + 1, y: y_door_start + 2};
     pos d_corner4 = {x: x_door_start + 1, y: y_door_start};
 
