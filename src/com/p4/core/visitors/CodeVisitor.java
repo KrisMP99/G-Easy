@@ -509,6 +509,7 @@ public class CodeVisitor implements INodeVisitor {
 
     @Override
     public void visit(IterativeNode node) {
+        this.symbolTable.enterScope(node.getNodesHash());
         AstNode startValueNode = node.children.get(0);
         AstNode endValueNode = node.children.get(1);
 
@@ -544,12 +545,12 @@ public class CodeVisitor implements INodeVisitor {
                 }
             }
         }
+        this.symbolTable.leaveScope();
     }
 
     private void updateValue(AstNode node, int value) {
-        AstNode nodeToUpdate = lookupAstNode(node);;
-        nodeToUpdate.children.get(0).setValue(Integer.toString(value));
-        nodeToUpdate.setValue(Integer.toString(value));
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        attributes.setValue(Integer.toString(value));
     }
 
     private void checkAndSetNegative(AstNode node){

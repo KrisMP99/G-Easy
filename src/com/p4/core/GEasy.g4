@@ -10,7 +10,7 @@ num_dcl : TYPE ID ASSIGN_OP (expr | pos_assign) ;
 
 bool_dcl : BOOL_T ID ASSIGN_OP logical_expr ;
 
-array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (term (COMMA term)*) R_BRACE ;
+array_dcl : TYPE ID L_BRACKET R_BRACKET ASSIGN_OP L_BRACE (expr (COMMA expr)*) R_BRACE ;
 
 assign : (ID | array_access) ASSIGN_OP (expr | pos_assign) SEMICOLON;
 

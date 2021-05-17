@@ -20,34 +20,37 @@ public class SymbolTable {
         return currentScope;
     }
 
-    //Add a scope to the symbol table
+    // Add a scope to the symbol table
     public void addScope(String scopeName) {
-        //Enters, if the scope has not already been entered
+        // When we add a scope we also enter the scope
         if (lookupScope(scopeName) == null) {
             Scope scope = new Scope(scopeName);
+
+            // The parent scope must be the current scope, before we enter the new scope
             scope.setParentScope(currentScope);
+
+            // We add the new scope we're creating to the current scope (the parent scope)
             currentScope.addScopeChild(scope);
+
+            // Push the scope to the scope stack, and enter the new scope
             scopeStack.push(currentScope);
             currentScope = scope;
         }
     }
 
+
+    // Leave the current scope
     public void leaveScope() {
-        this.leaveScope(null);
-    }
-
-    public void leaveScope(String scopeName) {
-        //Enters if we're in a non-global scope
+        // We can only leave the current scope, if there is a parent scope
+        // Otherwise, we're already in the global scope
         if (currentScope.getParentScope() != null){
-            if (scopeName != null){
-                currentScope.setScopeName(scopeName);
-            }
 
-            //Sets the current scope to the outer scope and removes the scope from the stack
+            // Sets the current scope to the outer scope and removes the scope from the stack
             currentScope = scopeStack.empty() ? globalScope : scopeStack.pop();
         }
     }
 
+    // Enters a specific scope
     public void enterScope(String scopeName) {
         Scope scope = this.findScope(scopeName, globalScope);
 
@@ -82,19 +85,19 @@ public class SymbolTable {
     }
 
     public SymbolAttributes lookupSymbol(String symbol){
-        Scope scope = currentScope;
-
         do {
-            //Is entered, if the symbol is a parameter
-            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
-                return scope.getParams().get(symbol);
+            // Look for the symbol in the current scope
+            if (!currentScope.getSymbols().isEmpty() && currentScope.getSymbols().containsKey(symbol)) {
+                return currentScope.getSymbols().get(symbol);
             }
 
-            //Is entered if the symbol is a regular symbol AND is found in the current scope
-            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
-                return scope.getSymbols().get(symbol);
+            // If the symbol is a parameter and in the current scope
+            if (!currentScope.getParams().isEmpty() && currentScope.getParams().containsKey(symbol)) {
+                return currentScope.getParams().get(symbol);
             }
-        } while((scope = scope.getParentScope()) != null);
+
+            // If we could not find the symbol we're looking for, we go to the outer scope and look there.
+        } while((currentScope = currentScope.getParentScope()) != null);
 
         return null;
     }

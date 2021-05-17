@@ -39,42 +39,12 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // Basically, it will only clutter the Ast with an unnecessary node
     @Override
     public AstNode visitDcl(GEasyParser.DclContext ctx) {
-        // A dcl can be one of the following non-terminals:
-        // assign, var_dcl, func_dcl
-        GEasyParser.AssignContext assign = ctx.assign();
-        GEasyParser.Var_dclContext var_dcl = ctx.var_dcl();
-        GEasyParser.Func_dclContext func_dcl = ctx.func_dcl();
-
-        // Figure out which dcl we're dealing with
-        if (assign != null) {
-            return visit(assign);
-        } else if (var_dcl != null) {
-            return visit(var_dcl);
-
-        } else if (func_dcl != null) {
-            return visit(func_dcl);
-        }
-
-        // Does not contain a DCL (error)
-        return null;
+        return visit(ctx.children.get(0));
     }
 
     @Override
     public AstNode visitVar_dcl(GEasyParser.Var_dclContext ctx) {
-        GEasyParser.Num_dclContext num_dcl = ctx.num_dcl();
-        GEasyParser.Array_dclContext array_dcl = ctx.array_dcl();
-        GEasyParser.Bool_dclContext bool_dcl = ctx.bool_dcl();
-
-        if (num_dcl != null) {
-            return visit(num_dcl);
-        } else if (array_dcl != null) {
-            return visit(array_dcl);
-        } else if (bool_dcl != null) {
-            return visit(bool_dcl);
-        }
-
-        // No var_dcl (error)
-        return null;
+        return visit(ctx.children.get(0));
     }
 
     @Override
@@ -267,24 +237,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
                 break;
             case "||":
                 node.setToken(GEasyParser.OR);
-                break;
-            case "<":
-                node.setToken(GEasyParser.LESS_THAN);
-                break;
-            case ">":
-                node.setToken(GEasyParser.GREATER_THAN);
-                break;
-            case "<=":
-                node.setToken(GEasyParser.LESS_THAN_EQ);
-                break;
-            case ">=":
-                node.setToken(GEasyParser.GREATER_THAN_EQ);
-                break;
-            case "==":
-                node.setToken(GEasyParser.IS_EQ);
-                break;
-            case "!=":
-                node.setToken(GEasyParser.NOT_EQ);
                 break;
             default:
                 return null;
