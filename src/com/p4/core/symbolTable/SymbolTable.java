@@ -98,7 +98,7 @@ public class SymbolTable {
             }
 
             // If we could not find the symbol we're looking for, we go to the outer scope and look there.
-        } while((scope = currentScope.getParentScope()) != null);
+        } while((scope = scope.getParentScope()) != null);
 
         return null;
     }

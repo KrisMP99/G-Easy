@@ -516,9 +516,6 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChild(startValueNode);
         this.visitChild(endValueNode);
 
-        // Check if the values are negative and update them
-        //checkAndSetNegative(startValueNode);
-        //checkAndSetNegative(endValueNode);
 
         int startValue = Integer.parseInt(startValueNode.getValue());
         int endValue = Integer.parseInt(endValueNode.getValue());
@@ -549,27 +546,6 @@ public class CodeVisitor implements INodeVisitor {
     private void updateValue(AstNode node, int value) {
         SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
         attributes.setValue(Integer.toString(value));
-    }
-
-    private void checkAndSetNegative(AstNode node){
-        if(node instanceof IntNode) {
-            IntNode nodeToUpdate = (IntNode)node;
-            if(nodeToUpdate.isNegative && !nodeToUpdate.getValue().contains("-")) {
-                node.setValue("-" + node.getValue());
-            }
-        }
-        else if(node instanceof DoubleNode) {
-            DoubleNode nodeToUpdate = (DoubleNode)node;
-            if(nodeToUpdate.isNegative && !nodeToUpdate.getValue().contains("-")) {
-                nodeToUpdate.setValue("-" + node.getValue());
-            }
-        }
-        else if(node instanceof IDNode && !node.getValue().contains("-")){
-            IDNode nodeToUpdate = (IDNode)node;
-            if(nodeToUpdate.isNegative) {
-                nodeToUpdate.setValue("-" + node.getValue());
-            }
-        }
     }
 
     @Override

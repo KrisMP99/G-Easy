@@ -11,6 +11,7 @@ public class SymbolAttributes {
     private String dataType;    // int, double, bool, pos
     private String scopeName;
     private String value;
+    private AstNode node;   // The node itself
 
 
     // Used for dcls
@@ -70,5 +71,13 @@ public class SymbolAttributes {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public AstNode getNode() {
+        return node;
+    }
+
+    public void setNode(AstNode node) {
+        this.node = node;
     }
 }
