@@ -547,9 +547,8 @@ public class CodeVisitor implements INodeVisitor {
     }
 
     private void updateValue(AstNode node, int value) {
-        AstNode nodeToUpdate = lookupAstNode(node);;
-        nodeToUpdate.children.get(0).setValue(Integer.toString(value));
-        nodeToUpdate.setValue(Integer.toString(value));
+        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+        attributes.setValue(Integer.toString(value));
     }
 
     private void checkAndSetNegative(AstNode node){
