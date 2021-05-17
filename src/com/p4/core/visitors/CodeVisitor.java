@@ -102,7 +102,11 @@ public class CodeVisitor implements INodeVisitor {
     //Calls builtin functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
-        this.visitChildren(node);
+        String id = node.getID();
+        if(!id.equals("set_units") && !id.equals("set_cut_mode") && !id.equals("set_feed_rate_mode")) {
+            this.visitChildren(node);
+        }
+
         String funcName = node.getID();
         double speed;
 
