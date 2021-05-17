@@ -196,6 +196,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(ArrayAccessNode node) {
         this.visitChildren(node);
+        node.setType(node.children.get(0).getType());
     }
 
     @Override

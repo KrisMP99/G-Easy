@@ -128,6 +128,9 @@ public class SemanticsVisitor implements INodeVisitor {
         Scope funcScope = this.symbolTable.lookupScope("Func: " + node.getID());
 
         if (funcScope != null) {
+
+
+
             // Check if the number of actual params corresponds with the number of formal params
             // First we check if it's a predefined function (if it is, we cannot find the func dcl)
             if(isPredefinedFunction(node.getID())) {
@@ -332,9 +335,9 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayDclNode node) {
-        this.symbolTable.enterScope(node.getNodesHash());
+        //this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
-        this.symbolTable.leaveScope();
+        //this.symbolTable.leaveScope();
 
         String leftType = node.getType();
         node.setType(leftType);

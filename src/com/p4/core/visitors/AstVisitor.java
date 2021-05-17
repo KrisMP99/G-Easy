@@ -104,7 +104,7 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
         for (int childIndex = 0; childIndex < childCount; childIndex++) {
             ParseTree child = ctx.getChild(childIndex);
 
-            if (child instanceof GEasyParser.TermContext) {
+            if (child instanceof GEasyParser.ExprContext) {
                 AstNode childNode = visit(child);
                 arrayDclNode.children.add(childNode);
             }
