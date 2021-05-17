@@ -197,14 +197,14 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(SelectionNode node) {
         symbolTable.addScope(node.getNodesHash());
         this.visitChildren(node);
-        symbolTable.leaveScope(node.getNodesHash());
+        symbolTable.leaveScope();
     }
 
     @Override
     public void visit(IterativeNode node) {
         symbolTable.addScope(node.getNodesHash());
         this.visitChildren(node);
-        symbolTable.leaveScope(node.getNodesHash());
+        symbolTable.leaveScope();
     }
 
     @Override
