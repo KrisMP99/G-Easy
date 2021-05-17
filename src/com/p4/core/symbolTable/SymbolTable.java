@@ -85,19 +85,19 @@ public class SymbolTable {
     }
 
     public SymbolAttributes lookupSymbol(String symbol){
-        Scope scope = currentScope;
-
         do {
-            // If the symbol is a parameter
-            if (!scope.getParams().isEmpty() && scope.getParams().containsKey(symbol)) {
-                return scope.getParams().get(symbol);
+            // Look for the symbol in the current scope
+            if (!currentScope.getSymbols().isEmpty() && currentScope.getSymbols().containsKey(symbol)) {
+                return currentScope.getSymbols().get(symbol);
             }
 
-            // If the symbol is not a param and it is found in the current scope
-            if (!scope.getSymbols().isEmpty() && scope.getSymbols().containsKey(symbol)) {
-                return scope.getSymbols().get(symbol);
+            // If the symbol is a parameter and in the current scope
+            if (!currentScope.getParams().isEmpty() && currentScope.getParams().containsKey(symbol)) {
+                return currentScope.getParams().get(symbol);
             }
-        } while((scope = scope.getParentScope()) != null);
+
+            // If we could not find the symbol we're looking for, we go to the outer scope and look there.
+        } while((currentScope = currentScope.getParentScope()) != null);
 
         return null;
     }
