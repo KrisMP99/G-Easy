@@ -272,7 +272,7 @@ public class SemanticsVisitor implements INodeVisitor {
             String formalParamType = formalParams.getValue().getDataType();
             String formalParamID = formalParams.getKey();
 
-            if(actualParamType == null || actualParamType.equals("error")){
+            if(actualParamType == null){
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", actualParamType), node.lineNumber);
             }
             else if(formalParamType != null) {
@@ -653,7 +653,6 @@ public class SemanticsVisitor implements INodeVisitor {
         String leftType = node.children.get(0).getType();
         String rightType = node.children.get(1).getType();
 
-        // Semantics rules for addition and minus
         if(leftType.equals(rightType)) {
             return leftType;
         }

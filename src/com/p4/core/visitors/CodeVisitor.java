@@ -25,12 +25,10 @@ public class CodeVisitor implements INodeVisitor {
     private ArrayList<String> output = new ArrayList<>();
     private SymbolTable symbolTable;
     private CuttingHead cuttingHead = new CuttingHead(0, 0, "G21", "G90", "G94");
-    private ProgNode progNode;
 
 
-    public CodeVisitor(SymbolTable symbolTable, ProgNode ast){
+    public CodeVisitor(SymbolTable symbolTable){
         this.symbolTable = symbolTable;
-        this.progNode = ast;
 
         //sets the default values
         stringBuilder.append("G17 " +
@@ -281,60 +279,6 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private AstNode searchAst(AstNode nodeToSearch, AstNode nodeToFind, boolean isFuncDcl){
-        // Make the list for the nodes
-        Queue<AstNode> nodeQueue = new LinkedList<>();
-
-        // Add our root node
-        nodeQueue.add(nodeToSearch);
-
-        // Check if it's a formal param
-        boolean isFormalParam = isFormalParam(nodeToFind);
-
-        // Go trough all the nodes
-        while(!nodeQueue.isEmpty()) {
-            int childSize = nodeQueue.size();
-
-            // If the node has children
-            while(childSize > 0) {
-                // Look at the next node
-                AstNode node = nodeQueue.peek();
-
-                // Check if it's the node we're looking for
-                if(node.getID().equals(nodeToFind.getID())) {
-                    if(isFormalParam && !isFuncDcl) {
-                        if(node instanceof ActualParamNode) {
-                            return node;
-                        }
-
-                    }
-                    else if (isFuncDcl){
-                        if(node instanceof FuncDclNode) {
-                            return node;
-                        }
-                    }
-                    else {
-                        return node;
-                    }
-                }
-
-                // Dequeue the node
-                nodeQueue.remove();
-
-                // Enqueue all the children of the node
-                for(int i = 0; i < node.children.size(); i++){
-                    if(!(node.children.get(i)instanceof FormalParamNode)) {
-                        nodeQueue.add(node.children.get(i));
-                    }
-                }
-
-                childSize--;
-            }
-        }
-        return null;
-
-    }
-
     private boolean isFormalParam(AstNode node){
         // If it's a formal param node, we need to find the actual param to get it's value
         // A formal param should be in the symbol table, so we can look up it's attributes
@@ -345,11 +289,6 @@ public class CodeVisitor implements INodeVisitor {
         }
 
         return false;
-    }
-
-    private AstNode lookupAstNode(AstNode node){
-        AstNode foundNode = searchAst(progNode, node, false);
-        return foundNode;
     }
 
     private void rapidMove(double x, double y) {
