@@ -249,7 +249,7 @@ public class CodeVisitor implements INodeVisitor {
         for (AstNode paramChild : node.children){
             for (AstNode childNode : paramChild.children){
                 if (childNode instanceof IDNode){
-                    params.add(lookupAstNode(childNode));
+                    params.add(childNode);
                 }
                 else if(childNode instanceof ArrayAccessNode) {
                     AstNode arrayDclNode = lookupAstNode(childNode);
@@ -523,8 +523,7 @@ public class CodeVisitor implements INodeVisitor {
         int startValue = Integer.parseInt(startValueNode.getValue());
         int endValue = Integer.parseInt(endValueNode.getValue());
 
-        if(startValue < endValue && endValue > 0) {
-            endValue += 1;
+        if(startValue <= endValue) {
             while(startValue <= endValue) {
                 this.visitChildren(node.children.get(2));
                 startValue++;
@@ -534,7 +533,7 @@ public class CodeVisitor implements INodeVisitor {
                 }
             }
         }
-        else if(endValue < 0 && startValue > endValue) {
+        else if(startValue >= endValue) {
             while(startValue >= endValue) {
                 this.visitChildren(node.children.get(2));
                 startValue--;
