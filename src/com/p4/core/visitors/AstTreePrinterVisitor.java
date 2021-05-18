@@ -2,120 +2,120 @@ package com.p4.core.visitors;
 
 import com.p4.core.nodes.*;
 
-// Used to visit our Ast and print it to the console
+// Prints the AST to the console
 public class AstTreePrinterVisitor {
-    public void visit(int localIndent, AstNode node) {
+    public void printTree(int localIndent, AstNode node) {
         if(node != null) {
             switch (node.getClass().toString()) {
                 case "class com.p4.core.nodes.IntDclNode":
-                    this.print(localIndent,"(IntDcl) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent,"(IntDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.DoubleDclNode":
-                    this.print(localIndent,"(DoubleDcl) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent,"(DoubleDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.PosDclNode":
-                    this.print(localIndent,"(PosDcl) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent,"(PosDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ArithmeticNode":
-                    this.print(localIndent, "(Arthm) " + ((ArithmeticNode)node).getToken());
+                    this.printNode(localIndent, "(Arthm) " + ((ArithmeticNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.DoubleNode":
-                    this.print(localIndent, "(Double) " + node.getValue());
+                    this.printNode(localIndent, "(Double) " + node.getValue());
                     break;
                 case "class com.p4.core.nodes.IntNode":
-                    this.print(localIndent, "(Int) " + node.getValue());
+                    this.printNode(localIndent, "(Int) " + node.getValue());
                     break;
                 case "class com.p4.core.nodes.ArrayDclNode":
-                    this.print(localIndent, "(ArrayDcl) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent, "(ArrayDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ArrayAccessNode":
-                    this.print(localIndent, "(ArrayAccess) " + node.getID());
+                    this.printNode(localIndent, "(ArrayAccess) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.FuncCallNode":
-                    this.print(localIndent, "(FuncCall) " + node.getID());
+                    this.printNode(localIndent, "(FuncCall) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ActualParamNode":
-                    this.print(localIndent, "(ActualParm) " + node.getID());
+                    this.printNode(localIndent, "(ActualParm) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.LineCommentNode":
-                    this.print(localIndent, "(LineComment) " + ((LineCommentNode)node).getComment());
+                    this.printNode(localIndent, "(LineComment) " + ((LineCommentNode)node).getComment());
                     break;
                 case "class com.p4.core.nodes.PosAssignNode":
-                    this.print(localIndent, "(PosAssign) ");
+                    this.printNode(localIndent, "(PosAssign) ");
                     break;
                 case "class com.p4.core.nodes.SelectionNode":
                     String isElse = ((SelectionNode)node).isElse() ? " else " : "";
-                    this.print(localIndent, "(Selection) " + node.getType() + isElse);
+                    this.printNode(localIndent, "(Selection) " + node.getType() + isElse);
                     break;
                 case "class com.p4.core.nodes.LogicalOPNode":
-                    this.print(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
+                    this.printNode(localIndent, "(LogicalOPNode) " + ((LogicalOPNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.LogicalExprNode":
-                    this.print(localIndent, "(LogicalExpr) " + ((LogicalExprNode)node).getToken());
+                    this.printNode(localIndent, "(LogicalExpr) " + ((LogicalExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompNode":
-                    this.print(localIndent, "(Comp) " + ((CompNode)node).getToken());
+                    this.printNode(localIndent, "(Comp) " + ((CompNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.CompExprNode":
-                    this.print(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
+                    this.printNode(localIndent, "(CompExpr) " + ((CompExprNode)node).getToken());
                     break;
                 case "class com.p4.core.nodes.BoolNode":
-                    this.print(localIndent, "(Bool) " + ((BoolNode)node).getBoolValue());
+                    this.printNode(localIndent, "(Bool) " + ((BoolNode)node).getBoolValue());
                     break;
                 case "class com.p4.core.nodes.IDNode":
-                    this.print(localIndent, "(ID) " + node.getID());
+                    this.printNode(localIndent, "(ID) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.AssignNode":
-                    this.print(localIndent, "(Assign) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent, "(Assign) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.BlockNode":
-                    this.print(localIndent, "(Block)");
+                    this.printNode(localIndent, "(Block)");
                     break;
                 case "class com.p4.core.nodes.IterativeNode":
-                    this.print(localIndent, "(Iterative) " + node.getType() + " " + ((IterativeNode)node).getFor_to());
+                    this.printNode(localIndent, "(Iterative) " + node.getType() + " " + ((IterativeNode)node).getFor_to());
                     break;
                 case "class com.p4.core.nodes.FuncDclNode":
-                    this.print(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + node.getID());
+                    this.printNode(localIndent, "(FuncDcl) " + ((FuncDclNode)node).getReturnType() + " " + node.getID());
                     break;
                 case "class com.p4.core.nodes.ReturnExprNode":
-                    this.print(localIndent, "(ReturnExpr)");
+                    this.printNode(localIndent, "(ReturnExpr)");
                     break;
                 case "class com.p4.core.nodes.ProgNode":
-                    this.print(localIndent, "(prog)");
+                    this.printNode(localIndent, "(prog)");
                     break;
                 case "class com.p4.core.nodes.BoolDclNode":
-                    this.print(localIndent, "(BoolDcl) " + node.getType() + " " + node.getID());
+                    this.printNode(localIndent, "(BoolDcl) " + node.getType() + " " + node.getID());
                     break;
                 case "class com.p4.cores.node.BoolNode":
-                    this.print(localIndent, "(Bool)" + node.getType());
+                    this.printNode(localIndent, "(Bool)" + node.getType());
                     break;
                 case "class com.p4.core.nodes.FormalParamNode":
-                    this.print(localIndent, "(Formal Param) " + node.getID());
+                    this.printNode(localIndent, "(Formal Param) " + node.getID());
                     break;
                 case "class com.p4.core.nodes.AddNode":
-                    this.print(localIndent, "(Add)");
+                    this.printNode(localIndent, "(Add)");
                     break;
                 case "class com.p4.core.nodes.SubNode":
-                    this.print(localIndent, "(Sub)");
+                    this.printNode(localIndent, "(Sub)");
                     break;
                 case "class com.p4.core.nodes.ModNode":
-                    this.print(localIndent, "(Mod)");
+                    this.printNode(localIndent, "(Mod)");
                     break;
                 case "class com.p4.core.nodes.MultNode":
-                    this.print(localIndent, "(Mult)");
+                    this.printNode(localIndent, "(Mult)");
                     break;
                 case "class com.p4.core.nodes.DivNode":
-                    this.print(localIndent, "(Div)");
+                    this.printNode(localIndent, "(Div)");
                     break;
             }
 
             for(AstNode childNode : node.getChildren()) {
-                this.visit(localIndent + 1, childNode);
+                printTree(localIndent + 1, childNode);
             }
         }
     }
 
-    private void print(int indent, String string) {
+    private void printNode(int indent, String string) {
         StringBuilder output = new StringBuilder();
         output.append("\t".repeat(Math.max(0, indent)));
 
