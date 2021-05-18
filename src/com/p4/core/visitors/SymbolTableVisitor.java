@@ -43,6 +43,8 @@ public class SymbolTableVisitor implements INodeVisitor {
     private void declareVarNode(VarDclNode<?> node) {
         if(!isNodeDeclared(node)) {
             SymbolAttributes attributes = new SymbolAttributes("dcl", node.getType());
+            attributes.setValue(node.children.get(0).getValue());
+            node.setValue(node.children.get(0).getValue());
             attributes.setNode(node);
             attributes.setScope(symbolTable.getCurrentScope().getScopeName());
             symbolTable.insertSymbol(node.getID(), attributes);

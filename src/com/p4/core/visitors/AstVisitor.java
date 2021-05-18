@@ -7,8 +7,6 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
-import java.net.IDN;
-
 public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
     // The ProgNode is a the top of our grammar, and we keep this as our entry point, always.
     @Override
@@ -128,7 +126,6 @@ public class AstVisitor<T> extends GEasyBaseVisitor<AstNode> {
             return boolDclNode;
         }
 
-        // error
         return null;
     }
 
