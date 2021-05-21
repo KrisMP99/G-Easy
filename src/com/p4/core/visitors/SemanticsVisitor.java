@@ -61,8 +61,7 @@ public class SemanticsVisitor implements INodeVisitor {
                         errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
                     // Check if the function return type is valid with the actual return type
-                    else if(!isReturnOK(funcReturnType, blockChild.getType())) {
-                        // error!!!
+                    else if(!isTypeCompatibleOK(funcReturnType, blockChild.getType())) {
                         errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
                     }
                 }
@@ -71,13 +70,13 @@ public class SemanticsVisitor implements INodeVisitor {
         this.symbolTable.leaveScope();
     }
 
-    // Used to compare the return type of the function and its return statements
-    // Also used in dcl
-    private boolean isReturnOK(String funcReturnType, String actualReturnType) {
-        if(funcReturnType.equals(actualReturnType)) {
+    // Used to compare the return type of the function and its return statement
+    // Same goes for array dcl
+    private boolean isTypeCompatibleOK(String leftType, String type) {
+        if(leftType.equals(type)) {
             return true;
         }
-        else if(funcReturnType.equals("double") && actualReturnType.equals("int")) {
+        else if(leftType.equals("double") && type.equals("int")) {
             return true;
         }
         return false;
@@ -128,8 +127,6 @@ public class SemanticsVisitor implements INodeVisitor {
         Scope funcScope = this.symbolTable.lookupScope("Func: " + node.getID());
 
         if (funcScope != null) {
-
-
 
             // Check if the number of actual params corresponds with the number of formal params
             // First we check if it's a predefined function (if it is, we cannot find the func dcl)
@@ -276,7 +273,7 @@ public class SemanticsVisitor implements INodeVisitor {
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", actualParamType), node.lineNumber);
             }
             else if(formalParamType != null) {
-                if(!isReturnOK(formalParams.getValue().getDataType(), node.children.get(child).children.get(0).getType())) {
+                if(!isTypeCompatibleOK(formalParams.getValue().getDataType(), node.children.get(child).children.get(0).getType())) {
                     errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("actual parameter type", actualParamID, actualParamType, formalParamType), node.lineNumber);
                 }
                 else {
@@ -318,7 +315,7 @@ public class SemanticsVisitor implements INodeVisitor {
             if(node.getType().equals("pos")) {
                 checkPosAssign(node);
             }
-            else if(!isReturnOK(node.getType(), rightType)) {
+            else if(!isTypeCompatibleOK(node.getType(), rightType)) {
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", node.getType(), rightType), node.lineNumber);
             }
         }
@@ -335,9 +332,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
     @Override
     public void visit(ArrayDclNode node) {
-        //this.symbolTable.enterScope(node.getNodesHash());
         this.visitChildren(node);
-        //this.symbolTable.leaveScope();
 
         String leftType = node.getType();
         node.setType(leftType);
@@ -345,11 +340,14 @@ public class SemanticsVisitor implements INodeVisitor {
         // Get the array elements
         List<AstNode> arrayElements = node.getChildren();
 
+        // Get the type of the array element
+        // We need to make sure, they're all of the same datatype
         for(AstNode arrayElement : arrayElements) {
             String type = arrayElement.getType();
 
-            if(!isReturnOK(leftType, type)) {
+            if(!isTypeCompatibleOK(leftType, type)) {
                 errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("array assign", type, leftType), node.lineNumber);
+                break;
             }
         }
     }
@@ -505,14 +503,27 @@ public class SemanticsVisitor implements INodeVisitor {
         this.visitChildren(node);
         node.setType("bool");
 
-        // All the children of a logical expr node must be a CompExpr
-        // We check this by going through all the children and verifying their node type
-        for(int child = 0; child < node.getChildren().size(); child++) {
-            String currChildName = node.children.get(child).getClass().toString();
-            if(!currChildName.equals("class com.p4.core.nodes.CompExprNode") && !currChildName.equals("class com.p4.core.nodes.LogicalExprNode")) {
+        // If the logical expr has more than two children, it must be comparing using AND or OR
+        if(node.children.size() > 1) {
+            // Get the type of the two children
+            String type1 = node.children.get(0).getType();
+            String type2 = node.children.get(1).getType();
+            int compOperator = node.getToken();
+
+            if(!isLogicalComparisonOK(type1, type2, compOperator)) {
                 errorCollector.addErrorEntry(ErrorType.OPERATION_ERROR, printErrorMessage("illegal comparison"), node.lineNumber);
             }
         }
+    }
+
+    private boolean isLogicalComparisonOK(String type1, String type2, int compOperator) {
+        if(compOperator == GEasyParser.AND || compOperator == GEasyParser.OR) {
+            if(type1.equals("bool") && type2.equals("bool")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -542,10 +553,10 @@ public class SemanticsVisitor implements INodeVisitor {
            compOperator == GEasyParser.LESS_THAN_EQ || compOperator == GEasyParser.GREATER_THAN_EQ ||
            compOperator == GEasyParser.NOT_EQ || compOperator == GEasyParser.IS_EQ) {
             // True if both sides are of the same type, but not bool or pos
-            if(type1.equals(type2) &&  !(type1.equals("bool") || type1.equals("pos"))) {
+            if((type1.equals("int") || type1.equals("double")) && (type2.equals("int") || type2.equals("double"))) {
                 return true;
             }
-            else if((type1.equals("int") && type2.equals("double")) || (type1.equals("double") && type2.equals("int"))) {
+            else if(type1.equals("pos") && type2.equals("pos")) {
                 return true;
             }
         }
@@ -592,7 +603,7 @@ public class SemanticsVisitor implements INodeVisitor {
     // Example: int x = true;    NOT OKAY
     // Example: int x = 22;      OKAY
     private void checkIfTypeDCLisCorrect(String dclType, String exprType, int lineNumber) {
-        if(!isReturnOK(dclType, exprType)) {
+        if(!isTypeCompatibleOK(dclType, exprType)) {
             errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("assign", dclType, exprType), lineNumber);
         }
     }

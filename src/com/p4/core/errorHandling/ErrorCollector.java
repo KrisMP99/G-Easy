@@ -27,12 +27,18 @@ public class ErrorCollector {
         }
     }
 
+    public ErrorType getErrorType(int index) {
+        if(index < errorList.size()) {
+            return errorList.get(index).errorType;
+        } else {
+          return null;
+        }
+    }
+
     private void printErrors() {
         // Go through all the errors
         for(ErrorElement error : errorList) {
             System.out.println(error.errorType + ": " + error.message + " on line: " + error.lineNumber);
         }
     }
-
-
 }
