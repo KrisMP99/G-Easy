@@ -47,15 +47,24 @@ public class SemanticsVisitor implements INodeVisitor {
         String funcReturnType = symbolTable.lookupSymbol(node.getID()).getDataType();
 
         //Checks if the return type is a valid
-        if (isValidReturnType(funcReturnType)){
+        if (!isValidReturnType(funcReturnType)){
+            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", funcReturnType), node.lineNumber);
+        }
 
-            int childIndex = node.getChildren().size() > 1 ? 1 : 0;
+        // Check if the params are valid
+        checkFormalParams(node);
 
-            // Goes through all the children in the function block to check if they're well typed
-            // Looks for a return statement as well.
-            for(AstNode blockChild : node.children.get(childIndex).children) {
-                if(blockChild instanceof ReturnExprNode) {
+        // Check the function block for an return statement
+        checkReturnStatement(node, funcReturnType);
 
+
+        this.symbolTable.leaveScope();
+    }
+
+    private void checkReturnStatement(FuncDclNode node, String funcReturnType){
+        for(AstNode child : node.getChildren()) {
+            if(child instanceof BlockNode) {
+                for(AstNode blockChild : child.getChildren()) {
                     // If the return type is void, there must not be a return statement
                     if(funcReturnType.equals("void")) {
                         errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
@@ -67,8 +76,28 @@ public class SemanticsVisitor implements INodeVisitor {
                 }
             }
         }
-        this.symbolTable.leaveScope();
     }
+
+    // Check if the formal params are type correct
+    private void checkFormalParams(FuncDclNode node) {
+        for(AstNode child : node.getChildren()) {
+            if(child instanceof FormalParamNode) {
+                if(!isValidType(child.getType())) {
+                    errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("non-valid type", child.getType()), child.lineNumber);
+                }
+            }
+        }
+    }
+
+    private Boolean isValidType(String type) {
+        switch (type) {
+            case "int": case "double": case "pos": case "bool":
+                return true;
+            default:
+                return false;
+        }
+    }
+
 
     // Used to compare the return type of the function and its return statement
     // Same goes for array dcl
@@ -123,17 +152,18 @@ public class SemanticsVisitor implements INodeVisitor {
     }
 
     private void checkNumberOfFunctionParams(FuncCallNode node) {
-        // First we check if the scope is found
-        Scope funcScope = this.symbolTable.lookupScope("Func: " + node.getID());
+        // First we check if it's a predefined function (if it is, we cannot find the func dcl)
+        if(isPredefinedFunction(node.getID())) {
+            checkPredefinedFunctionParams(node);
+        }
 
-        if (funcScope != null) {
+        else {
+
+            // First we check if the scope is found
+            Scope funcScope = this.symbolTable.lookupScope("Func: " + node.getID());
 
             // Check if the number of actual params corresponds with the number of formal params
-            // First we check if it's a predefined function (if it is, we cannot find the func dcl)
-            if(isPredefinedFunction(node.getID())) {
-                checkPredefinedFunctionParams(node);
-            }
-            else if(node.children.size() != funcScope.getParams().size()) {
+            if(node.children.size() != funcScope.getParams().size()) {
                 // Error
                 errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("number of params", node.getID()), node.lineNumber);
             }
@@ -153,6 +183,7 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+    // Fix this
     private void checkPredefinedFunctionParams(FuncCallNode node) {
         String id = node.getID();
         String firstParam = node.children.get(0).getID();
@@ -160,6 +191,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         if(id.equals("cut_line")) {
             secondParam = node.children.get(1).getID();
+
             if(!firstParam.equals("x")) {
                 if(!firstParam.equals("position")) {
                     errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
@@ -212,23 +244,6 @@ public class SemanticsVisitor implements INodeVisitor {
                     // error
                 }
             }
-
-
-            /*
-            if(!firstParam.equals("x")) {
-                if(!firstParam.equals("position")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
-                }
-                else if(!secondParam.equals("speed")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
-                }
-            }
-            else if(!secondParam.equals("y")) {
-                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
-            }
-            else if(!node.children.get(2).getID().equals("speed")) {
-                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
-            } */
 
         }
 
