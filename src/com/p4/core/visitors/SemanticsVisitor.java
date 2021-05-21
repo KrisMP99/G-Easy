@@ -578,6 +578,7 @@ public class SemanticsVisitor implements INodeVisitor {
                     errorCollector.addErrorEntry(ErrorType.UNDECLARED_VAR, printErrorMessage("no var dcl", node.getID()), node.lineNumber);
                 }
                 else {
+                    node.setValue(attributes.getValue());
                     node.setType(attributes.getDataType());
                 }
                 break;
@@ -685,7 +686,7 @@ public class SemanticsVisitor implements INodeVisitor {
 
         AstNode denominator = node.children.get(1);
         // Check if the denominator is zero, as dividing by zero is illegal
-        if(Double.parseDouble(denominator.getValue()) == 0) {
+        if(denominator.getValue().equals("0")) {
             errorCollector.addErrorEntry(ErrorType.DIVIDE_BY_ZERO, printErrorMessage("div by zero"), node.lineNumber);
         }
 

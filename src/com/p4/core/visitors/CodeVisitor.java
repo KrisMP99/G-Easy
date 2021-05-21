@@ -10,9 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 //This is the class that generates G code corresponding to the GEasy
 public class CodeVisitor implements INodeVisitor {
@@ -279,18 +277,6 @@ public class CodeVisitor implements INodeVisitor {
         return params;
     }
 
-    private boolean isFormalParam(AstNode node){
-        // If it's a formal param node, we need to find the actual param to get it's value
-        // A formal param should be in the symbol table, so we can look up it's attributes
-        SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-
-        if(attributes != null && attributes.getType().equalsIgnoreCase("Formal param")) {
-            return true;
-        }
-
-        return false;
-    }
-
     private void rapidMove(double x, double y) {
         stringBuilder.append("\nG00 X" + x
                 + " Y" + y);
@@ -355,8 +341,6 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AssignNode node) {
         this.visitChildren(node);
-        //AstNode childNode = lookupAstNode(node);
-        //childNode.setValue(node.children.get(0).getValue());
         node.setValue(node.children.get(0).getValue());
     }
 
@@ -416,8 +400,6 @@ public class CodeVisitor implements INodeVisitor {
             node.setValue(indexChild.getValue());
         }
         else if (indexChild instanceof IDNode) {
-            // Get the ID node:
-            //AstNode idNode = lookupAstNode(indexChild.getID());
             node.setValue(indexChild.getValue());
         }
     }

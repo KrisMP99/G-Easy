@@ -1,4 +1,4 @@
-package com.p4;
+package com.p4.core.tests.integrationTests;
 
 import com.p4.core.GEasyBaseVisitor;
 import com.p4.core.GEasyLexer;
@@ -15,17 +15,17 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
 
-public class Main {
+class IntegrationTests {
+
     public static void main(String[] args) throws Exception {
-        CharStream charStream = CharStreams.fromFileName("src/com/p4/SourceFile.GE");
-        //CharStream charStream = CharStreams.fromFileName("src/com/p4/program1.GE");
+        doTest("IntAssignmentFail.GE");
+    }
+
+    private static void doTest(String fileName) throws IOException {
+        CharStream charStream = CharStreams.fromFileName("src/com/p4/core/tests/integrationTests/" + fileName);
         Lexer lexer = new GEasyLexer(charStream);
         GEasyParser parser = new GEasyParser(new CommonTokenStream(lexer));
         ParseTree parseTree = parser.prog();
-
-        // Text in console (parseTree)
-        // System.out.println("ParseTree: ");
-        // System.out.println(parseTree.toStringTree(parser));
 
         GEasyBaseVisitor<?> visitor = new AstVisitor<>();
         ProgNode ast = (ProgNode) visitor.visit(parseTree);
@@ -45,23 +45,19 @@ public class Main {
 
 
         // We can only generate code, if there are no error from the semantic analysis
-        if(!errorCollector.hasErrors()) {
+        if (!errorCollector.hasErrors()) {
             CodeVisitor codeVisitor = new CodeVisitor(symbolTable);
             codeVisitor.visit(ast);
 
             try {
                 codeVisitor.print();
                 System.out.println("Code has been generated!");
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             // Print errors
             errorCollector.displayErrors();
         }
-        //ParseTree in GUI
-        //TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()),parseTree);
-        //viewer.open();
     }
 }
