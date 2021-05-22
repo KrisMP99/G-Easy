@@ -678,23 +678,53 @@ public class CodeVisitor implements INodeVisitor {
     @Override
     public void visit(AddNode node) {
         this.visitChildren(node);
-        double result = 0.0;
-        double rightSide = Double.parseDouble(node.children.get(0).getValue());
-        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
-        result = rightSide + leftSide;
-        node.setValue(Double.toString(result));
+        if (node.children.get(0).getType().equals("pos") && node.children.get(1).getType().equals("pos")) {
+            String[] stringValues1 = node.children.get(0).getValue().split(" ");
+            double xCordValue1 = Double.parseDouble(stringValues1[0]);
+            double yCordValue1 = Double.parseDouble(stringValues1[1]);
+
+            String[] stringValues2 = node.children.get(1).getValue().split(" ");
+            double xCordValue2 = Double.parseDouble(stringValues2[0]);
+            double yCordValue2 = Double.parseDouble(stringValues2[1]);
+
+            String posResult = (xCordValue1 + xCordValue2) + " " + (yCordValue1 + yCordValue2);
+            node.setValue(posResult);
+        }
+        else {
+            double result = 0.0;
+            double rightSide = Double.parseDouble(node.children.get(0).getValue());
+            double leftSide = Double.parseDouble(node.children.get(1).getValue());
+
+            result = rightSide + leftSide;
+            node.setValue(Double.toString(result));
+        }
     }
 
     @Override
     public void visit(SubNode node) {
         this.visitChildren(node);
-        double result = 0.0;
-        double rightSide = Double.parseDouble(node.children.get(0).getValue());
-        double leftSide = Double.parseDouble(node.children.get(1).getValue());
 
-        result = rightSide - leftSide;
-        node.setValue(Double.toString(result));
+        if(node.children.get(0).getType().equals("pos") && node.children.get(1).getType().equals("pos")) {
+            String[] stringValues1 = node.children.get(0).getValue().split(" ");
+            double xCordValue1 = Double.parseDouble(stringValues1[0]);
+            double yCordValue1 = Double.parseDouble(stringValues1[1]);
+
+            String[] stringValues2 = node.children.get(1).getValue().split(" ");
+            double xCordValue2 = Double.parseDouble(stringValues2[0]);
+            double yCordValue2 = Double.parseDouble(stringValues2[1]);
+
+            String posResult = (xCordValue1 - xCordValue2) + " " + (yCordValue1 - yCordValue2);
+            node.setValue(posResult);
+        }
+        else {
+            double result = 0.0;
+            double rightSide = Double.parseDouble(node.children.get(0).getValue());
+            double leftSide = Double.parseDouble(node.children.get(1).getValue());
+
+            result = rightSide - leftSide;
+            node.setValue(Double.toString(result));
+        }
     }
 
     @Override
