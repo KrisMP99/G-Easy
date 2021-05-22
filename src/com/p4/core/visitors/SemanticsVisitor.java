@@ -183,80 +183,19 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
-    // Fix this
     private void checkPredefinedFunctionParams(FuncCallNode node) {
         String id = node.getID();
         String firstParam = node.children.get(0).getID();
-        String secondParam;
 
         if(id.equals("cut_line")) {
-            secondParam = node.children.get(1).getID();
-
-            if(!firstParam.equals("x")) {
-                if(!firstParam.equals("position")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
-                }
-                else if(!secondParam.equals("speed")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
-                }
-            }
-            else if(!secondParam.equals("y")) {
-                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, id), node.lineNumber);
-            }
-            else if(!node.children.get(2).getID().equals("speed")) {
-                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, id), node.lineNumber);
-            }
+            checkIsXYorPosSpeedParam(node);
         }
         else if(id.equals("cut_clockwise_circular")) {
-            secondParam = node.children.get(1).getID();
-            String thirdParam = node.children.get(2).getID();
-            String fourthParam = node.children.get(3).getID();
-
-            // Handle if pos:
-            if(firstParam.equals("position")) {
-                if(!secondParam.equals("x_offset")) {
-                    // error
-                }
-                else if(!thirdParam.equals("y_offset")) {
-                    // error
-                }
-                else if(!fourthParam.equals("speed")) {
-                    // error
-                }
-            }
-            // Handle if x and y
-            else {
-                String fifthParam = node.children.get(4).getID();
-
-                if(!firstParam.equals("x")) {
-                    // error
-                }
-                else if(!secondParam.equals("y")) {
-                    // error
-                }
-                else if(!thirdParam.equals("x_offset")) {
-                    // error
-                }
-                else if(!fourthParam.equals("y_offset")) {
-                    // error
-                }
-                else if(!fifthParam.equals("speed")) {
-                    // error
-                }
-            }
-
+            checkCutClockWiseParams(node);
         }
 
         else if(id.equals("rapid_move")) {
-            if(!firstParam.equals("position")) {
-                secondParam = node.children.get(1).getID();
-                if(!firstParam.equals("x")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
-                }
-                else if(!secondParam.equals("y")) {
-                    errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", node.children.get(0).getID(), id), node.lineNumber);
-                }
-            }
+            checkIfXYorPos(node);
         }
 
         else if (id.equals("set_units")){
@@ -272,14 +211,96 @@ public class SemanticsVisitor implements INodeVisitor {
         }
     }
 
+
+    private void checkIsXYorPosSpeedParam(FuncCallNode node) {
+        String firstParam = node.children.get(0).getID();
+        String secondParam = node.children.get(1).getID();
+        String thirdParam = "";
+
+        if(node.getChildren().size() > 2) {
+            thirdParam = node.children.get(2).getID();
+        }
+
+        if(!firstParam.equals("x")) {
+            if(!firstParam.equals("pos")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, node.getID()), node.lineNumber);
+            }
+            else if(!secondParam.equals("speed")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, node.getID()), node.lineNumber);
+            }
+        }
+        else if(!secondParam.equals("y")) {
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, node.getID()), node.lineNumber);
+        }
+        else if(!thirdParam.equals("speed")) {
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", thirdParam, node.getID()), node.lineNumber);
+        }
+
+    }
+
+    private void checkIfXYorPos(FuncCallNode node) {
+        String firstParam = node.children.get(0).getID();
+        String secondParam = "";
+
+        if(node.getChildren().size() > 1) {
+            secondParam = node.children.get(1).getID();
+        }
+
+        if(!firstParam.equals("x") && !firstParam.equals("pos")) {
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, node.getID()), node.lineNumber);
+        }
+        else if(!firstParam.equals("pos") && !secondParam.equals("y")) {
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, node.getID()), node.lineNumber);
+        }
+    }
+
+    private void checkCutClockWiseParams(FuncCallNode node) {
+        String firstParam = node.children.get(0).getID();
+        String secondParam = node.children.get(1).getID();
+        String thirdParam = node.children.get(2).getID();
+        String fourthParam = node.children.get(3).getID();
+
+        // Handle if pos:
+        if(firstParam.equals("pos")) {
+            if(!secondParam.equals("x_offset")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, node.getID()), node.lineNumber);
+            }
+            else if(!thirdParam.equals("y_offset")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", thirdParam, node.getID()), node.lineNumber);
+            }
+            else if(!fourthParam.equals("speed")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", fourthParam, node.getID()), node.lineNumber);
+            }
+        }
+        // Handle if x and y
+        else if(firstParam.equals("x")){
+            String fifthParam = node.children.get(4).getID();
+
+            if(!secondParam.equals("y")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", secondParam, node.getID()), node.lineNumber);
+            }
+            else if(!thirdParam.equals("x_offset")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", thirdParam, node.getID()), node.lineNumber);
+            }
+            else if(!fourthParam.equals("y_offset")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", fourthParam, node.getID()), node.lineNumber);
+            }
+            else if(!fifthParam.equals("speed")) {
+                errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", fifthParam, node.getID()), node.lineNumber);
+            }
+        }
+        else {
+            errorCollector.addErrorEntry(ErrorType.PARAMETER_ERROR, printErrorMessage("actual param predefined", firstParam, node.getID()), node.lineNumber);
+        }
+    }
+
     private void checkIfParamsAreValid(FuncCallNode node, Scope funcScope) {
         // Go through all the parameters and compare each actual parameter with the formal parameters
         int child = 0;
         for(Map.Entry<String, SymbolAttributes> formalParams : funcScope.getParams().entrySet()) {
-            String actualParamName = node.children.get(child).getID();
-            SymbolAttributes actualParamAttributes = symbolTable.lookupSymbol(actualParamName);
-            String actualParamType = actualParamAttributes.getDataType();
             String actualParamID = node.children.get(child).getID();
+            SymbolAttributes actualParamAttributes = symbolTable.lookupSymbol(actualParamID);
+            String actualParamType = actualParamAttributes.getDataType();
 
             String formalParamType = formalParams.getValue().getDataType();
             String formalParamID = formalParams.getKey();

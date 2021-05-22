@@ -578,8 +578,7 @@ public class CodeVisitor implements INodeVisitor {
         double rightSide = Double.parseDouble(node.children.get(1).getValue());
         boolean result;
 
-        // Kommentar til Cecilie: Benyt GEasyparser i stedet for tallene
-        // F.eks. GEasyparser.LESS_THAN -> evaluerer til 24
+
         switch (node.getToken()) {
             case GEasyParser.LESS_THAN:
                 result = leftSide < rightSide;
