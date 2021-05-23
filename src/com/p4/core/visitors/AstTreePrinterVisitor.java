@@ -116,15 +116,15 @@ public class AstTreePrinterVisitor {
     }
 
     private void printNode(int indent, String string) {
-        StringBuilder output = new StringBuilder();
-        output.append("\t".repeat(Math.max(0, indent)));
+        StringBuilder outputString = new StringBuilder();
+        outputString.append("\t".repeat(Math.max(0, indent)));
 
         if(string != null) {
-            output = new StringBuilder(output.toString().concat(string));
+            outputString = new StringBuilder(outputString.toString().concat(string));
         } else {
-            output = new StringBuilder(output.toString().concat("null"));
+            outputString = new StringBuilder(outputString.toString().concat("null"));
         }
 
-        System.out.println(output);
+        System.out.println(outputString);
     }
 }

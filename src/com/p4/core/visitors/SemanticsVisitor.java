@@ -65,13 +65,15 @@ public class SemanticsVisitor implements INodeVisitor {
         for(AstNode child : node.getChildren()) {
             if(child instanceof BlockNode) {
                 for(AstNode blockChild : child.getChildren()) {
-                    // If the return type is void, there must not be a return statement
-                    if(funcReturnType.equals("void")) {
-                        errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
-                    }
-                    // Check if the function return type is valid with the actual return type
-                    else if(!isTypeCompatibleOK(funcReturnType, blockChild.getType())) {
-                        errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
+                    if(blockChild instanceof ReturnExprNode) {
+                        // If the return type is void, there must not be a return statement
+                        if(funcReturnType.equals("void")) {
+                            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("void return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
+                        }
+                        // Check if the function return type is valid with the actual return type
+                        else if(!isTypeCompatibleOK(funcReturnType, blockChild.getType())) {
+                            errorCollector.addErrorEntry(ErrorType.TYPE_ERROR, printErrorMessage("return", blockChild.getType(), funcReturnType), blockChild.lineNumber);
+                        }
                     }
                 }
             }
