@@ -1,0 +1,16 @@
+void windows(int x_window_start, int y_window_start){
+    pos w_corner1 = {x: x_window_start, y: y_window_start};
+    pos w_corner2 = {x: x_window_start, y: y_window_start + 1};
+    pos w_corner3 = {x: x_window_start + 1, y: y_window_start + 1};
+    pos w_corner4 = {x: x_window_start + 1, y: y_window_start};
+
+    rapid_move(pos: w_corner1);
+
+    cut_line(pos: w_corner2, speed: 60);
+    cut_line(pos: w_corner3, speed: 60);
+    cut_line(pos: w_corner4, speed: 60);
+    cut_line(pos: w_corner1, speed: 60);
+}
+
+windows(x_window_start: 1, y_window_start: 1);
+windows(x_window_start: 1, y_window_start: 3);

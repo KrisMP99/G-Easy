@@ -4,7 +4,6 @@ import com.p4.core.GEasyParser;
 import com.p4.core.errorHandling.ErrorCollector;
 import com.p4.core.errorHandling.ErrorType;
 import com.p4.core.nodes.*;
-import com.p4.core.symbolTable.SymbolAttributes;
 import com.p4.core.symbolTable.SymbolTable;
 import com.p4.core.visitors.SemanticsVisitor;
 import org.junit.jupiter.api.Test;
@@ -28,6 +27,8 @@ class SemanticsTests {
 
         // Assert
         assert(result);
+
+        int x  = 2 * (2 + 2);
 
     }
 

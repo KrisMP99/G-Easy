@@ -1,0 +1,10 @@
+int x = 0;
+
+for(x to 9) {
+    cut_line(x: x + 1, y: x + 1, speed: 10);
+}
+
+int cut_line() {
+    return 0;
+}
+

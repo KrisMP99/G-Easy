@@ -95,7 +95,7 @@ public class CodeVisitor implements INodeVisitor {
     public void visit(FuncDclNode node) {
     }
 
-    //Calls builtin functions and their own functions
+    //Calls built in functions and their own functions
     @Override
     public void visit(FuncCallNode node) {
         String id = node.getID();
@@ -161,7 +161,6 @@ public class CodeVisitor implements INodeVisitor {
                 actualParamsList.add(child);
             }
         }
-
 
         // We now replace the node's formal parameters with the values from the actual parameter
         for(int i = 0; i < funcDcl.children.size(); i++) {
@@ -508,10 +507,10 @@ public class CodeVisitor implements INodeVisitor {
         this.visitChildren(node);
         node.setValue(node.children.get(0).getValue());
 
-        if(symbolTable.lookupSymbol(node.getID()) != null) {
-            SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
-            attributes.setValue(node.children.get(0).getValue());
-        }
+        //if(symbolTable.lookupSymbol(node.getID()) != null) {
+            //SymbolAttributes attributes = symbolTable.lookupSymbol(node.getID());
+            //attributes.setValue(node.children.get(0).getValue());
+        //}
     }
 
     @Override
